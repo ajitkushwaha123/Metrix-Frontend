@@ -8,11 +8,11 @@ import Settings from './Pages/Settings'
 import Conversations from './Pages/Conversations'
 import Support from './Pages/Support'
 import Gift from './Pages/Gift'
-// import Logout from './Authentication/Logout'
+import Logout from './Authentication/Logout'
 import Customers from './Pages/Customers'
-// import Login from './Authentication/Login'
-// import Register from './Authentication/Register'
-// import ForgetPassword from './Authentication/ForgetPassword'
+import Login from './Authentication/Login'
+import Register from './Authentication/Register'
+import ForgetPassword from './Authentication/ForgetPassword'
 
 
 function App() {
@@ -34,14 +34,14 @@ function App() {
             <Route path='/customers' element={<Customers />}/>
             <Route path='/support' element={<Support />}/>
             <Route path='/gift' element={<Gift />}/>
-            {/* <Route path='/logout' element={<Logout />}/> */}
+            <Route path='/logout' element={<Logout />}/>
           </Routes>
 
-          {/* <Routes>
+          <Routes>
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
             <Route path='/forget-password' element={<ForgetPassword />} />
-          </Routes> */}
+          </Routes>
         </div>
       </div>
     </BrowserRouter>
