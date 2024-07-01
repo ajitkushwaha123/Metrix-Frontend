@@ -37,6 +37,7 @@ export async function registerUser(credential) {
 }
 
 export async function verifyPassword({ username, password }) {
+    console.log({username , password});
     try {
         const data = await axios.post('/api/login', { username, password });
         return Promise.resolve({ data });
@@ -44,6 +45,7 @@ export async function verifyPassword({ username, password }) {
         return Promise.reject({ error: "Password doesn't Match... !" });
     }
 }
+
 
 export async function updateUser(response) {
     try {

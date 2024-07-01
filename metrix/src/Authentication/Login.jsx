@@ -1,31 +1,52 @@
-import React, { useState } from 'react'
-import { metrix } from '../assets'
-import { IoMailOutline } from "react-icons/io5";
-import { IoKeyOutline } from "react-icons/io5";
-import { NavLink } from 'react-router-dom';
+import React from 'react';
+import { metrix } from '../assets';
+import { IoMailOutline, IoKeyOutline } from "react-icons/io5";
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { loginValidate } from '../helper/validate';
-import { Toaster } from 'react-hot-toast';
-import useFetch from '../hooks/fetch.hooks';
+import { toast, Toaster } from 'react-hot-toast';
 import { useAuthStore } from '../store/store';
+import { verifyPassword } from '../helper/helper';
+import useFetch from '../hooks/fetch.hooks';
 
 const Login = () => {
-  
-  const {username} = useAuthStore(state => state.auth);
+
+  const navigate = useNavigate();
+
+  const setUsername = useAuthStore(state=> state.setUsername);
+  //const [{isLoading , apiData , serverError}] = useFetch(`/user/${username}`)
 
   const formik = useFormik({
-    initialValues : {
-      email : '',
-      password : '',
+    initialValues: {
+      username: '123456',
+      password: '123456',
     },
-    validate : loginValidate,
-    validateOnBlur : false,
-    validateOnChange : false,
-    onSubmit : async values => {
-       console.log(values.email);
-    }
-  })
-
+    validate: loginValidate,
+    validateOnBlur: false,
+    validateOnChange: false,
+    onSubmit: async (values) => {
+      setUsername(values.username);
+      console.log(values.username);
+      let loginPromise = verifyPassword({ username : values.username , password: values.password });
+      toast.promise(loginPromise, {
+        loading: 'Checking...',
+        success: <b>Login Successfully... !</b>,
+        error: <b>Could not login... !</b>
+      });
+    
+      loginPromise.then(res => {
+        try {
+          let { token } = res.data.data;
+         // console.log('token:', res.data.data.token);
+          localStorage.setItem('token', token);
+          // navigate('/settings');
+        } catch (error) {
+          console.error('Error extracting token:', error);
+          // Handle the error (e.g., show an error message to the user)
+        }
+      });      
+    },
+  });
 
   return (
     <div className='w-[full] font-poppins flex h-screen justify-center items-center'>
@@ -41,7 +62,7 @@ const Login = () => {
          <div className='w-[full] flex flex-col justify-center items-center'>
             <div className='flex rounded-lg text-[18px] justify-center items-center bg-[#EFF1F9] w-[375px] h-[52px]'> 
               <IoMailOutline />
-              <input {...formik.getFieldProps('email')} className='w-[303px] ml-[10px] h-[36px] outline-none bg-[#EFF1F9]' placeholder='Email Address' type='email'/>
+              <input {...formik.getFieldProps('username')} className='w-[303px] ml-[10px] h-[36px] outline-none bg-[#EFF1F9]' placeholder='Email Address' type='username'/>
             </div>
 
             <div className='flex rounded-lg my-[20px] text-[18px] justify-center items-center bg-[#EFF1F9] w-[375px] h-[52px]'> 

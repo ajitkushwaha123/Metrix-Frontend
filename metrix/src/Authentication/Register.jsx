@@ -4,13 +4,15 @@ import { IoMailOutline } from "react-icons/io5";
 import { IoKeyOutline } from "react-icons/io5";
 import { CiLock } from "react-icons/ci";
 import { CiUser } from "react-icons/ci";
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import  {toast ,Toaster} from 'react-hot-toast';
 import { useFormik } from 'formik';
 import { registerValidate  } from '../helper/validate';
 import { registerUser } from '../helper/helper';
 
 const Register = () => {
+
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues : {
@@ -28,7 +30,9 @@ const Register = () => {
           loading : 'Creating...',
           success : <b>Register Successfully... !</b>,
           error : <b>Could not Register... !</b>
-        })
+        });
+
+        registerPromise.then(function(){navigate('/')});
     }
   })
 

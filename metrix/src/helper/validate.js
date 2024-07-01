@@ -25,18 +25,21 @@ export async function passwordReset(values)
 
 export async function loginValidate(values) {
   const errors = {}; 
-  if(!values.email)
-  {
-    errors.email = toast.error('Email Required... !');
+
+  if(values.username){
+    const {status} = await authenticate(values.username);
+
+    if(status !== 200)
+      {
+        errors.exist = toast.error("User Doesn't Exist... !");
+      }
   }
-  else if (!values.password) {
+
+  if (!values.password) {
+  console.log(values.password);
     errors.password = toast.error('Password Required... !');
   } else if (values.password.length < 4) {
     errors.password = toast.error('Password is too weak... !');
-  }
-  else
-  {
-    errors.success = toast.success('Login Success... !');
   }
 
   return errors; 
