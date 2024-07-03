@@ -16,9 +16,9 @@ const Register = () => {
 
   const formik = useFormik({
     initialValues : {
-      username : '',
-      email : '',
-      password : ''
+      username : '123456',
+      email : '123456@gmail.com',
+      password : '123456'
     },
     validate : registerValidate,
     validateOnBlur : false,
@@ -32,7 +32,7 @@ const Register = () => {
           error : <b>Could not Register... !</b>
         });
 
-        registerPromise.then(function(){navigate('/')});
+        registerPromise.then(function(){navigate('/login')});
     }
   })
 

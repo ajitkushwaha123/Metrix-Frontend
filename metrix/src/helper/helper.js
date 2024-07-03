@@ -49,13 +49,19 @@ export async function verifyPassword({ username, password }) {
 
 export async function updateUser(response) {
     try {
-        const token = await localStorage.getItem('token');
-        const data = await axios.put('/api/updateUser', response, { headers: { "Authorization": `Bearer ${token}` } });
+        const token = localStorage.getItem('token');
+        console.log(token); // Log the token for debugging purposes
+
+        const { data } = await axios.put('/api/updateUser', response, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
         return Promise.resolve({ data });
     } catch (error) {
-        return Promise.reject({ error: "Couldn't Update Profile... !" });
+        return Promise.reject({ error: "Couldn't update profile." });
     }
 }
+
 
 export async function generateOTP(username) {
     try {

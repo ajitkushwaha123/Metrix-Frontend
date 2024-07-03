@@ -6,8 +6,9 @@ import router from './router/route.js';
 
 const app = express();
 
-app.use(express.json());
-app.use(cors());
+app.use(express.json({ limit: '50mb' })); // Parse JSON body first
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(cors()); // Enable CORS
 app.use(morgan('tiny'));
 app.disable('x-powered-by');
 
@@ -17,18 +18,19 @@ app.get('/', (req, res) => {
     res.status(201).json("Home GET Request");
 });
 
-// api routes
+// API routes
+app.use('/api', router);
 
-app.use('/api' , router)
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
+});
 
 connect().then(() => {
-    try {
-        app.listen(port, () => {
-            console.log(`Server Connected to http://localhost:${port}`);
-        });
-    } catch (error) {
-        console.log("Can't Connect to the server");
-    }
+    app.listen(port, () => {
+        console.log(`Server connected to http://localhost:${port}`);
+    });
 }).catch(error => {
-    console.log("Invalid Database Connection... !");
+    console.log("Invalid database connection!");
 });

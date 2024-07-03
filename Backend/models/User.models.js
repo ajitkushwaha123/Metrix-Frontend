@@ -16,9 +16,10 @@ const UserSchema = new mongoose.Schema({
     unique: true,
   },
   name: { type: String },
-  mobile: { type: Number },
+  phone: { type: Number },
   address: { type: String },
   profile: { type: String },
+  city: {type  : String},
 });
 
 // Export the model correctly
