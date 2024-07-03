@@ -13,12 +13,11 @@ import convertToBase64 from '../helper/convert';
 
 const Profile = () => {
   const [file , setFile] = useState();
-  const {username} = useAuthStore(state => state.auth);
-  const [{isLoading , apiData , serverError}] = useFetch(`/user/${username}`)
+  const [{isLoading , apiData , serverError}] = useFetch();
 
   const formik = useFormik({
     initialValues : {
-      name : apiData?.name || 'aj',
+      name : apiData?.name || '',
       email : apiData?.email || '',
       phone : apiData?.phone || '',
       address : apiData?.address || '',
@@ -62,7 +61,7 @@ const Profile = () => {
          </div>
 
          
-           <h2 className='text-[20px] mt-[60px]'>{apiData?.email || apiData?.username} </h2>
+           <h2 className='text-[20px] text-start mt-[60px]'>Account Setting</h2>
 
            <div className='mt-[20px] flex flex-col justify-center'>
             <div className='flex rounded-lg my-[20px] text-[18px] justify-center items-center bg-[#EFF1F9] w-[375px] h-[52px]'> 
@@ -87,6 +86,7 @@ const Profile = () => {
 
             <div className='flex rounded-lg my-[20px] text-[18px] justify-center items-center bg-[#EFF1F9] w-[375px] h-[52px]'> 
               <IoKeyOutline />
+              <input {...formik.getFieldProps('address')} className='w-[303px] ml-[10px] h-[36px] outline-none bg-[#EFF1F9]' placeholder='City' type='city'/>
             </div>
          </div>
       </div>

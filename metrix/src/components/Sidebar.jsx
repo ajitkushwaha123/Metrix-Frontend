@@ -9,9 +9,15 @@ import { IoSettingsOutline } from 'react-icons/io5';
 import { TfiHeadphoneAlt } from 'react-icons/tfi';
 import { FiLogOut } from 'react-icons/fi';
 import { GoGift } from 'react-icons/go';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+  function userLogout(){
+    localStorage.removeItem('token');
+    navigate('/login');
+  }
+
   const navLinks = [
     {
       title: 'Dashboard',
@@ -90,7 +96,7 @@ const Sidebar = () => {
             <p className="hidden group-hover:block">Free Gift Awaits You!</p>
           </li>
         </NavLink>
-        <NavLink to={'/logout'}>
+        <NavLink onClick={userLogout} to={'/login'}>
           <li className="flex items-center h-[53px] rounded-lg group-hover:w-[233px] text-[16px] text-[#db9292] px-[15px] group-hover:px-[30px] my-[3px]">
             <FiLogOut className="group-hover:mr-[10px] text-[20px]" />
             <p className="hidden group-hover:block">Logout</p>
