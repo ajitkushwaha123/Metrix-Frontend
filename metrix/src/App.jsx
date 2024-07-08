@@ -13,7 +13,7 @@ import Customers from './Pages/Customers'
 import Login from './Authentication/Login'
 import Register from './Authentication/Register'
 import ForgetPassword from './Authentication/ForgetPassword'
-
+import { AuthorizeUser } from './middleware/auth'
 
 function App() {
 
@@ -29,7 +29,7 @@ function App() {
             <Route path='/' element={<Dashboard />}/>
             <Route path='/order' element={<Order />}/>
             <Route path='/inventory' element={<Inventory />}/>
-            <Route path='/settings' element={<Settings />}/>
+            <Route path='/profile' element={<Settings />}/>
             <Route path='/conversations' element={<Conversations />}/>
             <Route path='/customers' element={<Customers />}/>
             <Route path='/support' element={<Support />}/>

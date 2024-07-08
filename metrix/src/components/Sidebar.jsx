@@ -47,7 +47,7 @@ const Sidebar = () => {
     {
       title: 'Settings',
       icon: <IoSettingsOutline />,
-      link: '/settings',
+      link: '/profile',
     },
   ];
 
