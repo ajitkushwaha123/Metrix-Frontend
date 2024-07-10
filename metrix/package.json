@@ -12,11 +12,13 @@
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
     "@headlessui/react": "^2.1.2",
+    "@heroicons/react": "^1.0.6",
     "@nextui-org/react": "^2.4.2",
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",
     "formik": "^2.4.6",
     "framer-motion": "^11.2.13",
+    "heroicons": "^2.1.4",
     "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -28,6 +30,7 @@
     "zustand": "^4.5.4"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.13",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
