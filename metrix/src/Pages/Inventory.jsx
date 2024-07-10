@@ -6,7 +6,8 @@ import { BsHandbag } from "react-icons/bs";
 import Stats from '../components/Stats';
 import { BsFolder2Open } from 'react-icons/bs';
 import { TiPlus } from "react-icons/ti";
-import table from '../Inventory/Table';
+import InvTable from '../DataTable/Table';
+import { NavLink } from 'react-router-dom';
 
 const Inventory = () => {
   return (
@@ -15,7 +16,7 @@ const Inventory = () => {
       <BreadCrum title={"Inventory"} back={"/"} />
       <div className='flex justify-between items-center px-[30px] py-[10px]'>
         <h3 className='font-normal pt-[10px] text-[20px] font-poppins'>Inventory Summary</h3>
-        <button className='bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2'><TiPlus className='mr-[15px]'/>Add a New Product</button>
+        <NavLink to={"/inventory/new-product"}><button className='bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2'><TiPlus className='mr-[15px]'/>Add a New Product</button></NavLink>
       </div>
 
 
@@ -49,7 +50,11 @@ const Inventory = () => {
         </div>
       </div>
 
-      
+      <div className='px-[30px] py-[30px]'>
+        <div className='bg-white py-[40px] px-[40px]'>
+          <InvTable />  
+        </div>
+      </div>
     </div>
   )
 }

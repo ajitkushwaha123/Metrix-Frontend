@@ -14,6 +14,8 @@ import Login from './Authentication/Login'
 import Register from './Authentication/Register'
 import ForgetPassword from './Authentication/ForgetPassword'
 import { AuthorizeUser } from './middleware/auth'
+import NewInventory from './Pages/NewInventory'
+import SingleProduct from './Pages/SingleProduct'
 
 function App() {
 
@@ -29,12 +31,14 @@ function App() {
             <Route path='/' element={<Dashboard />}/>
             <Route path='/order' element={<Order />}/>
             <Route path='/inventory' element={<Inventory />}/>
+            <Route path='/inventory/new-product' element={<NewInventory />} />
             <Route path='/profile' element={<Settings />}/>
             <Route path='/conversations' element={<Conversations />}/>
             <Route path='/customers' element={<Customers />}/>
             <Route path='/support' element={<Support />}/>
             <Route path='/gift' element={<Gift />}/>
             <Route path='/logout' element={<Logout />}/>
+            <Route path='/singleproduct/:id' element={<SingleProduct />} />
           </Routes>
 
           <Routes>

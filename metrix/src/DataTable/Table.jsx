@@ -1,4 +1,5 @@
 import React from "react";
+import { useProductContext } from "../context/productContext";
 import {
   Table,
   TableHeader,
@@ -20,18 +21,52 @@ import {PlusIcon} from "./PlusIcon";
 import {VerticalDotsIcon} from "./VerticalDotsIcon";
 import {SearchIcon} from "./SearchIcon";
 import {ChevronDownIcon} from "./ChevronDownIcon";
-import {columns, users, statusOptions} from "./data";
+import {columns, statusOptions} from "./data";
 import {capitalize} from "./utils";
+import { NavLink } from "react-router-dom";
 
 const statusColorMap = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
+  published: "success",
+  unpublished : "danger",
+  draft: "warning",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ["name","category" , "price" , "role", "status", "actions"];
 
-export default function Table() {
+export default function InvTable() {
+  
+const { isLoading, products } = useProductContext();
+
+const users = [];
+console.log("chrrc" , products);
+
+products.forEach((product) => {
+  const user = {
+    id: product.id,
+    name: product.title,
+    category: product.category,
+    // Add other properties as needed
+    status: "published",
+    age: product.age,
+    avatar: product.images,
+    price: product.price,
+    stock: product.stock,
+    discountPercentage : product.discountPercentage,
+  };
+
+  // Push the user object to the users array
+  users.push(user);
+});
+
+// Now you can use the 'users' array wherever needed
+console.log("u" , users); // Example: Logging the users array
+
+// Return the 'users' array if this function is part of a larger component
+// return users;
+
+// Adjust the usage based on your specific requirements
+
+  
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -100,11 +135,19 @@ export default function Table() {
             }}
             description={user.email}
             name={cellValue}
+            id={user.id}
           >
             {user.email}
           </User>
         );
       case "role":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small capitalize">{cellValue}</p>
+            <p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>
+          </div>
+        );
+        case "category":
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
@@ -229,7 +272,7 @@ export default function Table() {
               </DropdownMenu>
             </Dropdown>
             <Button
-              className="bg-foreground text-background"
+              className="bg-primary text-background"
               endContent={<PlusIcon />}
               size="sm"
             >
@@ -269,7 +312,7 @@ export default function Table() {
         <Pagination
           showControls
           classNames={{
-            cursor: "bg-foreground text-background",
+            cursor: "bg-primary text-background",
           }}
           color="default"
           isDisabled={hasSearchFilter}
@@ -315,7 +358,7 @@ export default function Table() {
       bottomContentPlacement="outside"
       checkboxesProps={{
         classNames: {
-          wrapper: "after:bg-foreground after:text-background text-background",
+          wrapper: "after:bg-primary after:text-background text-background",
         },
       }}
       classNames={classNames}
@@ -341,7 +384,11 @@ export default function Table() {
       <TableBody emptyContent={"No users found"} items={sortedItems}>
         {(item) => (
           <TableRow key={item.id}>
-            {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+              {(columnKey) => <TableCell>
+                <NavLink to={`/singleproduct/${item.id}`}>
+                  {renderCell(item, columnKey)}
+                </NavLink>
+              </TableCell>}
           </TableRow>
         )}
       </TableBody>
