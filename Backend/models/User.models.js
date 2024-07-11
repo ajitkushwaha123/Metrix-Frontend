@@ -20,6 +20,39 @@ const UserSchema = new mongoose.Schema({
   address: { type: String },
   profile: { type: String },
   city: {type  : String},
+  role:{
+    type : String,
+    required : true,
+    default : "CUSTOMER",
+  },
+  paymentInformation : [
+    {
+      type : mongoose.Schema.Types.ObjectId,
+      ref : "payment_information"
+    }
+  ],
+  ratings : [
+    {
+      type : mongoose.Schema.Types.ObjectId,
+      ref : "ratings"
+    }
+  ],
+  reviews : [
+    {
+      type : mongoose.Schema.Types.ObjectId,
+      ref : "reviews"
+    }
+  ],
+  createdAt : {
+    type : Date,
+    default:Date.now(),
+  },
+  cart : [
+    {
+      type : mongoose.Schema.Types.ObjectId,
+      ref : "carts"
+    }
+  ],
 });
 
 // Export the model correctly
