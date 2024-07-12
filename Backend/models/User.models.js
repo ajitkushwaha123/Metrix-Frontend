@@ -53,6 +53,14 @@ const UserSchema = new mongoose.Schema({
       ref : "carts"
     }
   ],
+  product : [
+    {
+      type : String,
+      default : "dummmm",
+      // type : mongoose.Schema.Types.ObjectId,
+      // ref : "Product",
+    }
+  ]
 });
 
 // Export the model correctly

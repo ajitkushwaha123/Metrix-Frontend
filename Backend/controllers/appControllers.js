@@ -3,8 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import ENV from '../config.js';
 import otpGenerator from 'otp-generator';
-
-
+import { Product } from "../models/Product.model.js";
 // Middleware for verifying user
 export async function verifyUser(req, res, next) {
   try {
@@ -12,7 +11,7 @@ export async function verifyUser(req, res, next) {
 
     const exist = await UserModel.findOne({ username });
     if (!exist) {
-      return res.status(404).send({ error: "User not found" });
+      return res.status(401).send({ error: username });
     }
 
     next();
@@ -54,6 +53,27 @@ export async function register(req, res) {
     res.status(500).send({ error: "Internal server error" });
   }
 }
+export async function singleProduct(req, res) {
+  try {
+    const product = await Product.create(req.body);
+    // Assuming ProductModel is defined elsewhere
+    // console.log(req.body);
+    // res.send(req.body);
+    // const product = await Product.create(req.body);
+
+    res.status(200).json({
+      success: true,
+      product,
+    });
+  } catch (error) {
+    console.error('Error creating product:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error creating product',
+    });
+  }
+}
+
 
 export async function login(req, res) {
   const { username, password } = req.body;
@@ -110,7 +130,6 @@ export async function getUser(req, res) {
     return res.status(500).send({ error: "Can't find user data" });
   }
 }
-
 
 export async function updateUser(req, res) {
   try {

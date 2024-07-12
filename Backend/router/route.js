@@ -1,28 +1,36 @@
 // routes/userRoutes.js
 import { Router } from "express";
 import * as controller from '../controllers/appControllers.js';
-import Auth , {localVariable} from "../middleware/auth.js";
-const router = Router();
+import Auth from "../middleware/auth.js"; // Assuming Auth is the middleware for authentication
 import { registerMail } from "../controllers/mailer.js";
+import product_route from "./productRoute.js";
+// import productRoute from './ProductRoutes.js'
 
-// POST
+
+const router = Router();
+
+// POST: Register user
 router.route('/register').post(controller.register);
+
+// POST: Send registration email
 router.route('/registerMail').post(registerMail);
+
+// POST: User login
 router.route('/login').post(controller.verifyUser, controller.login);
-router.route('/authenticate').post(controller.verifyUser , (req, res) => res.end());
 
-// GET
+// POST: Authenticate (placeholder)
+router.route('/authenticate').post(controller.verifyUser, (req, res) => res.end());
+
+// Use product routes
+// router.use(product_route);
+
+// GET: Get user details by username
 router.route('/user/:username').get(controller.getUser);
-// Remove the unused routes:
-router.route('/generateOTP').get(controller.verifyUser , localVariable , controller.generateOTP);
-router.route('/verifyOTP').get(controller.verifyUser , controller.verifyOTP);
-router.route('/createResetSession').get(controller.createResetSession);
 
+// PUT: Update user data (requires authentication)
+router.route('/updateuser').put(Auth, controller.updateUser);
 
-// PUT
-
-//pass user id to update data:)
-router.route('/updateuser').put(Auth , controller.updateUser);
-router.route('/resetPassword').put(controller.verifyUser , controller.resetPassword);
+// PUT: Reset user password
+router.route('/resetPassword').put(controller.verifyUser, controller.resetPassword);
 
 export default router;
