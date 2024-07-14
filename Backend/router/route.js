@@ -3,9 +3,6 @@ import { Router } from "express";
 import * as controller from '../controllers/appControllers.js';
 import Auth from "../middleware/auth.js"; // Assuming Auth is the middleware for authentication
 import { registerMail } from "../controllers/mailer.js";
-import product_route from "./productRoute.js";
-// import productRoute from './ProductRoutes.js'
-
 
 const router = Router();
 
@@ -21,12 +18,11 @@ router.route('/login').post(controller.verifyUser, controller.login);
 // POST: Authenticate (placeholder)
 router.route('/authenticate').post(controller.verifyUser, (req, res) => res.end());
 
-// Use product routes
-// router.use(product_route);
-
 // GET: Get user details by username
 router.route('/user/:username').get(controller.getUser);
-
+router.route('/test').get((req , res) => {
+    res.send("hi");
+})
 // PUT: Update user data (requires authentication)
 router.route('/updateuser').put(Auth, controller.updateUser);
 
