@@ -6,6 +6,10 @@ const UserSchema = new mongoose.Schema({
     required: [true, "Username is required"],
     unique: true,
   },
+  isAdmin : {
+    type : Boolean,
+    default : false,
+  },
   password: {
     type: String,
     required: [true, "Password is required"],
@@ -31,37 +35,11 @@ const UserSchema = new mongoose.Schema({
       ref : "payment_information"
     }
   ],
-  ratings : [
-    {
-      type : mongoose.Schema.Types.ObjectId,
-      ref : "ratings"
-    }
-  ],
-  reviews : [
-    {
-      type : mongoose.Schema.Types.ObjectId,
-      ref : "reviews"
-    }
-  ],
   createdAt : {
     type : Date,
     default:Date.now(),
   },
-  cart : [
-    {
-      type : mongoose.Schema.Types.ObjectId,
-      ref : "carts"
-    }
-  ],
-  product : [
-    {
-      type : String,
-      default : "dummmm",
-      // type : mongoose.Schema.Types.ObjectId,
-      // ref : "Product",
-    }
-  ]
-});
+} , {timestamps : true});
 
 // Export the model correctly
 export default mongoose.model("User", UserSchema);

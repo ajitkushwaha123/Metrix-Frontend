@@ -2,7 +2,6 @@ import mongoose, { Schema } from "mongoose";
 
 const ProductSchema = new mongoose.Schema(
     {
-        _id : mongoose.Schema.Types.ObjectId,
         title: {
           type: String,
           default : "dummy",
@@ -10,9 +9,8 @@ const ProductSchema = new mongoose.Schema(
         },
         shortDescription: {
           type: String,
-        //   required: true,
         },
-        category: [String], // Assuming category is an array of strings
+        category: {type : Array}, 
         price: {
           type: Number,
         },
@@ -25,11 +23,7 @@ const ProductSchema = new mongoose.Schema(
         longDescription: {
           type: String,
         },
-        images : [
-          {
-            type : Array,
-          },
-        ],
+        images : {type : String},
       },
       { timestamps: true }
 );

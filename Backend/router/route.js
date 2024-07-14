@@ -3,6 +3,9 @@ import { Router } from "express";
 import * as controller from '../controllers/appControllers.js';
 import Auth from "../middleware/auth.js"; // Assuming Auth is the middleware for authentication
 import { registerMail } from "../controllers/mailer.js";
+import products from "./product.route.js";
+import orders from "./Order.routes.js";
+import carts from "./cart.route.js";
 
 const router = Router();
 
@@ -20,13 +23,16 @@ router.route('/authenticate').post(controller.verifyUser, (req, res) => res.end(
 
 // GET: Get user details by username
 router.route('/user/:username').get(controller.getUser);
-router.route('/test').get((req , res) => {
-    res.send("hi");
-})
 // PUT: Update user data (requires authentication)
 router.route('/updateuser').put(Auth, controller.updateUser);
 
 // PUT: Reset user password
 router.route('/resetPassword').put(controller.verifyUser, controller.resetPassword);
+
+//Products
+router.use('/products' , products);
+router.use("/cart", carts);
+router.use("/orders", orders);
+
 
 export default router;

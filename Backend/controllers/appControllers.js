@@ -53,26 +53,23 @@ export async function register(req, res) {
     res.status(500).send({ error: "Internal server error" });
   }
 }
-export async function singleProduct(req, res) {
-  try {
-    const product = await Product.create(req.body);
-    // Assuming ProductModel is defined elsewhere
-    // console.log(req.body);
-    // res.send(req.body);
-    // const product = await Product.create(req.body);
 
-    res.status(200).json({
-      success: true,
-      product,
-    });
-  } catch (error) {
-    console.error('Error creating product:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error creating product',
-    });
-  }
-}
+// export async function singleProduct(req, res) {
+//   try {
+//     const product = await Product.create(req.body);
+
+//     res.status(200).json({
+//       success: true,
+//       product,
+//     });
+//   } catch (error) {
+//     console.error('Error creating product:', error);
+//     res.status(500).json({
+//       success: false,
+//       message: 'Error creating product',
+//     });
+//   }
+// }
 
 
 export async function login(req, res) {
