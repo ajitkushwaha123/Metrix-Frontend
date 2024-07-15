@@ -6,6 +6,7 @@ import { registerMail } from "../controllers/mailer.js";
 import products from "./product.route.js";
 import orders from "./Order.routes.js";
 import carts from "./cart.route.js";
+import category from "./category.route.js";
 
 const router = Router();
 
@@ -33,6 +34,7 @@ router.route('/resetPassword').put(controller.verifyUser, controller.resetPasswo
 router.use('/products' , products);
 router.use("/cart", carts);
 router.use("/orders", orders);
+router.use("/category" , category)
 
 
 export default router;
