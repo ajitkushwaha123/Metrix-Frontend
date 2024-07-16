@@ -34,6 +34,7 @@ const Category = () => {
             .then(res => {
                 console.log(res);
                 setIsLoading(false);
+                getData();
                 navigate('/category');
             })
             .catch(err => {
