@@ -48,17 +48,6 @@ export async function loginValidate(values) {
 
 export async function registerValidate(values) {
     const errors = {}; 
-
-    // if(values.username)
-    // {
-    //   const {status} = await authenticate(values.username);
-
-    //   if(status !== 200)
-    //     {
-    //       errors.exist = toast.error('User does not exit... !');        
-    //     }
-    // }
-
     if(!values.username)
     {
         errors.username = toast.error('Username Required... !');

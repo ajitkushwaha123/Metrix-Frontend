@@ -16,6 +16,8 @@ import ForgetPassword from './Authentication/ForgetPassword'
 import { AuthorizeUser } from './middleware/auth'
 import NewInventory from './Pages/NewInventory'
 import SingleProduct from './Pages/SingleProduct'
+import AddCategory from './Pages/AddCategory'
+import Category from './Pages/Category'
 
 function App() {
 
@@ -39,6 +41,8 @@ function App() {
             <Route path='/gift' element={<Gift />}/>
             <Route path='/logout' element={<Logout />}/>
             <Route path='/singleproduct/:id' element={<SingleProduct />} />
+            <Route path='add-category' element={<AddCategory />} />
+            <Route path='/category' element={<Category />} />
           </Routes>
 
           <Routes>
