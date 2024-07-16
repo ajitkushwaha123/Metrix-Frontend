@@ -1,0 +1,47 @@
+import React , {useEffect, useState} from 'react'
+import { loader } from '../assets';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
+
+const DetailCategory = () => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [category, setCategory] = useState({});
+    let params = useParams();
+    console.log(params.id);
+
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data", // Required for FormData
+      },
+    };
+
+    useEffect(() => {
+        
+        setIsLoading(true);
+        axios.get(`http://localhost:8000/api/category/${params.id}`, config)
+        .then(res=>{
+            console.log(res.data);
+            setIsLoading(false);
+            setCategory(res.data.category);
+            console.log(category);
+        })
+        .catch(err=>{
+            console.log(err);
+            setIsLoading(false);
+        });
+    } , []);
+
+  return (
+    <>{isLoading && <div><img src={loader}/></div>}
+      {!isLoading && <div>
+        <h1>Detail Category</h1>
+        <h3>{category.name}</h3>
+        <img src={category.photo} alt={category.name} />
+      </div>}
+    </>
+  );
+}
+
+export default DetailCategory

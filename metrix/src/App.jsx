@@ -18,42 +18,46 @@ import NewInventory from './Pages/NewInventory'
 import SingleProduct from './Pages/SingleProduct'
 import AddCategory from './Pages/AddCategory'
 import Category from './Pages/Category'
+import DetailCategory from './Pages/DetailCategory'
+import UpdateCategory from './Pages/UpdateCategory'
 
 function App() {
 
   return (
     <BrowserRouter>
-      <div className='flex w-[100%]'>
-        <div className=''>
-           <Sidebar />
+      <div className="flex w-[100%]">
+        <div className="">
+          <Sidebar />
         </div>
 
-        <div className='w-[100%]'>
+        <div className="w-[100%]">
           <Routes>
-            <Route path='/' element={<Dashboard />}/>
-            <Route path='/order' element={<Order />}/>
-            <Route path='/inventory' element={<Inventory />}/>
-            <Route path='/inventory/new-product' element={<NewInventory />} />
-            <Route path='/profile' element={<Settings />}/>
-            <Route path='/conversations' element={<Conversations />}/>
-            <Route path='/customers' element={<Customers />}/>
-            <Route path='/support' element={<Support />}/>
-            <Route path='/gift' element={<Gift />}/>
-            <Route path='/logout' element={<Logout />}/>
-            <Route path='/singleproduct/:id' element={<SingleProduct />} />
-            <Route path='add-category' element={<AddCategory />} />
-            <Route path='/category' element={<Category />} />
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/order" element={<Order />} />
+            <Route path="/inventory" element={<Inventory />} />
+            <Route path="/inventory/new-product" element={<NewInventory />} />
+            <Route path="/profile" element={<Settings />} />
+            <Route path="/conversations" element={<Conversations />} />
+            <Route path="/customers" element={<Customers />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/gift" element={<Gift />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/singleproduct/:id" element={<SingleProduct />} />
+            <Route path="add-category" element={<AddCategory />} />
+            <Route path="/category" element={<Category />} />
+            <Route path="/category/:id" element={<DetailCategory />} />
+            <Route path="/category/edit/:id" element={<UpdateCategory />} />
           </Routes>
 
           <Routes>
-            <Route path='/login' element={<Login />} />
-            <Route path='/register' element={<Register />} />
-            <Route path='/forget-password' element={<ForgetPassword />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forget-password" element={<ForgetPassword />} />
           </Routes>
         </div>
       </div>
     </BrowserRouter>
-  )
+  );
 }
 
 export default App
