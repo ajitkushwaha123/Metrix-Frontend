@@ -18,7 +18,7 @@ export async function getUsername() {
     throw new Error("Token not found"); // Throw an error with a descriptive message
   }
   const decoded = jwtDecode(token);
-  console.log(decoded);
+  console.log("decoded" , decoded);
   return decoded;
 }
 
@@ -97,17 +97,6 @@ export async function addCategory({ name , photo }) {
   }
 }
 
-// const config = {
-//   headers: {
-//     Authorization: `Bearer ${token}`,
-//     "Content-Type": "multipart/form-data",
-//   },
-// };
-
-// const { data } = await axios.post("/api/category", formData, config);
-
-// console.log("Category added successfully:", data);
-
 export async function updateUser(response) {
   try {
     const token = localStorage.getItem("token");
@@ -168,4 +157,13 @@ export async function resetPassword({ username, password }) {
   } catch (error) {
     return Promise.reject({ error });
   }
+}
+
+
+export async function showCategory()
+{
+  console.log("hel");
+  const {userId} = await getUsername();
+  console.log("decoed" , userId);
+  return userId;
 }

@@ -41,7 +41,7 @@ const AddCategory = ({ onSubmit }) => {
       setIsLoading(false);
       toast.success("Category Added Successfully"); 
 
-      navigate('/category');
+      // navigate('/category');
     })
     .catch(err=>{
       setHasError(true);

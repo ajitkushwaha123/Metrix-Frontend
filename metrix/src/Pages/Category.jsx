@@ -1,77 +1,77 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { loader } from "../assets";
 import { useNavigate } from "react-router-dom";
 
 const Category = () => {
   const [isLoading, setIsLoading] = useState(false);
-
   const [categoryList, setCategoryList] = useState([]);
-
   const navigate = useNavigate();
+
   const handleView = (id) => {
-    // alert(id);
-    navigate(`/category/` + id);
-  }
+    navigate(`/category/${id}`);
+  };
 
   const handleEdit = (id) => {
-    // alert(id);
-    navigate(`/category/edit/` + id);
+    navigate(`/category/edit/${id}`);
   };
 
-  const handleDelete = ({id , imageUrl}) => {
-    // alert(id);
-    // navigate(`/category/` + id);
-    if(window.confirm("Are you sure you want to delete this category?")){
-        const token = localStorage.getItem("token");
-        const config = {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "multipart/form-data", // Required for FormData
-            },
-        };
-        axios.delete(`http://localhost:8000/api/category/?id=${id}&imageUrl=${imageUrl}`, config)
-            .then(res => {
-                console.log(res);
-                setIsLoading(false);
-                getData();
-                navigate('/category');
-            })
-            .catch(err => {
-                console.log(err);
-                setIsLoading(false);
-            });
-        setIsLoading(true);
+  const handleDelete = ({ id, imageUrl }) => {
+    if (window.confirm("Are you sure you want to delete this category?")) {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      axios
+        .delete(`http://localhost:8000/api/category/?id=<span class="math-inline">\{id\}&imageUrl\=</span>{imageUrl}`, config)
+        .then((res) => {
+          console.log(res);
+          setIsLoading(false);
+          getData();
+          navigate("/category");
+        })
+        .catch((err) => {
+          console.log(err);
+          setIsLoading(false);
+        });
+
+      setIsLoading(true);
     }
-    console.log(id);
   };
 
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data", // Required for FormData
-    },
-  };
 
-  const getData = ()  => {
+
+  const getData = () => {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json", // Use 'application/json' for typical API requests
+      },
+    };
+
     axios
       .get("http://localhost:8000/api/category", config)
       .then((res) => {
-        console.log(res.data.category);
-        setCategoryList(res.data.category);
-        setIsLoading(false);
+        console.log(res);
+        setCategoryList(res.data.categories);
+        // console.log(categoryList);
+  //       setIsLoading(false);
       })
       .catch((err) => {
         console.log(err);
-        setIsLoading(false);
+        // setIsLoading(false);
       });
-  }
+
+      console.log("cat" , categoryList)
+  };
 
   useEffect(() => {
-    setIsLoading(true);
     getData();
-  }, []);
+  }, []); // Currently runs only on mount, adjust for dynamic updates
+
   return (
     <>
       {isLoading && (
@@ -98,9 +98,30 @@ const Category = () => {
                   <td>
                     <img src={categoryList[index].photo} alt={category.name} />
                   </td>
-                  <button onClick={() => {handleEdit(category._id)}} type="button">Edit</button>
-                  <button onClick={() => {handleDelete({"id" : category._id , "imageUrl" : category.photo})}} type="button">Delete</button>
-                  <button onClick={() => {handleView(category._id)}} type="button">View</button>
+                  <button
+                    onClick={() => {
+                      handleEdit(category._id);
+                    }}
+                    type="button"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleDelete({ id: category._id, imageUrl: category.photo });
+                    }}
+                    type="button"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleView(category._id);
+                    }}
+                    type="button"
+                  >
+                    View
+                  </button>
                 </tr>
               ))}
             </tbody>
@@ -111,4 +132,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default Category

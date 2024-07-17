@@ -37,7 +37,7 @@ const Profile = () => {
         error : <b>Could not update... !</b>
        })
        console.log(apiData?.email);
-       console.log(values);
+       console.log("userData" , values);
     }
   })
 

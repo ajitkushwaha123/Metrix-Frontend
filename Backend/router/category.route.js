@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import { Category } from "../models/Category.models.js";
 import { v2 as cloudinary } from "cloudinary";
 import { upload } from "../middleware/multer.js";
+import UserModel from "../models/User.models.js";
+import UserModels from "../models/User.models.js";
 
 cloudinary.config({
   cloud_name: "drku1djt5",
@@ -15,29 +17,34 @@ const category = express();
 
 category.post("/", upload.single("photo"), Auth, async (req, res, next) => {
   try {
-    console.log("hi" , req.file);
     if (req.file) {
       const filePath = req.file.path;
-      const result = await cloudinary.uploader.upload(req.file.path);
-      // res.status(200).send(result.url);
+      const result = await cloudinary.uploader.upload(filePath);
+
+      // Assuming you have user authentication (e.g., req.user contains the authenticated user)
+      const { userId } = req.user; // Adjust this based on your user model
+
+      console.log("userId", userId);
+      const user = await UserModel.findOne({ userId });
+      if (!user) {
+        return res.status(404).send({ error: "Username not found" });
+      }
       const newCategory = new Category({
         name: req.body.name,
         photo: result.url,
+        user: userId, // Associate the category with the user
       });
+
+       const category = req.user;
+       console.log("category", category);
+       // Update data using promises
+
       await newCategory.save();
       res.status(200).json({
         category: newCategory,
       });
     } else {
-    //   const newCategory = new Category({
-    //     name: req.body.name,
-    //   });
-    //   await newCategory.save();
-    //   res.status(200).json({
-    //     category: newCategory,
-    //   });
-
-    //   console.log("Category added successfully:", newCategory);
+      res.status(400).json({ error: "No photo uploaded" });
     }
   } catch (err) {
     console.error(err);
@@ -48,21 +55,26 @@ category.post("/", upload.single("photo"), Auth, async (req, res, next) => {
 });
 
 // GET all categories
-category.get("/", Auth, (req, res, next) => {
-  Category.find()
-    .select("_id name photo")
-    .then((result) => {
-      res.status(200).json({
-        category: result,
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-      });
+category.get("/", Auth, async (req, res, next) => {
+  try {
+    const { userId } = req.user; // Adjust this based on your user model
+
+    console.log("userId", userId);
+    const categories = await Category.find({ user: userId }).select(
+      "_id name photo user"
+    );
+
+    res.status(200).json({
+      categories,
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: err.message,
+    });
+  }
 });
+
 
 //get single category by id
 category.get("/:id", Auth, (req, res, next) => {
@@ -88,28 +100,28 @@ category.put("/:id", upload.single("photo"), Auth, async (req, res, next) => {
   console.log(req.params.id);
   const file = req.file;
   console.log(file);
-      const result = await cloudinary.uploader.upload(req.file.path);
-    console.log(result);
-    Category.findOneAndUpdate(
-      { _id: req.params.id },
-      {
-        $set: {
-          name: req.body.name,
-          photo: result.url,
-        },
-      }
-    )
-      .then((result) => {
-        res.status(200).json({
-          updated_category: result,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json({
-          error: err,
-        });
+  const result = await cloudinary.uploader.upload(req.file.path);
+  console.log(result);
+  Category.findOneAndUpdate(
+    { _id: req.params.id },
+    {
+      $set: {
+        name: req.body.name,
+        photo: result.url,
+      },
+    }
+  )
+    .then((result) => {
+      res.status(200).json({
+        updated_category: result,
       });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
   // });
 });
 

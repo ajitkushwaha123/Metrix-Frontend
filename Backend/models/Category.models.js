@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
 const CategorySchema = new mongoose.Schema({
+  user : {
+    type : mongoose.Schema.Types.ObjectId,
+    ref : "User",
+  },
   name: String,
   photo: {
     type : String,
