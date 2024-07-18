@@ -64,21 +64,46 @@ products.post("/", upload.array("photos", 4), Auth, async (req, res) => {
 });
 
 //Update
-products.put("/:id", Auth, async (req, res) => {
-  const newProduct = new Product(req.body);
+products.put("/:id", upload.array("photos"), Auth, async (req, res, next) => {
+  const { id } = req.params; // Corrected destructuring
+
+  console.log(id);
+
+  if (req.files && req.files.length > 0) {
+    try {
+      const uploadPromises = req.files.map((file) =>
+        cloudinary.uploader.upload(file.path)
+      );
+      const results = await Promise.all(uploadPromises);
+      console.log("results", results);
+
+      const photoUrls = results.map((result) => result.url);
+      req.body.photos = photoUrls; // Add photo URLs to the request body
+      console.log("body", req.body);
+    } catch (error) {
+      return res.status(500).json({ error: "Error uploading photos" });
+    }
+  }
+
   try {
-    const updatedProduct = await product.findByIdAndUpdate(
-      req.params.id,
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
       {
         $set: req.body,
       },
       { new: true }
     );
+    console.log("updatedProduct", updatedProduct);
+    if (!updatedProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
     res.status(200).json(updatedProduct);
   } catch (err) {
     res.status(500).json(err);
   }
 });
+
+
 
 //Delete
 products.delete("/:id", Auth, async (req, res) => {
