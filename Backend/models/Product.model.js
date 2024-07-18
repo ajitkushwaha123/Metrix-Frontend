@@ -2,19 +2,19 @@ import mongoose, { Schema } from "mongoose";
 
 const ProductSchema = new mongoose.Schema(
     {
-        title: {
+        productName : {
           type: String,
-          default : "dummy",
+          // default: "",  
           required: true,
         },
         shortDescription: {
           type: String,
         },
-        category: {type : Array}, 
+        category: {type : String}, 
         price: {
           type: Number,
         },
-        discountPercentage: {
+        discountPrice: {
           type: Number,
         },
         stock: {
@@ -23,7 +23,13 @@ const ProductSchema = new mongoose.Schema(
         longDescription: {
           type: String,
         },
-        images : {type : String},
+        orderType: {
+          type: String,
+        },
+        variant: {
+          type: String,
+        },
+        photos : {type : Array},
       },
       { timestamps: true }
 );

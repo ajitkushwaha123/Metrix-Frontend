@@ -64,20 +64,35 @@ export async function verifyPassword({ username, password }) {
   }
 }
 
-export async function addCategory({ name , photo }) {
+export async function addProduct(values) {
   try {
     const token = localStorage.getItem("token");
-
-    console.log("Input {values}:", {
-      name: values.name,
-      photos: values.photos,
-    });
+    console.log(values);
 
     const formData = new FormData();
-    formData.append("name", values.name);
-    formData.append("photo", values.photo);
+    formData.append("productName", values.productName); // Ensure productName is a single value
+    formData.append("discountPrice", values.discountPrice);
+    formData.append("orderType", values.orderType);
+    formData.append("longDescription", values.longDescription);
+    formData.append("variant", values.variant);
+    formData.append("shortDescription", values.shortDescription);
+    formData.append("category", values.category);
+    formData.append("price", values.price);
+    formData.append("stock", values.stock);
+    formData.append("photos", values.photos[0]); // Ensure photos is a single value
+    console.log("Form Data:", values.photos[0]);
 
-    console.log("FormData:", formData); // Should now log the appended data
+    // if (values.photos && values.photos.length > 0) {
+    //   values.photos.forEach((photo, index) => {
+    //     console.log("Photo:", photo);
+    //     formData.append(`photos[${index}]`, photo);
+    //   });
+    // }
+
+
+
+    console.log("Selected photos:", values.photos);
+    // console.log("FormData photos:", formData.getAll("photos"));
 
     const config = {
       headers: {
@@ -86,13 +101,13 @@ export async function addCategory({ name , photo }) {
       },
     };
 
-    const { data } = await axios.post("/api/category", formData, config);
+    const { data } = await axios.post("/api/products", formData, config);
 
-    console.log("Category added successfully:", data);
+    console.log("Product added successfully:", data);
 
-    return Promise.resolve({ dataCat: data });
+    return Promise.resolve({ product: data });
   } catch (error) {
-    console.error("Error adding category:", error);
+    console.error("Error adding product:", error);
     return Promise.reject({ error: error.message });
   }
 }
@@ -159,11 +174,3 @@ export async function resetPassword({ username, password }) {
   }
 }
 
-
-export async function showCategory()
-{
-  console.log("hel");
-  const {userId} = await getUsername();
-  console.log("decoed" , userId);
-  return userId;
-}

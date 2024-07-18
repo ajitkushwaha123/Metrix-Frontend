@@ -4,8 +4,13 @@ import { upload, upload2 } from "../assets";
 import { useFormik } from "formik";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import { NavLink } from "react-router-dom";
+import { addProduct } from "../helper/helper";
 
 const AddProduct = () => {
+  const fileHandler = (e) => {
+    formik.setFieldValue("photos", e.target.files);
+  };
+
   const formik = useFormik({
     initialValues: {
       productName: "",
@@ -17,12 +22,17 @@ const AddProduct = () => {
       shortDescription: "",
       longDescription: "",
       variant: "",
+      photos : [],
     },
     // validate : registerValidate,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      console.log(values);
+      console.log("valu" , values.photos);
+
+      console.log("val" , values.photos)
+      const {product} = await addProduct(values);
+      console.log(product);
     },
   });
 
@@ -147,10 +157,27 @@ const AddProduct = () => {
 
           <div className="">
             <div className="min-w-[300px]">
+              <input
+                onChange={(e) => {
+                  fileHandler(e);
+                }}
+                type="file"
+                id="photos"
+                name="photos"
+                multiple
+                // {...formik.getFieldProps("photos")}
+              />
               <img src={upload} />
             </div>
             <div className="py-[30px]">
-              <img src={upload2} />
+              {/* <input
+                type="file"
+                multiple
+                onChange={(e) => {
+                  formik.setFieldValue("photos", e.target.files[1]);
+                }}
+              />
+              <img src={upload2} /> */}
             </div>
           </div>
         </div>

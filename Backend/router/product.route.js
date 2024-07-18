@@ -1,27 +1,70 @@
 import { Product } from "../models/Product.model.js";
 import Auth from "../middleware/auth.js";
 import express from "express";
+import { v2 as cloudinary } from "cloudinary";
+import { upload } from "../middleware/multer.js";
 
 const products = express();
 
+
 // Create a new product
-products.post("/", Auth, async (req, res) => {
+products.post("/", upload.array("photos", 4), Auth, async (req, res) => {
   try {
-    const { title, shortDescription, category, price, stock } = req.body;
-    const newProduct = new Product({
-      title,
+    const {
+      productName,
+      discountPrice,
+      orderType,
+      longDescription,
+      variant,
       shortDescription,
       category,
       price,
       stock,
-    });
-    const savedProduct = await newProduct.save();
-    res.status(200).json(savedProduct);
+      // photos,
+    } = req.body;
+    
+    console.log(req.body);
+
+    // console.log("req.files", req.files);
+
+    if (req.files && req.files.length > 0) {
+      const uploadPromises = req.files.map((file) =>
+        cloudinary.uploader.upload(file.path)
+      );
+      const results = await Promise.all(uploadPromises);
+      console.log("results", results);
+
+      const photoUrls = results.map((result) => result.url);
+
+      const newProduct = new Product({
+        productName,
+        discountPrice, 
+        orderType,
+        longDescription,
+        variant,
+        shortDescription,
+        category,
+        price,
+        stock,
+        photos: photoUrls, // Store array of photo URLs
+      });
+
+      console.log("newProduct", newProduct);
+
+      console.log("newProduct", newProduct);
+      const savedProduct = await newProduct.save();
+      console.log("savedProduct", savedProduct);
+      res.status(200).json(savedProduct);
+    } else {
+      res.status(400).json({ error: "No photos uploaded" });
+    }
   } catch (err) {
-    console.error("Error saving product:", err); // Log the error
-    res.status(500).json({ error: "Internal Server Error" }); // Return an informative response
+    console.error("Error saving product:", err);
+    res.status(500).json({ error: err.message });
   }
 });
+
+
 
 //Update
 products.put("/:id", Auth, async (req, res) => {

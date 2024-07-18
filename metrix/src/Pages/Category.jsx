@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {loader} from "../assets/index";
 
 const Category = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +26,7 @@ const Category = () => {
       };
 
       axios
-        .delete(`http://localhost:8000/api/category/?id=<span class="math-inline">\{id\}&imageUrl\=</span>{imageUrl}`, config)
+        .delete(`http://localhost:8000/api/category/?id=${id}&imageUrl${imageUrl}`, config)
         .then((res) => {
           console.log(res);
           setIsLoading(false);

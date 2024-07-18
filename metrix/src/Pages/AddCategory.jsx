@@ -34,6 +34,8 @@ const AddCategory = ({ onSubmit }) => {
       },
     };
 
+    console.log(selectedFile);
+
     console.log("Form Data:", formData);
     axios.post("http://localhost:8000/api/category", formData , config)
     .then(res=>{
