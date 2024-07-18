@@ -3,7 +3,7 @@ import axios from 'axios';
 const AppContext = createContext();
 import reducer from '../reducer/productReducer'
 
-const API = "https://dummyjson.com/products";
+const API = "http://localhost:8000/api/products";
 
 const initialState = {
   isLoading: false,
@@ -19,10 +19,19 @@ const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const getProducts = async (url) => {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json", // Use 'application/json' for typical API requests
+      },
+    };
+
     dispatch({ type: "SET_LOADING" });
     try {
-      const res = await axios.get(url);
-      const products = await res.data.products;
+      const res = await axios.get(url , config);
+      console.log(res);
+      const products = await res.data;
       console.log("product : " , products);
       dispatch({ type: "MY_API_DATA", payload: products });
     } catch (error) {

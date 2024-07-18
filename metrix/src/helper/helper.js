@@ -80,7 +80,10 @@ export async function addProduct(values) {
     formData.append("price", values.price);
     formData.append("stock", values.stock);
     formData.append("photos", values.photos[0]); // Ensure photos is a single value
-    console.log("Form Data:", values.photos[0]);
+    if(values.photos[1]) formData.append("photos", values.photos[1]); 
+    if (values.photos[2]) formData.append("photos", values.photos[2]); 
+    if (values.photos[3]) formData.append("photos", values.photos[3]); 
+    console.log("Form Data:", values.photos);
 
     // if (values.photos && values.photos.length > 0) {
     //   values.photos.forEach((photo, index) => {

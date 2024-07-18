@@ -64,12 +64,9 @@ products.post("/", upload.array("photos", 4), Auth, async (req, res) => {
   }
 });
 
-
-
 //Update
 products.put("/:id", Auth, async (req, res) => {
-  // const newProduct = new Product(req.body);
-
+  const newProduct = new Product(req.body);
   try {
     const updatedProduct = await product.findByIdAndUpdate(
       req.params.id,

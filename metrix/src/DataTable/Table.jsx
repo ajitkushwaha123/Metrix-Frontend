@@ -42,19 +42,17 @@ console.log("chrrc" , products);
 
 products.forEach((product) => {
   const user = {
-    id: product.id,
-    name: product.title,
+    id: product._id,
+    name: product.productName,
     category: product.category,
-    // Add other properties as needed
     status: "published",
     age: product.age,
-    avatar: product.images,
+    avatar: product.photos[0],
     price: product.price,
     stock: product.stock,
-    discountPercentage : product.discountPercentage,
+    discountPrice : product.discountPrice,
   };
 
-  // Push the user object to the users array
   users.push(user);
 });
 
