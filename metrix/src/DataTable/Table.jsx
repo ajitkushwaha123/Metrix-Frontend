@@ -1,5 +1,8 @@
-import React from "react";
+import React , {useState} from "react";
 import { useProductContext } from "../context/productContext";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 import {
   Table,
   TableHeader,
@@ -23,7 +26,9 @@ import {SearchIcon} from "./SearchIcon";
 import {ChevronDownIcon} from "./ChevronDownIcon";
 import {columns, statusOptions} from "./data";
 import {capitalize} from "./utils";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
+import { set } from "mongoose";
+import { loader } from "../assets";
 
 const statusColorMap = {
   published: "success",
@@ -34,7 +39,43 @@ const statusColorMap = {
 const INITIAL_VISIBLE_COLUMNS = ["name","category" , "price" , "role", "status", "actions"];
 
 export default function InvTable() {
-  
+
+  const [loading , setLoading] = useState(false);
+
+  const navigate = useNavigate();
+const handleDelete = (id) => {  
+  // const {id} = useParams();
+  console.log("id" , id);
+  if (window.confirm("Are you sure you want to delete this product?")) {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+
+    console.log(`http://localhost:8000/api/products/${id}`);
+    setLoading(true);
+
+    axios
+      .delete(`http://localhost:8000/api/products/${id}`, config)
+      .then((res) => {
+        setLoading(false);
+        console.log(res);
+        // getProducts(`http://localhost:8000/api/product`);
+        window.location.reload();
+        navigate("/inventory");
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log(err);
+      });
+  }
+};
+
+
+
 const { isLoading, products } = useProductContext();
 
 const users = [];
@@ -56,15 +97,9 @@ products.forEach((product) => {
   users.push(user);
 });
 
-// Now you can use the 'users' array wherever needed
-console.log("u" , users); // Example: Logging the users array
+console.log("u" , users); 
 
-// Return the 'users' array if this function is part of a larger component
-// return users;
 
-// Adjust the usage based on your specific requirements
-
-  
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -173,9 +208,12 @@ console.log("u" , users); // Example: Logging the users array
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                <DropdownItem>View</DropdownItem>
+                <DropdownItem>
+                  <NavLink to={`/singleproduct/${user.id}`}>View</NavLink>
+                </DropdownItem>
                 <DropdownItem>Edit</DropdownItem>
-                <DropdownItem>Delete</DropdownItem>
+                
+                <DropdownItem onClick={() => {handleDelete(user.id)}}>Delete</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -348,7 +386,12 @@ console.log("u" , users); // Example: Logging the users array
   );
 
   return (
-    <Table
+    <>
+    {loading &&
+    <div><img src={loader}/> </div>
+    }
+    {!loading && 
+       <Table
       isCompact
       removeWrapper
       aria-label="Example table with custom cells, pagination and sorting"
@@ -383,13 +426,15 @@ console.log("u" , users); // Example: Logging the users array
         {(item) => (
           <TableRow key={item.id}>
               {(columnKey) => <TableCell>
-                <NavLink to={`/singleproduct/${item.id}`}>
+                {/* <NavLink to={`/singleproduct/${item.id}`}> */}
                   {renderCell(item, columnKey)}
-                </NavLink>
+                {/* </NavLink> */}
               </TableCell>}
           </TableRow>
         )}
       </TableBody>
     </Table>
+    }    
+    </>
   );
 }

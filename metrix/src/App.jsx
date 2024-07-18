@@ -22,6 +22,7 @@ import DetailCategory from './Pages/DetailCategory'
 import UpdateCategory from './Pages/UpdateCategory'
 import ImageGenerator from './components/Gemini'
 import Prod from './components/Gemini'
+import UpdateProduct from './Pages/UpdateProduct'
 
 function App() {
 
@@ -51,6 +52,7 @@ function App() {
             <Route path="/category/edit/:id" element={<UpdateCategory />} />
             <Route path='/gemini' element={<ImageGenerator />} />
             <Route path='/prod' element={<Prod />} />
+            <Route path='/inventory/update-product' element={<UpdateProduct />} />
           </Routes>
 
           <Routes>

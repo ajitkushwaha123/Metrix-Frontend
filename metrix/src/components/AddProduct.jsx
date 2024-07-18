@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { LuShirt } from "react-icons/lu";
 import { upload, upload2 } from "../assets";
 import { useFormik } from "formik";
@@ -6,11 +6,19 @@ import { MdOutlineArrowDropDown } from "react-icons/md";
 import { NavLink } from "react-router-dom";
 import { addProduct } from "../helper/helper";
 
-const AddProduct = () => {
+const AddProduct = ({update}) => {
   const fileHandler = (e) => {
     formik.setFieldValue("photos", e.target.files);
   };
 
+  console.log("update", update);  
+
+  useEffect(() => {
+    if(update){
+      console.log("update", update);
+    }
+  }, [update])
+  
   const formik = useFormik({
     initialValues: {
       productName: "",

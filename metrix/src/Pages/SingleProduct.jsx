@@ -1,30 +1,32 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useProductContext } from '../context/productContext';
-
 import { useState } from 'react'
 import { StarIcon } from '@heroicons/react/solid'
 import { RadioGroup } from '@headlessui/react'
 import { CurrencyDollarIcon, GlobeIcon } from '@heroicons/react/outline'
 
 
-const API = "https://dummyjson.com/products";
+const API = "http://localhost:8000/api/products";
 
 const SingleProduct = () => {
   const { getSingleProduct, isSingleLoading, singleProduct } = useProductContext();
   const { id } = useParams();
 
+  console.log("id" , id);
+
   useEffect(() => {
+    console.log("id", id);
     getSingleProduct(`${API}/${id}`)
   }, []);
 
- // const images = [];
+ // const photos = [];
 
-// console.log("images" , images)
+// console.log("photos" , photos)
   const product = {
-    name: singleProduct.title,
+    name: singleProduct.productName,
     price: singleProduct.price,
-    rating: singleProduct.rating,
+    // rating: singleProduct.rating,
     reviewCount: 512,
     href: '#',
     breadcrumbs: [
@@ -54,23 +56,23 @@ const SingleProduct = () => {
       'Machine wash cold with similar colors',
     ],
   }
-  const images = [];
+  const photos = [];
 
-  if (singleProduct.images && typeof singleProduct.images === 'object') {
-    console.log(singleProduct.images);
+  if (singleProduct.photos && typeof singleProduct.photos === 'object') {
+    console.log(singleProduct.photos);
 
-    Object.keys(singleProduct.images).forEach((key, i) => {
+    Object.keys(singleProduct.photos).forEach((key, i) => {
       const id = i;
-      const imageSrc = singleProduct.images[key];
+      const imageSrc = singleProduct.photos[key];
       const imageAlt = "FD"; // You can customize the alt text here
       // Do something with id and imageSrc
-      images.push({ id, imageSrc, imageAlt });
+      photos.push({ id, imageSrc, imageAlt });
     });
   } else {
-    console.log(singleProduct.images);
+    console.log(singleProduct.photos);
   }
 
-  console.log(images);
+  console.log(photos);
 
   
 
@@ -160,7 +162,7 @@ const SingleProduct = () => {
           <h2 className="sr-only">Images</h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-3 lg:gap-8">
-            {images.map((image) => (
+            {photos.map((image) => (
               <img
                 key={image.id}
                 src={image.imageSrc}

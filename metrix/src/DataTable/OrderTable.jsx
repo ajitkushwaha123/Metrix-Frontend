@@ -77,7 +77,7 @@ console.log("chrrc" , products);
 
 products.forEach((product) => {
   const user = {
-    id: product.id,
+    id: product._id,
     name: product.title,
     orderDate: product.category,
     // Add other properties as needed

@@ -11,7 +11,7 @@ const NewInventory = () => {
       <BreadCrum title={"NewInventory"} back={"/"} title2={"Add Product"}/>
       
       <div className='mx-[30px] px-[30px]'>
-        <AddProduct />
+        <AddProduct update={false}/>
       </div>
 
       <h3 className="text-[100px]">{name}</h3>

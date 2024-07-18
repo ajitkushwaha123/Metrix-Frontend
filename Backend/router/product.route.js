@@ -6,7 +6,6 @@ import { upload } from "../middleware/multer.js";
 
 const products = express();
 
-
 // Create a new product
 products.post("/", upload.array("photos", 4), Auth, async (req, res) => {
   try {
@@ -94,9 +93,7 @@ products.delete("/:id", Auth, async (req, res) => {
 });
 
 //Get Products
-products.get("/find/:id", Auth, async (req, res) => {
-  //   const newProduct = new Product(req.body);
-
+products.get("/:id", Auth, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     res.status(200).json(product);

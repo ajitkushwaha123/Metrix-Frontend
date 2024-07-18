@@ -41,16 +41,24 @@ const AppProvider = ({ children }) => {
   }
 
   const getSingleProduct = async (url) => {
-      dispatch({ type: "SET_SINGLE_LOADING" });
-      try{
-        const res = await axios.get(url);
-        console.log("res" , res);
-        const singleProduct = await res.data;
-        console.log("singleproduct : " , singleProduct);
-        dispatch({ type: "SET_SINGLE_PRODUCT", payload: singleProduct });
-      }catch(error){
-        dispatch({type : "SET_SINGLE_ERROR"});
-      }
+        const token = localStorage.getItem("token");
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json", // Use 'application/json' for typical API requests
+          },
+        };
+
+    dispatch({ type: "SET_SINGLE_LOADING" });
+    try {
+      const res = await axios.get(url, config);
+      console.log("res", res);
+      const singleProduct = await res.data;
+      console.log("singleproduct : ", singleProduct);
+      dispatch({ type: "SET_SINGLE_PRODUCT", payload: singleProduct });
+    } catch (error) {
+      dispatch({ type: "SET_SINGLE_ERROR" });
+    }
   }
 
   useEffect(() => {
