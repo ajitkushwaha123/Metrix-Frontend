@@ -68,6 +68,7 @@ products.put("/:id", upload.array("photos"), Auth, async (req, res, next) => {
   const { id } = req.params; // Corrected destructuring
 
   console.log(id);
+  console.log(req.body);
 
   if (req.files && req.files.length > 0) {
     try {

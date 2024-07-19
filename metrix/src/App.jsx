@@ -52,7 +52,7 @@ function App() {
             <Route path="/category/edit/:id" element={<UpdateCategory />} />
             <Route path='/gemini' element={<ImageGenerator />} />
             <Route path='/prod' element={<Prod />} />
-            <Route path='/inventory/update-product' element={<UpdateProduct />} />
+            <Route path='/inventory/update-product/:id' element={<UpdateProduct />} />
           </Routes>
 
           <Routes>

@@ -1,46 +1,57 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { LuShirt } from "react-icons/lu";
 import { upload, upload2 } from "../assets";
 import { useFormik } from "formik";
 import { MdOutlineArrowDropDown } from "react-icons/md";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { addProduct } from "../helper/helper";
-// import { image } from "@nextui-org/react";
+import { useParams } from "react-router-dom";
+import { useProductContext } from "../context/productContext";
+import { updateProduct } from "../helper/helper";
+ 
+const API = "http://localhost:8000/api/products";
+ 
+const UpdateComponent = () => {
+    const navigate = useNavigate();
+    const { getSingleProduct, isSingleLoading, singleProduct } = useProductContext();
+    const { id } = useParams();
 
-const AddProduct = () => {
+    console.log("id", id);
 
-  const [images, setImage] = useState();
-  const [ImageUrl , setImageUrl] = useState(upload);
+    useEffect(() => {
+      console.log("id", id);
+      getSingleProduct(`${API}/${id}`);
+    }, []);
+
+    console.log("sun" , singleProduct.category);
 
   const fileHandler = (e) => {
-    setImage(e.target.files[0]);
-    setImageUrl(URL.createObjectURL(e.target.files[0]));
-    formik.setFieldValue("photos", e.target.files);
-  }; 
-
-  
+    formik.setFieldValue("photos", singleProduct.photos | e.target.files);
+  };
   const formik = useFormik({
     initialValues: {
-      productName: "",
-      category: "",
-      price: "",
-      discountPrice: "",
-      stock: "",
-      orderType: "",
-      shortDescription: "",
-      longDescription: "",
-      variant: "",
-      photos : [],
+      _id: singleProduct._id,
+      productName: singleProduct.productName,
+      category: singleProduct.category ,
+      price: singleProduct.price ,
+      discountPrice: singleProduct.discountPrice ,
+      stock: singleProduct.stock,
+      orderType: singleProduct.orderType,
+      shortDescription: singleProduct.shortDescription,
+      longDescription: singleProduct.longDescription,
+      variant: singleProduct.variant,
+      photos: [singleProduct.photos],
     },
     // validate : registerValidate,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      console.log("valu" , values.photos);
+      console.log("valu", values);
 
-      console.log("val" , values.photos)
-      const {product} = await addProduct(values);
-      console.log(product);
+      console.log("val", values._id);
+      const { product } = await updateProduct(values);
+      navigate('/inventory');
+    //   console.log(product);
     },
   });
 
@@ -175,7 +186,7 @@ const AddProduct = () => {
                 multiple
                 // {...formik.getFieldProps("photos")}
               />
-              <img src={ImageUrl} />
+              <img src={upload} />
             </div>
             <div className="py-[30px]">
               {/* <input
@@ -194,4 +205,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default UpdateComponent;

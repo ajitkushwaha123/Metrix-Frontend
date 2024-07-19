@@ -115,6 +115,53 @@ export async function addProduct(values) {
   }
 }
 
+export async function updateProduct(values) {
+  try {
+    const token = localStorage.getItem("token");
+    console.log("valueId", values._id);
+
+    const formData = new FormData();
+    formData.append("productName", values.productName);
+    formData.append("discountPrice", values.discountPrice);
+    formData.append("orderType", values.orderType);
+    formData.append("longDescription", values.longDescription);
+    formData.append("variant", values.variant);
+    formData.append("shortDescription", values.shortDescription);
+    formData.append("category", values.category);
+    formData.append("price", values.price);
+    formData.append("stock", values.stock);
+    formData.append("photos", values.photos[0]);
+    if (values.photos[1]) formData.append("photos", values.photos[1]);
+    if (values.photos[2]) formData.append("photos", values.photos[2]);
+    if (values.photos[3]) formData.append("photos", values.photos[3]);
+
+    console.log("Form Data:", values.photos);
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    console.log(`/api/products/${values._id}`);
+
+    const { data } = await axios.put(
+      `/api/products/${values._id}`,
+      formData,
+      config
+    );
+
+    console.log("Product updated successfully:", data);
+
+    return { product: data };
+  } catch (error) {
+    console.error("Error updating product:", error);
+    return { error: error.message };
+  }
+}
+
+
 export async function updateUser(response) {
   try {
     const token = localStorage.getItem("token");

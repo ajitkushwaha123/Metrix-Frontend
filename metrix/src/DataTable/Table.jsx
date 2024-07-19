@@ -27,7 +27,7 @@ import {ChevronDownIcon} from "./ChevronDownIcon";
 import {columns, statusOptions} from "./data";
 import {capitalize} from "./utils";
 import { NavLink, useParams } from "react-router-dom";
-import { set } from "mongoose";
+// import { set } from "mongoose";
 import { loader } from "../assets";
 
 const statusColorMap = {
@@ -211,9 +211,19 @@ console.log("u" , users);
                 <DropdownItem>
                   <NavLink to={`/singleproduct/${user.id}`}>View</NavLink>
                 </DropdownItem>
-                <DropdownItem>Edit</DropdownItem>
-                
-                <DropdownItem onClick={() => {handleDelete(user.id)}}>Delete</DropdownItem>
+                <DropdownItem>
+                  <NavLink to={`/inventory/update-product/${user.id}`}>
+                    Edit
+                  </NavLink>
+                </DropdownItem>
+
+                <DropdownItem
+                  onClick={() => {
+                    handleDelete(user.id);
+                  }}
+                >
+                  Delete
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
