@@ -9,16 +9,21 @@ import { addProduct } from "../helper/helper";
 
 const AddProduct = () => {
 
-  const [images, setImage] = useState();
+  const [images, setImage] = useState(upload);
   const [ImageUrl , setImageUrl] = useState(upload);
 
+  const [photos , setPhotos] = useState([]);
+
   const fileHandler = (e) => {
-    setImage(e.target.files[0]);
+    setImage(e.target.files);
+    photos.push(e.target.files[0]);
     setImageUrl(URL.createObjectURL(e.target.files[0]));
-    formik.setFieldValue("photos", e.target.files);
+    // setImageUrl('');
+    formik.setFieldValue("photos", photos);
+    console.log("photos" , photos);
   }; 
 
-  
+
   const formik = useFormik({
     initialValues: {
       productName: "",
@@ -30,7 +35,7 @@ const AddProduct = () => {
       shortDescription: "",
       longDescription: "",
       variant: "",
-      photos : [],
+      photos : photos,
     },
     // validate : registerValidate,
     validateOnBlur: false,

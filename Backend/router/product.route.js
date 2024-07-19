@@ -22,9 +22,9 @@ products.post("/", upload.array("photos", 4), Auth, async (req, res) => {
       // photos,
     } = req.body;
     
-    console.log(req.body);
+    console.log( "red"  , req.body);
 
-    // console.log("req.files", req.files);
+    console.log("req.files", req.files);
 
     if (req.files && req.files.length > 0) {
       const uploadPromises = req.files.map((file) =>
@@ -34,6 +34,8 @@ products.post("/", upload.array("photos", 4), Auth, async (req, res) => {
       console.log("results", results);
 
       const photoUrls = results.map((result) => result.url);
+
+      console.log(photoUrls);
 
       const newProduct = new Product({
         productName,
