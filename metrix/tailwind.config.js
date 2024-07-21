@@ -10,6 +10,7 @@ module.exports = {
     extend: {
 
       colors: {
+        txtArea : "#EFF1F9",
         foreground : "#5570F1",
         primary: "#5570F1",
         secondary: "#FEF5EA",

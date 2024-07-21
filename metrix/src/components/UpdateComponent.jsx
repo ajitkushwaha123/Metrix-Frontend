@@ -1,64 +1,121 @@
-import React, { useEffect } from "react";
+import React, { useEffect , useState } from "react";
 import { LuShirt } from "react-icons/lu";
 import { upload, upload2 } from "../assets";
 import { useFormik } from "formik";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import { NavLink, useNavigate } from "react-router-dom";
-import { addProduct } from "../helper/helper";
 import { useParams } from "react-router-dom";
 import { useProductContext } from "../context/productContext";
 import { updateProduct } from "../helper/helper";
+import { Textarea, Input } from "@nextui-org/react";
+import toast, { Toaster } from "react-hot-toast";
  
 const API = "http://localhost:8000/api/products";
- 
+
 const UpdateComponent = () => {
-    const navigate = useNavigate();
-    const { getSingleProduct, isSingleLoading, singleProduct } = useProductContext();
-    const { id } = useParams();
+  const navigate = useNavigate();
+  const { getSingleProduct, isSingleLoading, singleProduct } =
+    useProductContext();
+  const { id } = useParams();
 
-    console.log("id", id);
+  const [cloudinaryPhotos, setCloudinaryPhotos] = useState([]);
+  const [uploadedPhotos, setUploadedPhotos] = useState([]);
+  const [imageUrl, setImageUrl] = useState(); // Replace with your initial image URL
 
-    useEffect(() => {
-      console.log("id", id);
-      getSingleProduct(`${API}/${id}`);
-    }, []);
+  useEffect(() => {
+    getSingleProduct(`${API}/${id}`);
+  }, [id]);
 
-    console.log("sun" , singleProduct.category);
+  useEffect(() => {
+    if (singleProduct.photos) {
+      setCloudinaryPhotos(singleProduct.photos);
+      setImageUrl(singleProduct.photos[0]);
+      formik.setFieldValue("productName", singleProduct.productName);
+      formik.setFieldValue("category", singleProduct.category);
+      formik.setFieldValue("price", singleProduct.price);
+      formik.setFieldValue("discountPrice", singleProduct.discountPrice);
+      formik.setFieldValue("stock", singleProduct.stock);
+      formik.setFieldValue("orderType", singleProduct.orderType);
+      formik.setFieldValue("shortDescription", singleProduct.shortDescription);
+      formik.setFieldValue("longDescription", singleProduct.longDescription);
+      formik.setFieldValue("variant", singleProduct.variant);
+    }
+  }, [singleProduct]);
 
   const fileHandler = (e) => {
-    formik.setFieldValue("photos", singleProduct.photos | e.target.files);
+    const files = Array.from(e.target.files);
+    setUploadedPhotos((prevPhotos) => {
+      const updatedPhotos = [...prevPhotos, ...files];
+      formik.setFieldValue("photos", [...cloudinaryPhotos, ...updatedPhotos]);
+      return updatedPhotos;
+    });
+
+    if (files.length > 0) {
+      const file = files[0];
+      if (file instanceof Blob) {
+        const fileReader = new FileReader();
+        fileReader.onload = (event) => {
+          setImageUrl(event.target.result);
+        };
+        fileReader.readAsDataURL(file);
+      } else {
+        console.error("The selected file is not a valid Blob or File object.");
+      }
+    }
   };
+
+  const deletePhoto = (index, type) => {
+    if (type === "cloudinary") {
+      setCloudinaryPhotos((prevPhotos) =>
+        prevPhotos.filter((_, i) => i !== index)
+      );
+    } else {
+      setUploadedPhotos((prevPhotos) =>
+        prevPhotos.filter((_, i) => i !== index)
+      );
+    }
+    formik.setFieldValue("photos", [...cloudinaryPhotos, ...uploadedPhotos]);
+  };
+
   const formik = useFormik({
     initialValues: {
       _id: singleProduct._id,
       productName: singleProduct.productName,
-      category: singleProduct.category ,
-      price: singleProduct.price ,
-      discountPrice: singleProduct.discountPrice ,
+      category: singleProduct.category,
+      price: singleProduct.price,
+      discountPrice: singleProduct.discountPrice,
       stock: singleProduct.stock,
       orderType: singleProduct.orderType,
       shortDescription: singleProduct.shortDescription,
       longDescription: singleProduct.longDescription,
       variant: singleProduct.variant,
-      photos: [singleProduct.photos],
+      photos: [...cloudinaryPhotos, ...uploadedPhotos],
     },
-    // validate : registerValidate,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      console.log("valu", values);
+      // console.log("valu", values.photos);
 
-      console.log("val", values._id);
-      const { product } = await updateProduct(values);
-      navigate('/inventory');
-    //   console.log(product);
+      // console.log("val", values._id);
+      // const { product } = await updateProduct(values);
+      let updateProductPromise = updateProduct(values);
+      toast.promise(updateProductPromise, {
+        loading: "Creating...",
+        success: <b>Product Updated Successfully... !</b>,
+        error: <b>Error Updating Product... !</b>,
+      });
+
+      updateProductPromise.then(function () {
+        navigate("/inventory");
+      });
     },
   });
 
   return (
-    <div className="w-full">
-      <div className="flex px-[40px] py-[20px] bg-white justify-between w-full items-center">
-        <p className="text-[22px] font-medium">Add New Product</p>
+    <div className="w-[100%]">
+      <Toaster position="top-center" reverseOrder={false}></Toaster>
+      <div className="flex px-[40px] py-[20px] bg-white justify-between items-center">
+        <p className="text-[22px] font-medium">Update New Product</p>
 
         <div className="flex justify-center items-center">
           <button className="bg-black mx-[15px] rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2">
@@ -74,129 +131,221 @@ const UpdateComponent = () => {
         </div>
       </div>
       <form>
-        <div className="px-[40px] flex bg-white">
-          <div className="flex flex-col font-poppins bg-white items-center">
-            <div className="flex rounded-lg px-[20px] text-[18px] mb-[20px] justify-center items-center bg-[#EFF1F9] mx-w-[375px] h-[52px]">
-              <LuShirt />
-              <input
+        <div className="px-[40px] w-full flex bg-white">
+          <div className="w-[35%] font-poppins">
+            <div className="w-[370px] mb-[20px]">
+              <Input
                 {...formik.getFieldProps("productName")}
-                className="max-w-[303px] ml-[10px] h-[36px] outline-none bg-[#EFF1F9]"
+                type="text"
                 placeholder="Product Name"
-                type="text"
+                labelPlacement="outside"
+                radius="sm"
+                size="lg"
+                startContent={
+                  <div className="pointer-events-none flex items-center">
+                    <span className="text-default-400 w-[full] text-medium">
+                      <LuShirt />
+                    </span>
+                  </div>
+                }
               />
             </div>
 
-            <div className="flex rounded-lg px-[20px] text-[18px] mb-[20px] justify-center items-center bg-[#EFF1F9] mx-w-[375px] h-[52px]">
-              <LuShirt />
-              <input
+            <div className="w-[370px] mb-[20px]">
+              <Input
                 {...formik.getFieldProps("category")}
-                className="max-w-[303px]  ml-[10px] h-[36px] outline-none bg-[#EFF1F9]"
-                placeholder="Product Category"
                 type="text"
+                placeholder="Category"
+                labelPlacement="outside"
+                radius="sm"
+                size="lg"
+                startContent={
+                  <div className="pointer-events-none flex items-center">
+                    <span className="text-default-400 w-[full] text-medium">
+                      <LuShirt />
+                    </span>
+                  </div>
+                }
               />
             </div>
 
-            <div className="flex rounded-lg px-[20px] text-[18px] mb-[20px] justify-center items-center bg-[#EFF1F9] mx-w-[375px] h-[52px]">
-              <LuShirt />
-              <input
+            <div className="mb-[20px] w-[370px]">
+              <Input
                 {...formik.getFieldProps("price")}
-                className="max-w-[303px] ml-[10px] h-[36px] outline-none bg-[#EFF1F9]"
+                type="number"
                 placeholder="Price"
-                type="text"
+                labelPlacement="outside"
+                radius="sm"
+                size="lg"
+                startContent={
+                  <div className="pointer-events-none flex items-center">
+                    <span className="text-default-400 w-[full] text-medium">
+                      $
+                    </span>
+                  </div>
+                }
               />
             </div>
 
-            <div className="flex rounded-lg px-[20px] text-[18px] mb-[20px] justify-center items-center bg-[#EFF1F9] mx-w-[375px] h-[52px]">
-              <LuShirt />
-              <input
+            <div className="mb-[20px] w-[370px]">
+              <Input
                 {...formik.getFieldProps("discountPrice")}
-                className="max-w-[303px] ml-[10px] h-[36px] outline-none bg-[#EFF1F9]"
+                type="number"
                 placeholder="Discount Price"
-                type="text"
+                labelPlacement="outside"
+                radius="sm"
+                size="lg"
+                startContent={
+                  <div className="pointer-events-none flex items-center">
+                    <span className="text-default-400 w-[full] text-medium">
+                      $
+                    </span>
+                  </div>
+                }
               />
             </div>
 
-            <div className="flex rounded-lg px-[20px] text-[18px] mb-[20px] justify-center items-center bg-[#EFF1F9] mx-w-[375px] h-[52px]">
-              <LuShirt />
-              <input
+            <div className="w-[370px] mb-[20px]">
+              <Input
                 {...formik.getFieldProps("stock")}
-                className="max-w-[303px] ml-[10px] h-[36px] outline-none bg-[#EFF1F9]"
+                type="number"
                 placeholder="Stock"
-                type="text"
+                labelPlacement="outside"
+                radius="sm"
+                size="lg"
+                startContent={
+                  <div className="pointer-events-none flex items-center">
+                    <span className="text-default-400 w-[full] text-medium">
+                      <LuShirt />
+                    </span>
+                  </div>
+                }
               />
             </div>
 
-            <div className="flex rounded-lg px-[20px] text-[18px] mb-[20px] justify-center items-center bg-[#EFF1F9] mx-w-[375px] h-[52px]">
-              <LuShirt />
-              <input
+            <div className="w-[370px] mb-[20px]">
+              <Input
                 {...formik.getFieldProps("orderType")}
-                className="max-w-[303px] ml-[10px] h-[36px] outline-none bg-[#EFF1F9]"
-                placeholder="Order type"
                 type="text"
+                placeholder="Order Type"
+                labelPlacement="outside"
+                radius="sm"
+                size="lg"
+                startContent={
+                  <div className="pointer-events-none flex items-center">
+                    <span className="text-default-400 w-[full] text-medium">
+                      <LuShirt />
+                    </span>
+                  </div>
+                }
               />
             </div>
           </div>
-          <div className="flex flex-col mx-[30px]">
-            <div className="flex rounded-lg px-[20px] text-[18px] mb-[20px] justify-center items-center bg-[#EFF1F9] mx-w-[375px] h-[110px]">
-              <textarea
+          <div className="w-[35%] mx-[30px]">
+            <div className="mb-[20px]">
+              <Textarea
+                variant="faded"
+                label="Short Description"
+                placeholder="Enter a Short description ..."
+                className="bg-txtArea bg-[#EFF1F9] outline-none"
                 {...formik.getFieldProps("shortDescription")}
-                className="w-[340px] ml-[4px] h-[100px] outline-none bg-[#EFF1F9]"
-                placeholder="Short Discription"
-                type="textarea"
               />
             </div>
 
-            <div className="flex rounded-lg px-[20px] text-[18px] mb-[20px] justify-center items-center bg-[#EFF1F9] mx-w-[375px] h-[110px]">
-              <textarea
+            <div className="mb-[20px]">
+              <Textarea
+                variant="faded"
+                label="Description"
+                placeholder="Enter a description ..."
+                // className="bg-txtArea bg-[#EFF1F9] outline-none".
+                className="bg-txtArea"
                 {...formik.getFieldProps("longDescription")}
-                className="w-[340px] ml-[4px] h-[100px] outline-none bg-[#EFF1F9]"
-                placeholder="Long Discription"
-                type="textarea"
               />
             </div>
 
-            <div className="flex rounded-lg px-[20px] text-[18px] mb-[20px] justify-center items-center bg-[#EFF1F9] mx-w-[375px] h-[110px]">
-              <textarea
-                className="w-[340px] ml-[4px] h-[100px] outline-none bg-[#EFF1F9]"
-                placeholder="Long Discription"
-                type="textarea"
+            <div className="mb-[20px]">
+              <Textarea
+                variant="faded"
+                label="Description"
+                placeholder="Enter a description ..."
+                className="bg-txtArea bg-[#EFF1F9] outline-none"
+                {...formik.getFieldProps("longDescription")}
               />
             </div>
 
-            <div className="flex rounded-lg px-[20px] text-[18px] mb-[20px] justify-center items-center bg-[#EFF1F9] mx-w-[375px] h-[52px]">
-              <LuShirt />
-              <input
+            <div className="mb-[20px]">
+              <Input
                 {...formik.getFieldProps("variant")}
-                className="w-[340px] ml-[10px] h-[36px] outline-none bg-[#EFF1F9]"
-                placeholder="Variant"
                 type="text"
+                placeholder="Variant"
+                labelPlacement="outside"
+                radius="sm"
+                size="lg"
+                startContent={
+                  <div className="pointer-events-none flex items-center">
+                    <span className="text-default-400 w-[full] text-medium">
+                      <LuShirt />
+                    </span>
+                  </div>
+                }
               />
             </div>
           </div>
 
-          <div className="">
-            <div className="min-w-[300px]">
-              <input
-                onChange={(e) => {
-                  fileHandler(e);
-                }}
-                type="file"
-                id="photos"
-                name="photos"
-                multiple
-                // {...formik.getFieldProps("photos")}
-              />
-              <img src={upload} />
-            </div>
-            <div className="py-[30px]">
-              {/* <input
-                type="file"
-                multiple
-                onChange={(e) => {
-                  formik.setFieldValue("photos", e.target.files[1]);
-                }}
-              />
-              <img src={upload2} /> */}
+          <div className="w-[33%] flex justify-center items-center flex-col bg-[white]">
+            <div>
+              <div>
+                <img
+                  className="rounded-xl p-2 w-[300px] h-[300px] cursor-pointer"
+                  src={imageUrl}
+                  onClick={() => document.getElementById("photos").click()}
+                />
+                <input
+                  onChange={fileHandler}
+                  type="file"
+                  id="photos"
+                  name="photos"
+                  multiple
+                  className="hidden"
+                />
+              </div>
+              <h3 className="font-medium text-[20px] mt-4">
+                Additional Images
+              </h3>
+              <div className="grid grid-cols-3 pb-[40px] gap-4 mt-2">
+                {cloudinaryPhotos.map((photo, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={photo}
+                      alt={`Cloudinary Photo ${index}`}
+                      className="rounded-lg w-[100px] h-[100px]"
+                    />
+                    <button
+                      type="button"
+                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                      onClick={() => deletePhoto(index, "cloudinary")}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                {uploadedPhotos.map((photo, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={URL.createObjectURL(photo)}
+                      alt={`Uploaded Photo ${index}`}
+                      className="rounded-lg w-[100px] h-[100px]"
+                    />
+                    <button
+                      type="button"
+                      className="absolute top-0 right-0 bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center"
+                      onClick={() => deletePhoto(index, "uploaded")}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
