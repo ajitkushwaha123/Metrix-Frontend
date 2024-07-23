@@ -7,13 +7,19 @@ const orders = express();
 // Create a new Order
 orders.post("/", Auth, async (req, res) => {
   try {
-    const { userId, products, amount, address, status } = req.body;
+    const { userId } = req.user;
+    const { products , newCustomer , paymentType , orderType , amount, address, status , orderNote , productName} = req.body;
     const newOrder = new Order({
       userId,
       products,
+      newCustomer,
+      paymentType,
+      orderType,
       amount,
       address,
       status,
+      orderNote,
+      productName,
     });
     const savedOrder = await newOrder.save();
     res.status(200).json(savedOrder);
@@ -60,9 +66,11 @@ orders.get("/find/:userId", Auth, async (req, res) => {
 });
 
 // Get all orders
-orders.get("/", Auth, async (req, res) => {
+orders.get("/:userId", Auth, async (req, res) => {
   try {
-    const orders = await Order.find();
+    const orders = await Order.find( {
+      userId: req.params.userId
+    });
     res.status(200).json(orders);
   } catch (err) {
     res.status(500).json(err);

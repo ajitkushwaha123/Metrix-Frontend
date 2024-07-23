@@ -14,12 +14,22 @@ const OrderSchema = new mongoose.Schema(
         },
       },
     ],
-    amount : {type : Number},
-    address:{type : Object},
-    status : {
-        type : String ,
-        default :"pending",
-    }
+    productName : {
+      type: String,
+    },
+    newCustomer: {
+      type: Boolean,
+      default: false,
+    },
+    paymentType: { type: String },
+    orderType: { type: String },
+    amount: { type: Number },
+    address: { type: Object },
+    status: {
+      type: String,
+      default: "pending",
+    },
+    orderNote: { type: String },
   },
   { timestamps: true }
 );

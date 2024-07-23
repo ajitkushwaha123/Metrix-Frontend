@@ -23,6 +23,7 @@ import UpdateCategory from './Pages/UpdateCategory'
 import ImageGenerator from './components/Gemini'
 import Prod from './components/Gemini'
 import UpdateProduct from './Pages/UpdateProduct'
+import ViewProduct from './Pages/ViewProduct'
 
 function App() {
 
@@ -53,6 +54,7 @@ function App() {
             <Route path='/gemini' element={<ImageGenerator />} />
             <Route path='/prod' element={<Prod />} />
             <Route path='/inventory/update-product/:id' element={<UpdateProduct />} />
+            <Route path='/inventory/view/:id' element={<ViewProduct />} />
           </Routes>
 
           <Routes>

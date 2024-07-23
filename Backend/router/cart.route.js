@@ -7,7 +7,13 @@ const carts = express();
 // Create a new cart
 carts.post("/", Auth, async (req, res) => {
   try {
-    const { userId, products} = req.body;
+    console.log(req.body);
+    const {userId} = req.user;
+    const {products} = req.body;
+
+   console.log(userId);
+   console.log(products);
+
     const newCart = new Cart({
       userId,
       products,

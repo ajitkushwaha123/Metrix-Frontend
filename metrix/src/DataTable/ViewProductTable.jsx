@@ -1,5 +1,8 @@
-import React , {useState , useEffect} from "react";
+import React, { useState } from "react";
 import { useProductContext } from "../context/productContext";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 import {
   Table,
   TableHeader,
@@ -17,95 +20,94 @@ import {
   User,
   Pagination,
 } from "@nextui-org/react";
-import {PlusIcon} from "./PlusIcon";
-import {VerticalDotsIcon} from "./VerticalDotsIcon";
-import {SearchIcon} from "./SearchIcon";
-import {ChevronDownIcon} from "./ChevronDownIcon";
-// import {columns, statusOptions} from "./data";
-import {capitalize} from "./utils";
-import { NavLink } from "react-router-dom";
-import NewOrder from "../Pages/NewOrder";
-import { getOrders } from "../helper/helper";
-import { useParams } from "react-router-dom";
-
-const columns = [
-  {name: "ID", uid: "id", sortable: true},
-  {name: "Product NAME", uid: "name", sortable: true},
-  {name: "ORDER DATE", uid: "orderDate", sortable: true},
-  {name: "Quantity", uid: "quantity", sortable: true},
-  // {name: "ITEMS", uid: "items", sortable: true},
-  {name: "ORDER TYPE", uid: "orderType", sortable: true},
-  {name: "TOTAL PRICE", uid: "total", sortable: true},
-  // {name: "ROLE", uid: "role", sortable: true},
-  // {name: "TEAM", uid: "team"},
-  // {name: "EMAIL", uid: "email"},
-  {name: "STATUS", uid: "status", sortable: true},
-  {name: "ACTIONS", uid: "actions"},
-];
-
-const statusOptions = [
-  {name: "Completed", uid: "completed"},
-  {name: "Pending", uid: "pending"},
-  {name: "in-Progress", uid: "progress"},
-];
+import { PlusIcon } from "./PlusIcon";
+import { VerticalDotsIcon } from "./VerticalDotsIcon";
+import { SearchIcon } from "./SearchIcon";
+import { ChevronDownIcon } from "./ChevronDownIcon";
+import { columns, statusOptions } from "./data";
+import { capitalize } from "./utils";
+import { NavLink, useParams } from "react-router-dom";
+// import { set } from "mongoose";
+import { loader } from "../assets";
 
 const statusColorMap = {
-  completed: "success",
-  pending : "danger",
-  progress: "warning",
+  published: "success",
+  unpublished: "danger",
+  draft: "warning",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["name","orderDate" , "quantity" , "orderType" , "total" , "status", "actions"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "name",
+  "category",
+  "price",
+  "role",
+  "status",
+  "actions",
+];
 
-const API = "http://localhost:8000/api/orders";
+export default function VeiwProductTable() {
+  const [loading, setLoading] = useState(false);
 
-export default function OrderTable() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
+  const handleDelete = (id) => {
+    // const {id} = useParams();
+    console.log("id", id);
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      };
 
-  const toggleModal = () => {
-    setIsOpen((prevState) => !prevState);
-    console.log(isOpen); // This will log the previous state value
+      console.log(`http://localhost:8000/api/products/${id}`);
+      setLoading(true);
+
+      axios
+        .delete(`http://localhost:8000/api/products/${id}`, config)
+        .then((res) => {
+          setLoading(false);
+          console.log(res);
+          // getProducts(`http://localhost:8000/api/product`);
+          window.location.reload();
+          navigate("/inventory");
+        })
+        .catch((err) => {
+          setLoading(false);
+          console.log(err);
+        });
+    }
   };
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      const orders = await getOrders(API);
+  const { isLoading, products } = useProductContext();
 
-      const newUsers = orders.map((order) => {
-        const orderDate = new Date(order.createdAt);
-        return {
-          id: order._id,
-          name : order.productName,
-          avatar: order.images,
-          total: order.amount,
-          address: order.address,
-          orderType: order.orderType,
-          status: order.status,
-          newCustomer: order.newCustomer,
-          orderNote: order.orderNote,
-          paymentType: order.paymentType,
-          products: order.products,
-          quantity: order.products.reduce(
-            (acc, product) => acc + product.quantity,
-            0
-          ), // Assuming products is an array
-          orderDate: `${orderDate.toLocaleDateString()} ${orderDate.toLocaleTimeString()}`,
-        };
-      });
+  const users = [];
+  console.log("chrrc", products);
 
-      setUsers(newUsers);
+  products.forEach((product) => {
+    const user = {
+      id: product._id,
+      name: product.productName,
+      category: product.category,
+      status: "published",
+      age: product.age,
+      avatar: product.photos[0],
+      price: product.price,
+      stock: product.stock,
+      discountPrice: product.discountPrice,
     };
 
-    fetchOrders();
-    console.log(isOpen); // This will log the updated state value
-  }, [isOpen]);
+    users.push(user);
+  });
 
-  console.log("users", users);
-  
+  console.log("u", users);
+
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-  const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
+  const [visibleColumns, setVisibleColumns] = React.useState(
+    new Set(INITIAL_VISIBLE_COLUMNS)
+  );
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState({
@@ -121,7 +123,9 @@ export default function OrderTable() {
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
 
-    return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
+    return columns.filter((column) =>
+      Array.from(visibleColumns).includes(column.uid)
+    );
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
@@ -129,12 +133,15 @@ export default function OrderTable() {
 
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase()),
+        user.name.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
-    if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
+    if (
+      statusFilter !== "all" &&
+      Array.from(statusFilter).length !== statusOptions.length
+    ) {
       filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.status),
+        Array.from(statusFilter).includes(user.status)
       );
     }
 
@@ -164,9 +171,8 @@ export default function OrderTable() {
     switch (columnKey) {
       case "name":
         return (
-          <NavLink to={`/singleproduct/${user.id}`}>
-            <User
-            avatarProps={{radius: "full", size: "sm", src: user.avatar}}
+          <User
+            avatarProps={{ radius: "full", size: "sm", src: user.avatar }}
             classNames={{
               description: "text-default-500",
             }}
@@ -176,26 +182,29 @@ export default function OrderTable() {
           >
             {user.email}
           </User>
-          </NavLink>
         );
       case "role":
         return (
-          <div className="flex font-poppins flex-col">
+          <div className="flex flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>
+            <p className="text-bold text-tiny capitalize text-default-500">
+              {user.team}
+            </p>
           </div>
         );
-        case "orderDate":
+      case "category":
         return (
-          <div className="flex font-poppins flex-col">
+          <div className="flex flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>
+            <p className="text-bold text-tiny capitalize text-default-500">
+              {user.team}
+            </p>
           </div>
         );
       case "status":
         return (
           <Chip
-            className="capitalize font-poppins border-none gap-1 text-default-600"
+            className="capitalize border-none gap-1 text-default-600"
             color={statusColorMap[user.status]}
             size="sm"
             variant="dot"
@@ -205,7 +214,7 @@ export default function OrderTable() {
         );
       case "actions":
         return (
-          <div className="relative font-poppins flex justify-end items-center gap-2">
+          <div className="relative flex justify-end items-center gap-2">
             <Dropdown className="bg-background border-1 border-default-200">
               <DropdownTrigger>
                 <Button isIconOnly radius="full" size="sm" variant="light">
@@ -213,9 +222,22 @@ export default function OrderTable() {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                <DropdownItem><NavLink to={`/inventory/view/${user.id}`}>View</NavLink></DropdownItem>
-                <DropdownItem>Edit</DropdownItem>
-                <DropdownItem>Delete</DropdownItem>
+                <DropdownItem>
+                  <NavLink to={`/singleproduct/${user.id}`}>View</NavLink>
+                </DropdownItem>
+                <DropdownItem>
+                  <NavLink to={`/inventory/update-product/${user.id}`}>
+                    Edit
+                  </NavLink>
+                </DropdownItem>
+
+                <DropdownItem
+                  onClick={() => {
+                    handleDelete(user.id);
+                  }}
+                >
+                  Delete
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -230,7 +252,6 @@ export default function OrderTable() {
     setPage(1);
   }, []);
 
-
   const onSearchChange = React.useCallback((value) => {
     if (value) {
       setFilterValue(value);
@@ -242,7 +263,7 @@ export default function OrderTable() {
 
   const topContent = React.useMemo(() => {
     return (
-      <div className="flex font-poppins flex-col gap-4">
+      <div className="flex flex-col gap-4">
         <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
@@ -309,18 +330,19 @@ export default function OrderTable() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            {/* <Button
+            <Button
               className="bg-primary text-background"
               endContent={<PlusIcon />}
               size="sm"
             >
-            </Button> */}
-            <NewOrder />
-            {/* {isOpen == true && <NewOrder />} */}
+              Add New
+            </Button>
           </div>
         </div>
-        <div className="flex font-poppins justify-between items-center">
-          <span className="text-default-400 text-small">Total {users.length} users</span>
+        <div className="flex justify-between items-center">
+          <span className="text-default-400 text-small">
+            Total {users.length} users
+          </span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
             <select
@@ -347,7 +369,7 @@ export default function OrderTable() {
 
   const bottomContent = React.useMemo(() => {
     return (
-      <div className="py-2 font-poppins px-2 flex justify-between items-center">
+      <div className="py-2 px-2 flex justify-between items-center">
         <Pagination
           showControls
           classNames={{
@@ -385,52 +407,63 @@ export default function OrderTable() {
         "group-data-[last=true]:last:before:rounded-none",
       ],
     }),
-    [],
+    []
   );
 
   return (
-    <Table
-      isCompact
-      removeWrapper
-      aria-label="Example table with custom cells, pagination and sorting"
-      bottomContent={bottomContent}
-      bottomContentPlacement="outside"
-      checkboxesProps={{
-        classNames: {
-          wrapper: "after:bg-primary after:text-background text-background",
-        },
-      }}
-      classNames={classNames}
-      selectedKeys={selectedKeys}
-      selectionMode="multiple"
-      sortDescriptor={sortDescriptor}
-      topContent={topContent}
-      topContentPlacement="outside"
-      onSelectionChange={setSelectedKeys}
-      onSortChange={setSortDescriptor}
-    >
-      <TableHeader columns={headerColumns}>
-        {(column) => (
-          <TableColumn
-            key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
-            allowsSorting={column.sortable}
-          >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody emptyContent={"No users found"} items={sortedItems}>
-        {(item) => (
-          <TableRow key={item.id}>
-              {(columnKey) => <TableCell>
-                {/* <NavLink> */}
-                  {renderCell(item, columnKey)}
-                {/* </NavLink> */}
-              </TableCell>}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <>
+      {loading && (
+        <div>
+          <img src={loader} />{" "}
+        </div>
+      )}
+      {!loading && (
+        <Table
+          isCompact
+          removeWrapper
+          aria-label="Example table with custom cells, pagination and sorting"
+          bottomContent={bottomContent}
+          bottomContentPlacement="outside"
+          checkboxesProps={{
+            classNames: {
+              wrapper: "after:bg-primary after:text-background text-background",
+            },
+          }}
+          classNames={classNames}
+          selectedKeys={selectedKeys}
+          selectionMode="multiple"
+          sortDescriptor={sortDescriptor}
+          topContent={topContent}
+          topContentPlacement="outside"
+          onSelectionChange={setSelectedKeys}
+          onSortChange={setSortDescriptor}
+        >
+          <TableHeader columns={headerColumns}>
+            {(column) => (
+              <TableColumn
+                key={column.uid}
+                align={column.uid === "actions" ? "center" : "start"}
+                allowsSorting={column.sortable}
+              >
+                {column.name}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody emptyContent={"No users found"} items={sortedItems}>
+            {(item) => (
+              <TableRow key={item.id}>
+                {(columnKey) => (
+                  <TableCell>
+                    {/* <NavLink to={`/singleproduct/${item.id}`}> */}
+                    {renderCell(item, columnKey)}
+                    {/* </NavLink> */}
+                  </TableCell>
+                )}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      )}
+    </>
   );
 }

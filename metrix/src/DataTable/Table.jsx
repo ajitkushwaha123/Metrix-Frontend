@@ -209,7 +209,7 @@ console.log("u" , users);
               </DropdownTrigger>
               <DropdownMenu>
                 <DropdownItem>
-                  <NavLink to={`/singleproduct/${user.id}`}>View</NavLink>
+                  <NavLink to={`/inventory/view/${user.id}`}>View</NavLink>
                 </DropdownItem>
                 <DropdownItem>
                   <NavLink to={`/inventory/update-product/${user.id}`}>

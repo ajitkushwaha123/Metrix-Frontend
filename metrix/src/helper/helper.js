@@ -1,4 +1,5 @@
 // Api request
+import { user } from "@nextui-org/react";
 import axios from "axios";
 axios.defaults.baseURL = "http://localhost:8000";
 import { jwtDecode } from "jwt-decode";
@@ -30,6 +31,34 @@ export async function getUser({ username }) {
     return { error: "Password doesn't Match... !" };
   }
 }
+
+export async function getOrders(url) {
+  const { userId } = await getUsername();
+  console.log("User ID:", userId);
+  const token = localStorage.getItem("token");
+  console.log("Token:", token);
+  if (!token) {
+    throw new Error("Token not found"); // Throw an error with a descriptive message
+  }
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json", 
+    },
+  };
+
+
+  try {
+    console.log("URL:", url);
+    const { data } = await axios.get(`${url}/${userId}`, config);
+    console.log("Orders:", data);
+    return  data  ;
+  } catch (error) {
+    return { error: "Couldn't fetch Orders" };
+  }
+}
+
 
 export async function registerUser(credential) {
   try {
