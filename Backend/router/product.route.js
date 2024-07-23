@@ -130,6 +130,22 @@ products.get("/:id", Auth, async (req, res) => {
   }
 });
 
+products.get('/', async (req, res) => {
+    try {
+        const searchQuery = req.query.search;
+        console.log(searchQuery);
+        let products;
+        if (searchQuery) {
+            products = await Product.find({ productName : { $regex: searchQuery, $options: 'i' } });
+        } else {
+            products = await Product.find();
+        }
+        res.status(200).json(products);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 products.get("/", Auth, async (req, res) => {
   const qNew = req.query.new;
   const qCategory = req.query.category;
