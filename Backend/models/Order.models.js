@@ -3,31 +3,26 @@ import mongoose, { Schema } from "mongoose";
 const OrderSchema = new mongoose.Schema(
   {
     userId: { type: String },
-    products: [
-      {
-        productId: {
-          type: String,
-        },
-        quantity: {
-          type: Number,
-          default: 1,
-        },
-      },
-    ],
-    productName : {
+    products: {
+      type: Array,
+    },
+    customerName : {
       type: String,
+    },
+    quantity: {
+      type: Number,
     },
     newCustomer: {
       type: Boolean,
-      default: false,
+      default: true,
+    },
+    phone : {
+      type: Number,
     },
     paymentType: { type: String },
-    orderType: { type: String },
-    amount: { type: Number },
-    address: { type: Object },
+    price : { type: Number },
     status: {
       type: String,
-      default: "pending",
     },
     orderNote: { type: String },
   },

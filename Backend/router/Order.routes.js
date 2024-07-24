@@ -8,18 +8,18 @@ const orders = express();
 orders.post("/", Auth, async (req, res) => {
   try {
     const { userId } = req.user;
-    const { products , newCustomer , paymentType , orderType , amount, address, status , orderNote , productName} = req.body;
+    const { products , newCustomer , quantity , customerName , paymentType , price , phone , status , orderNote} = req.body;
     const newOrder = new Order({
       userId,
       products,
+      quantity,
       newCustomer,
+      customerName,
+      phone,
       paymentType,
-      orderType,
-      amount,
-      address,
+      price,
       status,
       orderNote,
-      productName,
     });
     const savedOrder = await newOrder.save();
     res.status(200).json(savedOrder);

@@ -64,8 +64,10 @@ carts.get("/find/:userId", Auth, async (req, res) => {
 
 // Get All Carts
 carts.get("/", Auth, async (req, res) => {
+  const {userId} = req.user;
+  console.log(userId);
   try {
-    const allCarts = await Cart.find();
+    const allCarts = await Cart.find(userId ? {userId} : {});
     res.status(200).json(allCarts);
   } catch (err) {
     res.status(500).json(err);

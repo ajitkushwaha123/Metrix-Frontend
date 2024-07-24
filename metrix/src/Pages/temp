@@ -7,17 +7,12 @@ import { CiSearch } from "react-icons/ci";
 const NewOrder = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [newCustomer, setNewCustomer] = useState(false);
-  const [cartProduct, setCartProduct] = useState([]);
-  const [cart , setCart] = useState(false);
-  
-  const AddedProduct = [];
-  console.log(AddedProduct);
+  const [product, setProduct] = useState([]);
 
   const toggleModal = () => {
     setIsOpen(!isOpen);
   };
 
-  
   const [quantities, setQuantities] = useState({});
   const [query, setQuery] = useState("");
   const [products, setProducts] = useState([]);
@@ -55,6 +50,9 @@ const NewOrder = () => {
       });
   }, []);
 
+  const AddedProduct = [];
+  console.log(AddedProduct);
+
   const searchProducts = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -79,7 +77,7 @@ const NewOrder = () => {
   };
 
   const handleOrder = async (values) => {
-    console.log("Order Added", values.products);
+    console.log("Order Added", values);
 
     const token = localStorage.getItem("token");
     console.log(token);
@@ -98,62 +96,30 @@ const NewOrder = () => {
         config
       );
 
-      console.log("Order Added", data);
       return { data };
     } catch (err) {
       console.error(err);
     }
   };
 
-  const viewCart = (e) => {
-    e.preventDefault();
-    setCart(!cart);
-    console.log("View Cart");
-    setCartProduct(AddedProduct);
-    console.log("Cart Product", AddedProduct);
-    console.log("Cart Product00000", cartProduct.product);
-  };
-
   const formik = useFormik({
     initialValues: {
-      customerName: "",
+      customerName: "ajit",
       phone: "8178739633",
       price: 2999,
       paymentType: "Cash",
-      status: "Pending",
-      orderNote: "",
-      products: [{ product: "product", quantities: "quantities" }],
-      quantity: 0,
+      orderStatus: "Pending",
+      orderNote: "Order Note",
+      products: [],
     },
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      console.log("valuesAdded", AddedProduct);
-      values.products = AddedProduct;
-      console.log("valuesvsdzv", values.products);
+
       const data = await handleOrder(values);
       console.log("data", data);
     },
   });
-
- const updateTotalCartValue = () => {
-   let totalQuantity = 0;
-   const total = products
-     .reduce((total, product) => {
-       const quantity = quantities[product._id] || 0;
-       totalQuantity += quantity;
-       return total + product.price * quantity;
-     }, 0)
-     .toFixed(2);
-    formik.setFieldValue("price", total);
-   formik.setFieldValue("quantity", totalQuantity);
- };
-
-
-  useEffect(() => {
-    updateTotalCartValue();
-  }, [quantities]);
-
 
   return (
     <>
@@ -238,14 +204,16 @@ const NewOrder = () => {
                         <div className="col-span-2">
                           <div className="col-span-2 sm:col-span-1">
                             <label
-                              htmlFor="customerName"
+                              htmlFor="price"
                               className="block text-primary text-start mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
                               Customer Name
                             </label>
                             <input
-                              type="text"
                               {...formik.getFieldProps("customerName")}
+                              type="text"
+                              name="Customer Name"
+                              id="Customer Name"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               placeholder="Customer Name"
                               // required
@@ -280,12 +248,13 @@ const NewOrder = () => {
                           Price
                         </label>
                         <input
+                          {...formik.getFieldProps("price")}
                           type="number"
                           name="price"
                           id="price"
-                          {...formik.getFieldProps("price")}
                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                          placeholder="$0"
+                          placeholder="$2999"
+                          // required
                         />
                       </div>
                       <div className="col-span-2 sm:col-span-1">
@@ -315,14 +284,14 @@ const NewOrder = () => {
                           Order Status
                         </label>
                         <select
-                          {...formik.getFieldProps("status")}
+                          {...formik.getFieldProps("orderStatus")}
                           id="Order Status"
                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-3 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                         >
                           <option selected>Select Order Status</option>
-                          <option value="pending">Pending</option>
-                          <option value="completed">Completed</option>
-                          <option value="progress">In-Progress</option>
+                          <option value="Pending">Pending</option>
+                          <option value="Completed">Completed</option>
+                          <option value="Draft">Draft</option>
                         </select>
                       </div>
 
@@ -334,12 +303,12 @@ const NewOrder = () => {
                           Order Note
                         </label>
                         <input
+                          {...formik.getFieldProps("orderNote")}
                           type="text"
                           name="Add a Note"
                           id="Add a Note"
                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                           placeholder="Add a Note"
-                          {...formik.getFieldProps("orderNote")}
                           // required
                         />
                       </div>
@@ -350,44 +319,31 @@ const NewOrder = () => {
                         Cancel
                       </button>
                       <button
-                        // onClick={(e) => {
-                        //   handleOrder(e);
-                        // }}
                         className="bg-primary px-[10px] py-[5px] text-white rounded-md"
                       >
                         Add Order
                       </button>
                     </div>
                   </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
 
-                  {/* Second Half */}
+export default NewOrder;
 
-                  <div className="ml-[40px] w-[50%]">
+
+<div className="ml-[40px] w-[50%]">
                     <div>
                       <div className="overflow-y-scroll max-h-[500px]">
                         <h1 className="text-primary text-start">
                           Product Search
                         </h1>
-                        <div className="bg-white w-[50%] h-[60px] right-0 absolute bottom-0 fixed">
-                          <div className="bg-primary absolute fixed bottom-3 left-4 text-white rounded-md py-[3px] text-[18px] px-[15px]">
-                            Total : $
-                            {products
-                              .reduce((total, product) => {
-                                const quantity = quantities[product._id] || 0;
-                                return total + product.price * quantity;
-                              }, 0)
-                              .toFixed(2)}
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={(e) => viewCart(e)}
-                          className="bg-primary absolute fixed bottom-3 right-4 text-white rounded-md py-[3px] text-[18px] px-[15px]"
-                        >
-                          {cart == true && "View Products"}
-                          {cart == false && "View Cart"}
-                        </button>
-
                         <div className="flex bg-gray-50 pr-[20px] border outline-none text-sm rounded-lg dark:border-gray-500 dark:placeholder-gray-400 dark:text-white justify-center items-center">
                           <input
                             type="text"
@@ -407,12 +363,17 @@ const NewOrder = () => {
                           {products.length > 0 &&
                             products.map((product) => {
                               if (quantities[product._id] > 0) {
+                                console.log(
+                                  product.productName,
+                                  quantities[product._id]
+                                );
                                 AddedProduct.push({ product, quantities });
-                                console.log("Product", AddedProduct);
+                                setProduct({ product, quantities });
+                                console.log("Product", product);
                                 return (
                                   <div key={product._id}>
-                                    {/* {product.productName} :
-                                    {quantities[product._id]} */}
+                                    {product.productName}:{" "}
+                                    {quantities[product._id]}
                                   </div>
                                 );
                               }
@@ -420,137 +381,65 @@ const NewOrder = () => {
                             })}
                         </div>
 
-                        {cart === false && (
-                          <div>
-                            {products.length > 0 ? (
-                              products.map((product) => (
-                                <div key={product._id}>
-                                  <div className="flex border-2 justify-between rounded-xl items-center py-[10px] px-[10px] my-[12px]">
-                                    <div className="flex justify-between">
-                                      <img
-                                        className="w-[70px] h-[70px] rounded-md"
-                                        src={product.photos[0]}
-                                        alt={product.productName}
-                                      />
-                                      <div className="flex text-start mx-[14px] flex-col">
-                                        <h2 className="font-poppins font-medium">
-                                          {product.productName}
-                                        </h2>
-                                        <p>$ {product.price}</p>
-                                      </div>
+                        <div>
+                          {products.length > 0 ? (
+                            products.map((product) => (
+                              <div key={product._id}>
+                                <div className="flex border-2 justify-between rounded-xl items-center py-[10px] px-[10px] my-[12px]">
+                                  <div className="flex justify-between">
+                                    <img
+                                      className="w-[70px] h-[70px] rounded-md"
+                                      src={product.photos[0]}
+                                      alt={product.productName}
+                                    />
+                                    <div className="flex text-start mx-[14px] flex-col">
+                                      <h2 className="font-poppins font-medium">
+                                        {product.productName}
+                                      </h2>
+                                      <p>$ {product.price}</p>
                                     </div>
+                                  </div>
+                                  
 
-                                    {quantities[product._id] > 0 ? (
-                                      <div className="flex">
-                                        <button
-                                          onClick={(event) =>
-                                            addItem(event, product._id)
-                                          }
-                                          className="border-2 bg-slate-200 px-[8px] border-indigo-500/40 text-[17px] font-medium rounded-md"
-                                        >
-                                          +
-                                        </button>
-                                        <div className="mx-[8px]">
-                                          {quantities[product._id]}
-                                        </div>
-                                        <button
-                                          onClick={(event) =>
-                                            deleteItem(event, product._id)
-                                          }
-                                          className="border-2 bg-slate-200 px-[7px] border-indigo-500/40 text-[17px] font-medium rounded-md"
-                                        >
-                                          -
-                                        </button>
-                                      </div>
-                                    ) : (
+                                  {quantities[product._id] > 0 ? (
+                                    <div className="flex">
                                       <button
                                         onClick={(event) =>
                                           addItem(event, product._id)
                                         }
-                                        className="text-primary cursor-pointer justify-center items-center"
+                                        className="border-2 bg-slate-200 px-[8px] border-indigo-500/40 text-[17px] font-medium rounded-md"
                                       >
-                                        <div>Add Item</div>
+                                        +
                                       </button>
-                                    )}
-                                  </div>
-                                </div>
-                              ))
-                            ) : (
-                              <p>No products found.</p>
-                            )}
-                          </div>
-                        )}
-                        {cart === true && (
-                          <div>
-                            {cartProduct.length > 0 ? (
-                              cartProduct.map((item) => (
-                                <div key={item.product._id}>
-                                  <div className="flex border-2 justify-between rounded-xl items-center py-[10px] px-[10px] my-[12px]">
-                                    <div className="flex justify-between">
-                                      <img
-                                        className="w-[70px] h-[70px] rounded-md"
-                                        src={item.product.photos[0]}
-                                        alt={item.product.productName}
-                                      />
-                                      <div className="flex text-start mx-[14px] flex-col">
-                                        <h2 className="font-poppins font-medium">
-                                          {item.product.productName}
-                                        </h2>
-                                        <p>$ {item.product.price}</p>
+                                      <div className="mx-[8px]">
+                                        {quantities[product._id]}
                                       </div>
-                                    </div>
-
-                                    {quantities[item.product._id] > 0 ? (
-                                      <div className="flex">
-                                        <button
-                                          onClick={(event) =>
-                                            addItem(event, item.product._id)
-                                          }
-                                          className="border-2 bg-slate-200 px-[8px] border-indigo-500/40 text-[17px] font-medium rounded-md"
-                                        >
-                                          +
-                                        </button>
-                                        <div className="mx-[8px]">
-                                          {quantities[item.product._id]}
-                                        </div>
-                                        <button
-                                          onClick={(event) =>
-                                            deleteItem(event, item.product._id)
-                                          }
-                                          className="border-2 bg-slate-200 px-[7px] border-indigo-500/40 text-[17px] font-medium rounded-md"
-                                        >
-                                          -
-                                        </button>
-                                      </div>
-                                    ) : (
                                       <button
                                         onClick={(event) =>
-                                          addItem(event, item.product._id)
+                                          deleteItem(event, product._id)
                                         }
-                                        className="text-primary cursor-pointer justify-center items-center"
+                                        className="border-2 bg-slate-200 px-[7px] border-indigo-500/40 text-[17px] font-medium rounded-md"
                                       >
-                                        <div>Add Item</div>
+                                        -
                                       </button>
-                                    )}
-                                  </div>
+                                    </div>
+                                  ) : (
+                                    <button
+                                      onClick={(event) =>
+                                        addItem(event, product._id)
+                                      }
+                                      className="text-primary cursor-pointer justify-center items-center"
+                                    >
+                                      <div>Add Item</div>
+                                    </button>
+                                  )}
                                 </div>
-                              ))
-                            ) : (
-                              <p>No products found.</p>
-                            )}
-                          </div>
-                        )}
+                              </div>
+                            ))
+                          ) : (
+                            <p>No products found.</p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
-
-export default NewOrder;

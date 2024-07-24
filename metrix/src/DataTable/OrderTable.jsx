@@ -1,5 +1,8 @@
 import React , {useState , useEffect} from "react";
 import { useProductContext } from "../context/productContext";
+import { loader } from "../assets";
+// import AvatarGroup from "./Avatar";
+
 import {
   Table,
   TableHeader,
@@ -16,6 +19,8 @@ import {
   Chip,
   User,
   Pagination,
+  Avatar,
+  AvatarGroup,
 } from "@nextui-org/react";
 import {PlusIcon} from "./PlusIcon";
 import {VerticalDotsIcon} from "./VerticalDotsIcon";
@@ -27,26 +32,28 @@ import { NavLink } from "react-router-dom";
 import NewOrder from "../Pages/NewOrder";
 import { getOrders } from "../helper/helper";
 import { useParams } from "react-router-dom";
+import axios from "axios";
+import config from "../../../Backend/config";
 
 const columns = [
-  {name: "ID", uid: "id", sortable: true},
-  {name: "Product NAME", uid: "name", sortable: true},
-  {name: "ORDER DATE", uid: "orderDate", sortable: true},
-  {name: "Quantity", uid: "quantity", sortable: true},
-  // {name: "ITEMS", uid: "items", sortable: true},
-  {name: "ORDER TYPE", uid: "orderType", sortable: true},
-  {name: "TOTAL PRICE", uid: "total", sortable: true},
-  // {name: "ROLE", uid: "role", sortable: true},
-  // {name: "TEAM", uid: "team"},
-  // {name: "EMAIL", uid: "email"},
-  {name: "STATUS", uid: "status", sortable: true},
-  {name: "ACTIONS", uid: "actions"},
+  { name: "ID", uid: "id", sortable: true },
+  {name : "Product Image", uid: "productImages"},
+  { name: "PRODUCT NAME", uid: "name", sortable: true },
+  { name: "ORDER DATE", uid: "orderDate", sortable: true },
+  { name: "QUANTITY", uid: "quantity", sortable: true },
+  {name: "CUSTOMER NAME", uid: "customerName"},
+  { name: "PAYMENT TYPE", uid: "paymentType", sortable: true },
+  { name: "TOTAL PRICE", uid: "total", sortable: true },
+  { name: "PHONE", uid: "phone" },
+  { name: "STATUS", uid: "status", sortable: true },
+  { name: "ORDER NOTE", uid: "orderNote" },
+  { name: "ACTIONS", uid: "actions" },
 ];
 
 const statusOptions = [
   {name: "Completed", uid: "completed"},
   {name: "Pending", uid: "pending"},
-  {name: "in-Progress", uid: "progress"},
+  {name: "In-Progress", uid: "progress"},
 ];
 
 const statusColorMap = {
@@ -55,7 +62,16 @@ const statusColorMap = {
   progress: "warning",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["name","orderDate" , "quantity" , "orderType" , "total" , "status", "actions"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "productImages",
+  "name",
+  "orderDate",
+  "quantity",
+  "paymentType",
+  "total",
+  "status",
+  "actions",
+];
 
 const API = "http://localhost:8000/api/orders";
 
@@ -63,38 +79,89 @@ export default function OrderTable() {
   const [isOpen, setIsOpen] = useState(false);
   const [users, setUsers] = useState([]);
 
+  const [loading , setLoading] = useState(false);
+
   const toggleModal = () => {
     setIsOpen((prevState) => !prevState);
     console.log(isOpen); // This will log the previous state value
   };
 
+  const deleteOrder = async (id) => {
+    alert("Are you sure you want to delete this order... ?");
+    setLoading(true);
+
+    const token = localStorage.getItem("token");
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    try {
+      const res = await axios.delete(
+        `http://localhost:8000/api/orders/${id}`,
+        config
+      );
+      console.log("Response:", res);
+      // window.location.reload();
+      setLoading(false);
+    } catch (error) {
+      console.error("Error deleting order:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
   useEffect(() => {
     const fetchOrders = async () => {
-      const orders = await getOrders(API);
+        const orders = await getOrders(API);
 
-      const newUsers = orders.map((order) => {
-        const orderDate = new Date(order.createdAt);
-        return {
-          id: order._id,
-          name : order.productName,
-          avatar: order.images,
-          total: order.amount,
-          address: order.address,
-          orderType: order.orderType,
-          status: order.status,
-          newCustomer: order.newCustomer,
-          orderNote: order.orderNote,
-          paymentType: order.paymentType,
-          products: order.products,
-          quantity: order.products.reduce(
-            (acc, product) => acc + product.quantity,
-            0
-          ), // Assuming products is an array
-          orderDate: `${orderDate.toLocaleDateString()} ${orderDate.toLocaleTimeString()}`,
-        };
-      });
+        console.log("Orders:", orders);
+        const newUsers = orders.map((order) => {
+            console.log("Order:", order.products);
+            const singleproduct = order.products.map((product) => {
+                return product.product;
+            });
 
-      setUsers(newUsers);
+            const productName = singleproduct.map((product) => {
+                return product.productName;
+            });
+
+            const productImage = singleproduct.map((product) => {
+                return product.photos;
+            });
+
+            const firstImage = productImage[0];
+
+            console.log("productImage" ,  productImage);
+            
+            const firstProductName = productName[0];
+            const totalProducts = productName.length;
+            const orderDate = new Date(order.createdAt);
+            return {
+                id: order._id,
+                totalProducts : totalProducts,
+                name: firstProductName,
+                productImages: productImage,
+                avatar: firstImage,
+                total: order.price,
+                phone: order.phone,
+                totalProducts : totalProducts,
+                status: order.status,
+                newCustomer: order.newCustomer,
+                customerName: order.customerName,
+                orderNote: order.orderNote,
+                paymentType: order.paymentType,
+                products: order.products,
+                quantity: order.quantity,
+                orderDate: `${orderDate.toLocaleDateString()} ${orderDate.toLocaleTimeString()}`,
+            };
+        });
+
+        setUsers(newUsers);
     };
 
     fetchOrders();
@@ -165,18 +232,29 @@ export default function OrderTable() {
       case "name":
         return (
           <NavLink to={`/singleproduct/${user.id}`}>
-            <User
-            avatarProps={{radius: "full", size: "sm", src: user.avatar}}
-            classNames={{
-              description: "text-default-500",
-            }}
-            description={user.email}
-            name={cellValue}
-            id={user.id}
-          >
-            {user.email}
-          </User>
+           <h2>{user.name}</h2>
           </NavLink>
+        );
+      case "productImages":
+        return (
+          <AvatarGroup
+            isBordered
+            max={3}
+            total={user.totalProducts}
+            renderCount={(count) => (
+              <>
+                {count - 1 > 0 && (
+                  <p className="text-small text-foreground font-medium ms-2">
+                    +{count - 1} others
+                  </p>
+                )}
+              </>
+            )}
+          >
+            {user.productImages.map((image) => (
+              <Avatar src={image} />
+            ))}
+          </AvatarGroup>
         );
       case "role":
         return (
@@ -185,7 +263,7 @@ export default function OrderTable() {
             <p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>
           </div>
         );
-        case "orderDate":
+      case "orderDate":
         return (
           <div className="flex font-poppins flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
@@ -215,7 +293,7 @@ export default function OrderTable() {
               <DropdownMenu>
                 <DropdownItem><NavLink to={`/inventory/view/${user.id}`}>View</NavLink></DropdownItem>
                 <DropdownItem>Edit</DropdownItem>
-                <DropdownItem>Delete</DropdownItem>
+                <DropdownItem onClick={() => deleteOrder(user.id)}> Delete </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -279,7 +357,7 @@ export default function OrderTable() {
               >
                 {statusOptions.map((status) => (
                   <DropdownItem key={status.uid} className="capitalize">
-                    {capitalize(status.name)}
+                    {status.name}
                   </DropdownItem>
                 ))}
               </DropdownMenu>
@@ -421,15 +499,15 @@ export default function OrderTable() {
         )}
       </TableHeader>
       <TableBody emptyContent={"No users found"} items={sortedItems}>
-        {(item) => (
+        {sortedItems.map((item) => (
           <TableRow key={item.id}>
-              {(columnKey) => <TableCell>
-                {/* <NavLink> */}
-                  {renderCell(item, columnKey)}
-                {/* </NavLink> */}
-              </TableCell>}
+            {headerColumns.map((column) => (
+              <TableCell key={column.uid}>
+                {renderCell(item, column.uid)}
+              </TableCell>
+            ))}
           </TableRow>
-        )}
+        ))}
       </TableBody>
     </Table>
   );
