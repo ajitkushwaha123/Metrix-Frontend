@@ -45,6 +45,31 @@ export async function loginValidate(values) {
   return errors; 
 }
 
+export async function createOrderValidate(values) {
+  const errors = {}; 
+  if(!values.customerName)
+  {
+    errors.customerName = toast.error('Customer Name Required... !');
+  }
+
+  return errors; 
+}
+
+export async function createCustomerValidate(values) {
+  const errors = {};
+  if (!values.customerName) {
+    errors.customerName = toast.error("Customer Name Required... !");
+  }
+  else if(!values.phone)
+  {
+    errors.phone = toast.error('Phone Number Required... !');
+  }
+  else{
+    errors.success = toast.success('Customer Added Successfully... !');
+  }
+
+  return errors;
+}
 
 export async function registerValidate(values) {
     const errors = {}; 

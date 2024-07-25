@@ -1,4 +1,4 @@
-import React , {useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useProductContext } from "../context/productContext";
 import { loader } from "../assets";
 // import AvatarGroup from "./Avatar";
@@ -22,69 +22,62 @@ import {
   Avatar,
   AvatarGroup,
 } from "@nextui-org/react";
-import {PlusIcon} from "./PlusIcon";
-import {VerticalDotsIcon} from "./VerticalDotsIcon";
-import {SearchIcon} from "./SearchIcon";
-import {ChevronDownIcon} from "./ChevronDownIcon";
+import { PlusIcon } from "./PlusIcon";
+import { VerticalDotsIcon } from "./VerticalDotsIcon";
+import { SearchIcon } from "./SearchIcon";
+import { ChevronDownIcon } from "./ChevronDownIcon";
 // import {columns, statusOptions} from "./data";
-import {capitalize} from "./utils";
+import { capitalize } from "./utils";
 import { NavLink } from "react-router-dom";
 import NewOrder from "../Pages/NewOrder";
-import { getOrders } from "../helper/helper";
+import { getSingleOrders } from "../helper/helper";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import config from "../../../Backend/config";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
-  {name : "Product Image", uid: "productImages"},
+  { name: "Product Image", uid: "productImages" },
   { name: "PRODUCT NAME", uid: "name", sortable: true },
-  { name: "ORDER DATE", uid: "orderDate", sortable: true },
   { name: "QUANTITY", uid: "quantity", sortable: true },
-  {name: "CUSTOMER NAME", uid: "customerName"},
-  { name: "PAYMENT TYPE", uid: "paymentType", sortable: true },
-  { name: "TOTAL PRICE", uid: "total", sortable: true },
-  { name: "PHONE", uid: "phone" },
-  { name: "STATUS", uid: "status", sortable: true },
-  { name: "ORDER NOTE", uid: "orderNote" },
+  { name: "CATEGORY", uid: "category" },
+  { name: "DISCOUNT PRICE", uid: "discountPrice", sortable: true },
+  { name: "STOCK", uid: "stock", sortable: true },
+  { name: "PRICE", uid: "price" },
+  // { name: "STATUS", uid: "status", sortable: true },
   { name: "ACTIONS", uid: "actions" },
 ];
 
 const statusOptions = [
-  {name: "Completed", uid: "completed"},
-  {name: "Pending", uid: "pending"},
-  {name: "In-Progress", uid: "progress"},
+  { name: "Completed", uid: "completed" },
+  { name: "Pending", uid: "pending" },
+  { name: "In-Progress", uid: "progress" },
 ];
 
 const statusColorMap = {
   completed: "success",
-  pending : "danger",
+  pending: "danger",
   progress: "warning",
 };
 
 const INITIAL_VISIBLE_COLUMNS = [
   "productImages",
   "name",
-  "orderDate",
-  "quantity",
-  "paymentType",
-  "total",
-  "status",
+  "category",
+  // "status",
+  "discountPrice",
+  "stock",
+  "price",
   "actions",
 ];
 
-const API = "http://localhost:8000/api/orders";
+const API = "http://localhost:8000/api/orders/find";
 
-export default function OrderTable() {
+export default function SingleOrderTable() {
+  const { id } = useParams();
+  console.log("iddddd", id);
+
   const [isOpen, setIsOpen] = useState(false);
-  const [users, setUsers] = useState([]);
-
-  const [loading , setLoading] = useState(false);
-
-  const toggleModal = () => {
-    setIsOpen((prevState) => !prevState);
-    console.log(isOpen); // This will log the previous state value
-  };
 
   const deleteOrder = async (id) => {
     alert("Are you sure you want to delete this order... ?");
@@ -114,65 +107,48 @@ export default function OrderTable() {
     }
   };
 
-  
-  useEffect(() => {
-    const fetchOrders = async () => {
-        const orders = await getOrders(API);
+ const [users, setUsers] = useState([]);
 
-        console.log("Orders:", orders);
-        const newUsers = orders.map((order) => {
-            console.log("Order:", order.products);
-            const singleproduct = order.products.map((product) => {
-                return product.product;
-            });
+ useEffect(() => {
+   const fetchOrders = async () => {
+     try {
+       const orders = await getSingleOrders(`${API}/${id}`);
+       console.log("Orderrrrr:", orders);
+       const order = orders.products;
+       console.log("Ordersss:", order);
 
-            const productName = singleproduct.map((product) => {
-                return product.productName;
-            });
+       const singleproduct = order.map((product) => product.product);
+       console.log("singleproduct", singleproduct);
 
-            const productImage = singleproduct.map((product) => {
-                return product.photos;
-            });
+       const updatedUsers = singleproduct.map((product) => ({
+         id: product._id,
+         name: product.productName,
+         productImages: product.photos,
+         category: product.category,
+        //  status: product.status,
+         avatar: product.photos[0],
+         price: product.price,
+         stock: product.stock,
+         discountPrice: product.discountPrice,
+       }));
 
-            const firstImage = productImage[0];
+       setUsers(updatedUsers);
+     } catch (error) {
+       console.error("Error fetching orders:", error);
+     }
+   };
 
-            console.log("productImage" ,  productImage);
-            
-            const firstProductName = productName[0];
-            const totalProducts = productName.length;
-            const orderDate = new Date(order.createdAt);
-            return {
-                id: order._id,
-                totalProducts : totalProducts,
-                name: firstProductName,
-                productImages: productImage,
-                avatar: firstImage,
-                total: order.price,
-                phone: order.phone,
-                totalProducts : totalProducts,
-                status: order.status,
-                newCustomer: order.newCustomer,
-                customerName: order.customerName,
-                orderNote: order.orderNote,
-                paymentType: order.paymentType,
-                products: order.products,
-                quantity: order.quantity,
-                orderDate: `${orderDate.toLocaleDateString()} ${orderDate.toLocaleTimeString()}`,
-            };
-        });
+   fetchOrders();
+ }, [id]);
 
-        setUsers(newUsers);
-    };
+ console.log("Users:", users);
 
-    fetchOrders();
-    console.log(isOpen); // This will log the updated state value
-  }, [isOpen]);
 
-  console.log("users", users);
-  
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-  const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
+  const [visibleColumns, setVisibleColumns] = React.useState(
+    new Set(INITIAL_VISIBLE_COLUMNS)
+  );
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState({
@@ -188,7 +164,9 @@ export default function OrderTable() {
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
 
-    return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
+    return columns.filter((column) =>
+      Array.from(visibleColumns).includes(column.uid)
+    );
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
@@ -196,12 +174,15 @@ export default function OrderTable() {
 
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase()),
+        user.name.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
-    if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
+    if (
+      statusFilter !== "all" &&
+      Array.from(statusFilter).length !== statusOptions.length
+    ) {
       filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.status),
+        Array.from(statusFilter).includes(user.status)
       );
     }
 
@@ -232,7 +213,7 @@ export default function OrderTable() {
       case "name":
         return (
           <NavLink to={`/singleproduct/${user.id}`}>
-           <h2>{user.name}</h2>
+            <h2>{user.name}</h2>
           </NavLink>
         );
       case "productImages":
@@ -260,14 +241,18 @@ export default function OrderTable() {
         return (
           <div className="flex font-poppins flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>
+            <p className="text-bold text-tiny capitalize text-default-500">
+              {user.team}
+            </p>
           </div>
         );
       case "orderDate":
         return (
           <div className="flex font-poppins flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>
+            <p className="text-bold text-tiny capitalize text-default-500">
+              {user.team}
+            </p>
           </div>
         );
       case "status":
@@ -291,9 +276,14 @@ export default function OrderTable() {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                <DropdownItem><NavLink to={`/order-view/${user.id}`}>View</NavLink></DropdownItem>
+                <DropdownItem>
+                  <NavLink to={`/order-view/${user.id}`}>View</NavLink>
+                </DropdownItem>
                 <DropdownItem>Edit</DropdownItem>
-                <DropdownItem onClick={() => deleteOrder(user.id)}> Delete </DropdownItem>
+                <DropdownItem onClick={() => deleteOrder(user.id)}>
+                  {" "}
+                  Delete{" "}
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -307,7 +297,6 @@ export default function OrderTable() {
     setRowsPerPage(Number(e.target.value));
     setPage(1);
   }, []);
-
 
   const onSearchChange = React.useCallback((value) => {
     if (value) {
@@ -398,7 +387,9 @@ export default function OrderTable() {
           </div>
         </div>
         <div className="flex font-poppins justify-between items-center">
-          <span className="text-default-400 text-small">Total {users.length} users</span>
+          <span className="text-default-400 text-small">
+            Total {users.length} users
+          </span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
             <select
@@ -463,7 +454,7 @@ export default function OrderTable() {
         "group-data-[last=true]:last:before:rounded-none",
       ],
     }),
-    [],
+    []
   );
 
   return (

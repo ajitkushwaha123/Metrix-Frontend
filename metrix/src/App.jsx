@@ -9,7 +9,6 @@ import Conversations from './Pages/Conversations'
 import Support from './Pages/Support'
 import Gift from './Pages/Gift'
 import Logout from './Authentication/Logout'
-import Customers from './Pages/Customers'
 import Login from './Authentication/Login'
 import Register from './Authentication/Register'
 import ForgetPassword from './Authentication/ForgetPassword'
@@ -24,6 +23,10 @@ import ImageGenerator from './components/Gemini'
 import Prod from './components/Gemini'
 import UpdateProduct from './Pages/UpdateProduct'
 import ViewProduct from './Pages/ViewProduct'
+import ViewOrder from './Pages/ViewOrder'
+import Customer from './Pages/Customers/Customer'
+import NewCustomer from './Pages/Customers/AddCustomer'
+import UpdateCustomer from './Pages/Customers/UpdateCustomer'
 
 function App() {
 
@@ -42,7 +45,7 @@ function App() {
             <Route path="/inventory/new-product" element={<NewInventory />} />
             <Route path="/profile" element={<Settings />} />
             <Route path="/conversations" element={<Conversations />} />
-            <Route path="/customers" element={<Customers />} />
+            <Route path="/customer" element={<Customer />} />
             <Route path="/support" element={<Support />} />
             <Route path="/gift" element={<Gift />} />
             <Route path="/logout" element={<Logout />} />
@@ -55,6 +58,9 @@ function App() {
             <Route path='/prod' element={<Prod />} />
             <Route path='/inventory/update-product/:id' element={<UpdateProduct />} />
             <Route path='/inventory/view/:id' element={<ViewProduct />} />
+            <Route path='/order-view/:id' element={<ViewOrder />} />
+            <Route path='/customer/edit/:id' element={<UpdateCustomer />} />
+            {/* <Route path="/add-customer" element={<NewCustomer />} /> */}
           </Routes>
 
           <Routes>

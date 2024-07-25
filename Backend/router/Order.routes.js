@@ -56,14 +56,18 @@ orders.delete("/:id", Auth, async (req, res) => {
 });
 
 // Get Orders
-orders.get("/find/:userId", Auth, async (req, res) => {
+orders.get("/find/:orderId", Auth, async (req, res) => {
   try {
-    const orders = await Order.find({ userId: req.params.userId });
-    res.status(200).json(orders);
+    const order = await Order.findById(req.params.orderId);
+    res.status(200).json(order);
   } catch (err) {
-    res.status(500).json(err);
+    console.error("Error fetching orders:", err);
+    res
+      .status(500)
+      .json({ message: "Failed to fetch orders", error: err.message });
   }
 });
+
 
 // Get all orders
 orders.get("/:userId", Auth, async (req, res) => {

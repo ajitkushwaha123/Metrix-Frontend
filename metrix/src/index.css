@@ -13,10 +13,20 @@ body
   background-color: #EEF0FA;
 }
 
-#root{
-  padding: 0;
-  margin: 0;
-  max-width: 100%;
+.custom-image::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* .custom-image {
+  -ms-overflow-style: none;  /* IE and Edge */
+  /* scrollbar-width: none;  Firefox */
+/* } */ */
+
+#root {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 !important;
+    text-align: center;
 }
 
 :root {
@@ -26,6 +36,8 @@ body
     #6d6d6d -78.47%,
     #11101d 91.61%
   );
+  padding : 0;
+  margin : 0;
   --card-shadow: 0px 20px 100px -10px rgba(66, 71, 91, 0.1);
 }
 

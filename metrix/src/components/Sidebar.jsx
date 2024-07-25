@@ -37,7 +37,7 @@ const Sidebar = () => {
     {
       title: 'Customers',
       icon: <LuUsers />,
-      link: '/customers',
+      link: '/customer',
     },
     {
       title: 'Conversations',

@@ -7,6 +7,7 @@ import products from "./product.route.js";
 import orders from "./Order.routes.js";
 import carts from "./cart.route.js";
 import category from "./category.route.js";
+import customers from "./customer.route.js";
 
 
 
@@ -37,6 +38,7 @@ router.use('/products' , products);
 router.use("/cart", carts);
 router.use("/orders", orders);
 router.use("/category" , category)
+router.use("/customer" , customers)
 
 
 export default router;

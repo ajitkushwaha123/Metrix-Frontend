@@ -3,6 +3,8 @@ import CustomerSearch from "../components/CustomerSearch";
 import axios from "axios";
 import { useFormik } from "formik";
 import { CiSearch } from "react-icons/ci";
+import toast , {Toaster} from 'react-hot-toast';
+import { createOrderValidate } from "../helper/validate";
 
 const NewOrder = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -78,32 +80,34 @@ const NewOrder = () => {
     console.log(!newCustomer);
   };
 
-  const handleOrder = async (values) => {
-    console.log("Order Added", values.products);
+ const handleOrder = async (values) => {
+   console.log("Order Added", values.products);
 
-    const token = localStorage.getItem("token");
-    console.log(token);
+   const token = localStorage.getItem("token");
+   console.log(token);
 
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    };
+   const config = {
+     headers: {
+       Authorization: `Bearer ${token}`,
+       "Content-Type": "application/json",
+     },
+   };
 
-    try {
-      const { data } = await axios.post(
-        "http://localhost:8000/api/orders",
-        values,
-        config
-      );
+   try {
+     const { data } = await axios.post(
+       "http://localhost:8000/api/orders",
+       values,
+       config
+     );
 
-      console.log("Order Added", data);
-      return { data };
-    } catch (err) {
-      console.error(err);
-    }
-  };
+     console.log("Order Added", data);
+     return Promise.resolve({ order: data });
+   } catch (err) {
+     console.error("Error adding order:", err.message);
+     return Promise.reject({ err: err.message });
+   }
+ };
+
 
   const viewCart = (e) => {
     e.preventDefault();
@@ -114,27 +118,52 @@ const NewOrder = () => {
     console.log("Cart Product00000", cartProduct.product);
   };
 
-  const formik = useFormik({
-    initialValues: {
-      customerName: "",
-      phone: "8178739633",
-      price: 2999,
-      paymentType: "Cash",
-      status: "Pending",
-      orderNote: "",
-      products: [{ product: "product", quantities: "quantities" }],
-      quantity: 0,
-    },
-    validateOnBlur: false,
-    validateOnChange: false,
-    onSubmit: async (values) => {
-      console.log("valuesAdded", AddedProduct);
-      values.products = AddedProduct;
-      console.log("valuesvsdzv", values.products);
-      const data = await handleOrder(values);
-      console.log("data", data);
-    },
-  });
+const formik = useFormik({
+  initialValues: {
+    customerName: "",
+    phone: "8178739633",
+    price: 2999,
+    paymentType: "Cash",
+    status: "pending",
+    orderNote: "",
+    products: [{ product: "product", quantities: "quantities" }],
+    quantity: 0,
+  },
+  validate: createOrderValidate,
+  validateOnBlur: false,
+  validateOnChange: false,
+  onSubmit: async (values) => {
+
+    values.products = AddedProduct;
+    try {
+      if (AddedProduct.length === 0) {
+        toast.error("Add Products to Cart... !");
+      }else
+      {
+        let orderPromise = handleOrder(values);
+        toast.promise(orderPromise, {
+          loading: "Creating...",
+          success: <b>Order Created Successfully... !</b>,
+          error: <b>Couldn't Create Order... !</b>,
+        });
+
+        formik.resetForm();
+        AddedProduct.map((product) => {
+          setQuantities((prevQuantities) => {
+            const newQuantities = { ...prevQuantities };
+            newQuantities[product.product._id] = 0;
+            return newQuantities;
+          });
+        });
+        setCartProduct([]);
+        setCart(false);
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  },
+});
+
 
  const updateTotalCartValue = () => {
    let totalQuantity = 0;
@@ -148,7 +177,6 @@ const NewOrder = () => {
     formik.setFieldValue("price", total);
    formik.setFieldValue("quantity", totalQuantity);
  };
-
 
   useEffect(() => {
     updateTotalCartValue();
@@ -170,6 +198,7 @@ const NewOrder = () => {
       {/* Main modal */}
       {isOpen && (
         <div className="flex">
+          <Toaster position="top-center" reverseOrder={false} />
           <div
             id="crud-modal"
             tabIndex="-1"
@@ -346,7 +375,10 @@ const NewOrder = () => {
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <button className="bg-white border-2 border-primary px-[10px] py-[5px] font-medium rounded-md">
+                      <button
+                        onClick={toggleModal}
+                        className="bg-white border-2 border-primary px-[10px] py-[5px] font-medium rounded-md"
+                      >
                         Cancel
                       </button>
                       <button

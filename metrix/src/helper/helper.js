@@ -59,6 +59,55 @@ export async function getOrders(url) {
   }
 }
 
+export async function getCustomers(url) {
+  const { userId } = await getUsername();
+  console.log("User ID:", userId);
+  const token = localStorage.getItem("token");
+  console.log("Token:", token);
+  if (!token) {
+    throw new Error("Token not found"); // Throw an error with a descriptive message
+  }
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  };
+
+  try {
+    console.log("URL:", url);
+    const { data } = await axios.get(`${url}`, config);
+    console.log("CutiePie:", data);
+    return data;
+  } catch (error) {
+    return { error: "Couldn't fetch Orders" };
+  }
+}
+
+export async function getSingleOrders(url) {
+  const token = localStorage.getItem("token");
+  console.log("Token:", token);
+  if (!token) {
+    throw new Error("Token not found"); // Throw an error with a descriptive message
+  }
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  };
+
+  try {
+    console.log("URL:", url);
+    const { data } = await axios.get(`${url}`, config);
+    console.log("Orders:", data);
+    return data;
+  } catch (error) {
+    return { error: "Couldn't fetch Orders" };
+  }
+}
 
 export async function registerUser(credential) {
   try {
@@ -114,17 +163,7 @@ export async function addProduct(values) {
     if (values.photos[3]) formData.append("photos", values.photos[3]); 
     console.log("Form Data:", values.photos);
 
-    // if (values.photos && values.photos.length > 0) {
-    //   values.photos.forEach((photo, index) => {
-    //     console.log("Photo:", photo);
-    //     formData.append(`photos[${index}]`, photo);
-    //   });
-    // }
-
-
-
     console.log("Selected photos:", values.photos);
-    // console.log("FormData photos:", formData.getAll("photos"));
 
     const config = {
       headers: {
@@ -190,6 +229,35 @@ export async function updateProduct(values) {
   }
 }
 
+export async function handleCustomers(values , id)  {
+  console.log("csnxv" , id);
+  const token = localStorage.getItem("token");
+  console.log(token);
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  };
+
+  console.log("skfhlk", values);
+
+  try {
+    const { data } = await axios.put(
+      `http://localhost:8000/api/customer/${id}`,
+      values,
+      config
+    );
+
+    console.log("Customer Added", data);
+    return Promise.resolve({ data });
+  } catch (err) {
+    console.error("Error adding customer :", err.message);
+    return Promise.reject({ err });
+  }
+};
+
 
 export async function updateUser(response) {
   try {
@@ -204,6 +272,36 @@ export async function updateUser(response) {
   } catch (error) {
     return Promise.reject({ error: "Couldn't update profile." });
   }
+}
+
+export async function getSingleCustomer(id){
+  try {
+       const token = localStorage.getItem("token");
+       if (!token) {
+         console.log("Token not found");
+         return;
+       }
+
+       const config = {
+         headers: {
+           Authorization: `Bearer ${token}`,
+           "Content-Type": "application/json",
+         },
+       };
+
+       console.log("idm sm" , id);
+
+       const {data} = await axios.get(
+         `http://localhost:8000/api/customer/find/${id}`,
+         config
+       );
+
+       console.log("diita" , data);
+       return Promise.resolve({ data });
+      
+     } catch (err) {
+       return Promise.reject({ error: "Error Fetching Customer..." });
+     }
 }
 
 export async function generateOTP(username) {
