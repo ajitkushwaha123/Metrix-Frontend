@@ -19,6 +19,7 @@ products.post("/", upload.array("photos", 4), Auth, async (req, res) => {
       category,
       price,
       stock,
+      status,
       // photos,
     } = req.body;
     
@@ -47,6 +48,7 @@ products.post("/", upload.array("photos", 4), Auth, async (req, res) => {
         category,
         price,
         stock,
+        status,
         photos: photoUrls, // Store array of photo URLs
       });
 

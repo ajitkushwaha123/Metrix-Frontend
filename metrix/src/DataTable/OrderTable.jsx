@@ -51,15 +51,17 @@ const columns = [
 ];
 
 const statusOptions = [
-  {name: "Completed", uid: "completed"},
-  {name: "Pending", uid: "pending"},
-  {name: "In-Progress", uid: "progress"},
+  { name: "Completed", uid: "completed" },
+  { name: "Pending", uid: "pending" },
+  { name: "In-Progress", uid: "progress" },
+  { name : "Cancelled" , uid : "cancelled"}
 ];
 
 const statusColorMap = {
   completed: "success",
   pending : "danger",
   progress: "warning",
+  cancelled: "error"
 };
 
 const INITIAL_VISIBLE_COLUMNS = [
@@ -87,7 +89,7 @@ export default function OrderTable() {
   };
 
   const deleteOrder = async (id) => {
-    alert("Are you sure you want to delete this order... ?");
+    // alert("Are you sure you want to delete this order... ?");
     setLoading(true);
 
     const token = localStorage.getItem("token");
@@ -107,6 +109,8 @@ export default function OrderTable() {
       console.log("Response:", res);
       // window.location.reload();
       setLoading(false);
+      fetchOrders();
+      // window.reload();
     } catch (error) {
       console.error("Error deleting order:", error);
     } finally {
@@ -114,56 +118,55 @@ export default function OrderTable() {
     }
   };
 
-  
+  const fetchOrders = async () => {
+    const orders = await getOrders(API);
+
+    console.log("Orders:", orders);
+    const newUsers = orders.map((order) => {
+      console.log("Order:", order.products);
+      const singleproduct = order.products.map((product) => {
+        return product.product;
+      });
+
+      const productName = singleproduct.map((product) => {
+        return product.productName;
+      });
+
+      const productImage = singleproduct.map((product) => {
+        return product.photos;
+      });
+
+      const firstImage = productImage[0];
+
+      console.log("productImage", productImage);
+
+      const firstProductName = productName[0];
+      const totalProducts = productName.length;
+      const orderDate = new Date(order.createdAt);
+      return {
+        id: order._id,
+        totalProducts: totalProducts,
+        name: firstProductName,
+        productImages: productImage,
+        avatar: firstImage,
+        total: order.price,
+        phone: order.phone,
+        totalProducts: totalProducts,
+        status: order.orderStatus,
+        newCustomer: order.newCustomer,
+        customerName: order.customerName,
+        orderNote: order.orderNote,
+        paymentType: order.paymentType,
+        products: order.products,
+        quantity: order.quantity,
+        orderDate: `${orderDate.toLocaleDateString()} ${orderDate.toLocaleTimeString()}`,
+      };
+    });
+
+    setUsers(newUsers);
+  };
+
   useEffect(() => {
-    const fetchOrders = async () => {
-        const orders = await getOrders(API);
-
-        console.log("Orders:", orders);
-        const newUsers = orders.map((order) => {
-            console.log("Order:", order.products);
-            const singleproduct = order.products.map((product) => {
-                return product.product;
-            });
-
-            const productName = singleproduct.map((product) => {
-                return product.productName;
-            });
-
-            const productImage = singleproduct.map((product) => {
-                return product.photos;
-            });
-
-            const firstImage = productImage[0];
-
-            console.log("productImage" ,  productImage);
-            
-            const firstProductName = productName[0];
-            const totalProducts = productName.length;
-            const orderDate = new Date(order.createdAt);
-            return {
-                id: order._id,
-                totalProducts : totalProducts,
-                name: firstProductName,
-                productImages: productImage,
-                avatar: firstImage,
-                total: order.price,
-                phone: order.phone,
-                totalProducts : totalProducts,
-                status: order.orderStatus,
-                newCustomer: order.newCustomer,
-                customerName: order.customerName,
-                orderNote: order.orderNote,
-                paymentType: order.paymentType,
-                products: order.products,
-                quantity: order.quantity,
-                orderDate: `${orderDate.toLocaleDateString()} ${orderDate.toLocaleTimeString()}`,
-            };
-        });
-
-        setUsers(newUsers);
-    };
-
     fetchOrders();
     console.log(isOpen); // This will log the updated state value
   }, [isOpen]);
@@ -357,7 +360,7 @@ export default function OrderTable() {
               >
                 {statusOptions.map((status) => (
                   <DropdownItem key={status.uid} className="capitalize">
-                    {status}
+                    {status.name}
                   </DropdownItem>
                 ))}
               </DropdownMenu>
@@ -467,48 +470,57 @@ export default function OrderTable() {
   );
 
   return (
-    <Table
-      isCompact
-      removeWrapper
-      aria-label="Example table with custom cells, pagination and sorting"
-      bottomContent={bottomContent}
-      bottomContentPlacement="outside"
-      checkboxesProps={{
-        classNames: {
-          wrapper: "after:bg-primary after:text-background text-background",
-        },
-      }}
-      classNames={classNames}
-      selectedKeys={selectedKeys}
-      selectionMode="multiple"
-      sortDescriptor={sortDescriptor}
-      topContent={topContent}
-      topContentPlacement="outside"
-      onSelectionChange={setSelectedKeys}
-      onSortChange={setSortDescriptor}
-    >
-      <TableHeader columns={headerColumns}>
-        {(column) => (
-          <TableColumn
-            key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
-            allowsSorting={column.sortable}
-          >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody emptyContent={"No users found"} items={sortedItems}>
-        {sortedItems.map((item) => (
-          <TableRow key={item.id}>
-            {headerColumns.map((column) => (
-              <TableCell key={column.uid}>
-                {renderCell(item, column.uid)}
-              </TableCell>
+    <>
+      {loading && (
+        <div className="flex justify-center items-center">
+          <img src={loader} />
+        </div>
+      )}
+      {!loading && (
+        <Table
+          isCompact
+          removeWrapper
+          aria-label="Example table with custom cells, pagination and sorting"
+          bottomContent={bottomContent}
+          bottomContentPlacement="outside"
+          checkboxesProps={{
+            classNames: {
+              wrapper: "after:bg-primary after:text-background text-background",
+            },
+          }}
+          classNames={classNames}
+          selectedKeys={selectedKeys}
+          selectionMode="multiple"
+          sortDescriptor={sortDescriptor}
+          topContent={topContent}
+          topContentPlacement="outside"
+          onSelectionChange={setSelectedKeys}
+          onSortChange={setSortDescriptor}
+        >
+          <TableHeader columns={headerColumns}>
+            {(column) => (
+              <TableColumn
+                key={column.uid}
+                align={column.uid === "actions" ? "center" : "start"}
+                allowsSorting={column.sortable}
+              >
+                {column.name}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody emptyContent={"No orders found"} items={sortedItems}>
+            {sortedItems.map((item) => (
+              <TableRow key={item.id}>
+                {headerColumns.map((column) => (
+                  <TableCell key={column.uid}>
+                    {renderCell(item, column.uid)}
+                  </TableCell>
+                ))}
+              </TableRow>
             ))}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+          </TableBody>
+        </Table>
+      )}
+    </>
   );
 }

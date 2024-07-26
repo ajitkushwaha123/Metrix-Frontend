@@ -17,6 +17,10 @@ body
   width: 5px;
 }
 
+.custom-sidebar::-webkit-scrollbar{
+  width: hidden;
+}
+
 /* .custom-image {
   -ms-overflow-style: none;  /* IE and Edge */
   /* scrollbar-width: none;  Firefox */

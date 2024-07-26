@@ -157,6 +157,7 @@ export async function addProduct(values) {
     formData.append("category", values.category);
     formData.append("price", values.price);
     formData.append("stock", values.stock);
+    formData.append("status" , values.status);
     formData.append("photos", values.photos[0]); // Ensure photos is a single value
     if(values.photos[1]) formData.append("photos", values.photos[1]); 
     if (values.photos[2]) formData.append("photos", values.photos[2]); 
@@ -330,6 +331,64 @@ export async function getSingleCustomer(id){
      } catch (err) {
        return Promise.reject({ error: "Error Fetching Customer..." });
      }
+}
+
+export async function getAllCustomers(){
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.log("Token not found");
+      return;
+    }
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+
+    const response = await axios.get(
+      `http://localhost:8000/api/customer`,
+      config
+    );
+
+    console.log("Customer", response.data);
+    return Promise.resolve( response.data );
+  } catch (err) {
+    return Promise.reject({ error: "Error Fetching Customer..." });
+  };
+}
+
+export async function getOrderByCustomer(id) {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.log("Token not found");
+      return;
+    }
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    console.log("idm sm", id);
+
+    const { data } = await axios.get(
+      `http://localhost:8000/api/orders/customer/${id}`,
+      config
+    );
+
+    console.log("diita", `http://localhost:8000/api/orders/customer/${id}`);
+    console.log("diita", data);
+    return Promise.resolve({ data });
+  } catch (err) {
+    return Promise.reject({ error: "Error Fetching Customer..." });
+  }
 }
 
 export async function generateOTP(username) {

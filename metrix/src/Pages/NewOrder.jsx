@@ -6,12 +6,34 @@ import { CiSearch } from "react-icons/ci";
 import toast , {Toaster} from 'react-hot-toast';
 import { createOrderValidate } from "../helper/validate";
 import { addCustomers } from "../helper/helper";
+import { Select, SelectItem, Avatar } from "@nextui-org/react";
+import { getAllCustomers } from "../helper/helper";
 
 const NewOrder = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [newCustomer, setNewCustomer] = useState(false);
   const [cartProduct, setCartProduct] = useState([]);
   const [cart , setCart] = useState(false);
+
+  const [customer, setCustomer] = useState([]);
+  const [selectCustomer, setSelectCustomer] = useState("");
+  const [selectCustomerName , setSelectCustomerName] = useState("");
+  const [selectCustomerPhone , setSelectCustomerPhone] = useState("");
+
+  console.log("Customer data", selectCustomer);
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const response = await getAllCustomers(); // Make sure to await the data fetching
+        setCustomer(response);
+        console.log("Customer data fetched successfully", response);
+      } catch (error) {
+        console.log("Error while fetching customer data", error);
+      }
+    };
+
+    fetchCustomers();
+  }, []);
   
   const AddedProduct = [];
   console.log(AddedProduct);
@@ -127,12 +149,13 @@ const formik = useFormik({
     paymentType: "Cash",
     orderStatus: "pending",
     orderNote: "",
-    products: [{ product: "product", quantities: "quantities" }],
+    products: [], // Initialize with an empty array
     quantity: 0,
     customerImage: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/1.png",
     imageColor: "tertiary",
+    customerId: "",
   },
-  validate: createOrderValidate,
+  // validate: createOrderValidate,
   validateOnBlur: false,
   validateOnChange: false,
   onSubmit: async (values) => {
@@ -144,6 +167,20 @@ const formik = useFormik({
       if (AddedProduct.length === 0) {
         toast.error("Add Products to Cart... !");
       } else {
+        if (selectCustomer !== "") {
+          values.customerId = selectCustomer;
+          values.customerName = selectCustomerName;
+          values.phone = selectCustomerPhone;
+        } else {
+          console.log("New Customer");
+          let customerPromise = await addCustomers(values);
+      
+          console.log("Customer ID", customerPromise.customer._id);
+          values.customerId = customerPromise.customer._id;
+        }
+
+        console.log("Updated values:", values);
+
         let orderPromise = handleOrder(values);
         toast.promise(orderPromise, {
           loading: "Creating...",
@@ -151,23 +188,12 @@ const formik = useFormik({
           error: <b>Couldn't Create Order... !</b>,
         });
 
-        // values.orders = values;
-
-        console.log("Added Proddfgldkjuct", values);
-        let customerPromise = addCustomers(values);
-        toast.promise(customerPromise, {
-          loading: "Creating...",
-          success: <b>Customer Added Successfully... !</b>,
-          error: <b>Couldn't Add Customer... !</b>,
-        });
-
         formik.resetForm();
-        AddedProduct.map((product) => {
-          setQuantities((prevQuantities) => {
-            const newQuantities = { ...prevQuantities };
-            newQuantities[product.product._id] = 0;
-            return newQuantities;
-          });
+        AddedProduct.forEach((product) => {
+          setQuantities((prevQuantities) => ({
+            ...prevQuantities,
+            [product.product._id]: 0,
+          }));
         });
         setCartProduct([]);
         setCart(false);
@@ -177,6 +203,7 @@ const formik = useFormik({
     }
   },
 });
+
 
 
  const updateTotalCartValue = () => {
@@ -217,7 +244,7 @@ const formik = useFormik({
             id="crud-modal"
             tabIndex="-1"
             aria-hidden="true"
-            className="fixed shadow-lg shadow-indigo-500/40 backdrop-blur-sm bg-indigo-500/10 font-poppins top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full overflow-y-auto overflow-x-hidden"
+            className="custom-sidebar fixed shadow-lg shadow-indigo-500/40 backdrop-blur-sm bg-indigo-500/10 font-poppins top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full overflow-y-auto overflow-x-hidden"
           >
             <div className="relative p-4 max-h-full">
               {/* Modal content */}
@@ -274,7 +301,75 @@ const formik = useFormik({
                     <div className="grid gap-4 my-[10px] mb-4 grid-cols-2">
                       {newCustomer && (
                         <div className="col-span-2">
-                          <CustomerSearch />
+                          <Select
+                            items={customer}
+                            label="Select a Customer"
+                            placeholder="Select a Customer"
+                            labelPlacement="outside"
+                            classNames={{
+                              base: "max-w-xs",
+                              trigger: "h-12",
+                            }}
+                            renderValue={(items) =>
+                              items.map((item) => (
+                                <div
+                                  key={item.key}
+                                  className="flex py-[2px] px-[4px] items-center gap-2"
+                                >
+                                  <Avatar
+                                    alt={item.data.customerImage}
+                                    className="flex-shrink-0"
+                                    size="sm"
+                                    src={item.data.customerImage}
+                                    isBordered
+                                    color={item.data.imageColor}
+                                  />
+                                  {/* {selectCustomer} */}
+                                  {/* {selectCustomerName}
+                                  {selectCustomerPhone} */}
+                                  <div className="flex flex-col">
+                                    <span>{item.data.customerName}</span>
+                                    <span className="text-default-500 text-tiny">
+                                      {item.data.phone}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))
+                            }
+                          >
+                            {(user) => (
+                              <SelectItem
+                                key={user._id}
+                                textValue={user.customerName}
+                              >
+                                <div
+                                  onClick={() => {
+                                    setSelectCustomer(user._id),
+                                      setSelectCustomerName(user.customerName),
+                                      setSelectCustomerPhone(user.phone);
+                                  }}
+                                  className="flex gap-2 py-[2px] px-[4px] items-center"
+                                >
+                                  <Avatar
+                                    isBordered
+                                    color={user.imageColor}
+                                    alt={user.customerName}
+                                    className="flex-shrink-0"
+                                    size="sm"
+                                    src={user.customerImage}
+                                  />
+                                  <div className="flex flex-col">
+                                    <span className="text-small">
+                                      {user.customerName}
+                                    </span>
+                                    <span className="text-tiny text-default-400">
+                                      {user.phone}
+                                    </span>
+                                  </div>
+                                </div>
+                              </SelectItem>
+                            )}
+                          </Select>
                         </div>
                       )}
                       {!newCustomer && (

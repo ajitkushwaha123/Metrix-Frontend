@@ -9,6 +9,10 @@ const ProductSchema = new mongoose.Schema(
         shortDescription: {
           type: String,
         },
+        status : {
+          type : String,
+          // default : "published",
+        },
         category: {type : String}, 
         price: {
           type: Number,

@@ -2,6 +2,7 @@ import React , {useState} from "react";
 import { useProductContext } from "../context/productContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import toast , {Toaster} from "react-hot-toast";
 
 import {
   Table,
@@ -32,7 +33,7 @@ import { loader } from "../assets";
 
 const statusColorMap = {
   published: "success",
-  unpublished : "danger",
+  // unpublished : "danger",
   draft: "warning",
 };
 
@@ -46,7 +47,7 @@ export default function InvTable() {
 const handleDelete = (id) => {  
   // const {id} = useParams();
   console.log("id" , id);
-  if (window.confirm("Are you sure you want to delete this product?")) {
+
     const token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -55,23 +56,22 @@ const handleDelete = (id) => {
       },
     };
 
-    console.log(`http://localhost:8000/api/products/${id}`);
     setLoading(true);
-
     axios
       .delete(`http://localhost:8000/api/products/${id}`, config)
       .then((res) => {
         setLoading(false);
         console.log(res);
         // getProducts(`http://localhost:8000/api/product`);
-        window.location.reload();
+        toast.success("Product Deleted Successfully");
+        // window.location.reload();
         navigate("/inventory");
       })
       .catch((err) => {
         setLoading(false);
         console.log(err);
+        toast.error("Failed to delete the product");
       });
-  }
 };
 
 
@@ -86,7 +86,7 @@ products.forEach((product) => {
     id: product._id,
     name: product.productName,
     category: product.category,
-    status: "published",
+    status: product.status,
     age: product.age,
     avatar: product.photos[0],
     price: product.price,
@@ -317,17 +317,22 @@ console.log("u" , users);
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button
-              className="bg-primary text-background"
-              endContent={<PlusIcon />}
-              size="sm"
-            >
-              Add New
-            </Button>
+
+            <NavLink to={"/inventory/new-product"}>
+              <Button
+                className="bg-primary text-background"
+                endContent={<PlusIcon />}
+                size="sm"
+              >
+                Add New
+              </Button>
+            </NavLink>
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">Total {users.length} users</span>
+          <span className="text-default-400 text-small">
+            Total {users.length} users
+          </span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
             <select
@@ -397,6 +402,7 @@ console.log("u" , users);
 
   return (
     <>
+    <Toaster position="top-center" reverseOrder="false"/>
     {loading &&
     <div><img src={loader}/> </div>
     }
@@ -432,7 +438,7 @@ console.log("u" , users);
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"No users found"} items={sortedItems}>
+      <TableBody emptyContent={"No Products found"} items={sortedItems}>
         {(item) => (
           <TableRow key={item.id}>
               {(columnKey) => <TableCell>

@@ -70,11 +70,26 @@ orders.get("/find/:orderId", Auth, async (req, res) => {
 });
 
 
+
 // Get all orders
 orders.get("/:userId", Auth, async (req, res) => {
   try {
     const orders = await Order.find( {
       userId: req.params.userId
+    });
+    res.status(200).json(orders);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+
+// Get all orders based on Customer Id;
+orders.get("/customer/:customerId", Auth, async (req, res) => {
+  try {
+    console.log(req.params.customerId);
+    const orders = await Order.find({
+      customerId: req.params.customerId,
     });
     res.status(200).json(orders);
   } catch (err) {

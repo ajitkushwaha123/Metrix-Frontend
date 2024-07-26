@@ -69,7 +69,6 @@ const AddCategory = ({ onSubmit }) => {
         // value={name}
         required
       />
-      {/* <label htmlFor="photo">Category Image (Optional):</label> */}
       <input
         onChange={(e) => {fileHandler(e)}}
         type="file"

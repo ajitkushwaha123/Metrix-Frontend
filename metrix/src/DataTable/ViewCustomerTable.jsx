@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useProductContext } from "../context/productContext";
 import { loader } from "../assets";
-// import AvatarGroup from "./Avatar";
+// import AvatarGroup from "./Avatar"
 
 import {
   Table,
@@ -30,7 +30,7 @@ import { ChevronDownIcon } from "./ChevronDownIcon";
 import { capitalize } from "./utils";
 import { NavLink } from "react-router-dom";
 import NewOrder from "../Pages/NewOrder";
-import { getSingleCustomer, getSingleOrders } from "../helper/helper";
+import { getOrderByCustomer, getOrders } from "../helper/helper";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import config from "../../../Backend/config";
@@ -39,12 +39,14 @@ const columns = [
   { name: "ID", uid: "id", sortable: true },
   { name: "Product Image", uid: "productImages" },
   { name: "PRODUCT NAME", uid: "name", sortable: true },
+  { name: "ORDER DATE", uid: "orderDate", sortable: true },
   { name: "QUANTITY", uid: "quantity", sortable: true },
-  { name: "CATEGORY", uid: "category" },
-  { name: "DISCOUNT PRICE", uid: "discountPrice", sortable: true },
-  { name: "STOCK", uid: "stock", sortable: true },
-  { name: "PRICE", uid: "price" },
-  // { name: "STATUS", uid: "status", sortable: true },
+  { name: "CUSTOMER NAME", uid: "customerName" },
+  { name: "PAYMENT TYPE", uid: "paymentType", sortable: true },
+  { name: "TOTAL PRICE", uid: "total", sortable: true },
+  { name: "PHONE", uid: "phone" },
+  { name: "STATUS", uid: "status", sortable: true },
+  { name: "ORDER NOTE", uid: "orderNote" },
   { name: "ACTIONS", uid: "actions" },
 ];
 
@@ -63,21 +65,27 @@ const statusColorMap = {
 const INITIAL_VISIBLE_COLUMNS = [
   "productImages",
   "name",
-  "category",
-  // "status",
-  "discountPrice",
-  "stock",
-  "price",
+  "orderDate",
+  "quantity",
+  "paymentType",
+  "total",
+  "status",
   "actions",
 ];
 
-const API = "http://localhost:8000/api/orders/find";
+const API = "http://localhost:8000/api/orders/customer";
 
 export default function ViewCustomerTable() {
-  const { id } = useParams();
-  console.log("iddddd", id);
-
+  const {id} = useParams();
   const [isOpen, setIsOpen] = useState(false);
+  const [users, setUsers] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+
+  const toggleModal = () => {
+    setIsOpen((prevState) => !prevState);
+    console.log(isOpen); // This will log the previous state value
+  };
 
   const deleteOrder = async (id) => {
     alert("Are you sure you want to delete this order... ?");
@@ -107,41 +115,61 @@ export default function ViewCustomerTable() {
     }
   };
 
-  const [users, setUsers] = useState([]);
-
   useEffect(() => {
     const fetchOrders = async () => {
-      try {
-        const {data} = await getSingleCustomer(id);
-        console.log("Orderrrrr:", data);
-        const order = data.products;
-        console.log("Ordersss:", order);
+      console.log("ID:", id);
+      const orders = await getOrderByCustomer(id);
+      // const order = orders.data;
+      console.log("Orders:", orders);
+      const newUsers = orders.data.map((order) => {
+        console.log("Order:", order.products);
+        const singleproduct = order.products.map((product) => {
+          return product.product;
+        });
 
-        const singleproduct = order.map((product) => product.product);
-        console.log("singleproduct", singleproduct);
+        const productName = singleproduct.map((product) => {
+          return product.productName;
+        });
 
-        const updatedUsers = singleproduct.map((product) => ({
-          id: product._id,
-          name: product.productName,
-          productImages: product.photos,
-          category: product.category,
-          status: product.orderStatus,
-          avatar: product.photos[0],
-          price: product.price,
-          stock: product.stock,
-          discountPrice: product.discountPrice,
-        }));
+        const productImage = singleproduct.map((product) => {
+          return product.photos;
+        });
 
-        setUsers(updatedUsers);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      }
+        const firstImage = productImage[0];
+
+        console.log("productImage", productImage);
+
+        const firstProductName = productName[0];
+        const totalProducts = productName.length;
+        const orderDate = new Date(order.createdAt);
+        return {
+          id: order._id,
+          totalProducts: totalProducts,
+          name: firstProductName,
+          productImages: productImage,
+          avatar: firstImage,
+          total: order.price,
+          phone: order.phone,
+          totalProducts: totalProducts,
+          status: order.orderStatus,
+          newCustomer: order.newCustomer,
+          customerName: order.customerName,
+          orderNote: order.orderNote,
+          paymentType: order.paymentType,
+          products: order.products,
+          quantity: order.quantity,
+          orderDate: `${orderDate.toLocaleDateString()} ${orderDate.toLocaleTimeString()}`,
+        };
+      });
+
+      setUsers(newUsers);
     };
 
     fetchOrders();
+    console.log(isOpen); // This will log the updated state value
   }, [id]);
 
-  console.log("Users:", users);
+  console.log("users", users);
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
