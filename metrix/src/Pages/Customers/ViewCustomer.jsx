@@ -1,46 +1,36 @@
-import React, { useEffect , useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getSingleOrders } from "../helper/helper";
-import Navbar from "../components/Navbar";
-import BreadCrum from "../components/BreadCrum";
+import { getSingleCustomer, getSingleOrders } from "../../helper/helper";
+import Navbar from "../../components/Navbar";
+import BreadCrum from "../../components/BreadCrum";
 import { MdOutlineArrowDropDown } from "react-icons/md";
-import Stats from "../components/Stats";
 import { BsFolder2Open, BsHandbag } from "react-icons/bs";
-import ViewProductTable from "../DataTable/ViewProductTable";
+import ViewProductTable from "../../DataTable/ViewProductTable";
 import { CiUser } from "react-icons/ci";
 import { MdOutlinePayment } from "react-icons/md";
 import { CiLocationOn } from "react-icons/ci";
-import { capitalize } from "../DataTable/utils";
-import SingleOrderTable from "../DataTable/SingleOrderTable";
-
-
+import { capitalize } from "../../DataTable/utils";
+import SingleOrderTable from "../../DataTable/SingleOrderTable";
+import ViewCustomerTable from "../../DataTable/ViewCustomerTable";
 
 const API = "http://localhost:8000/api/orders/find";
-const ViewOrder = () => {
+const ViewCustomer = () => {
   const { id } = useParams();
   console.log("id", id);
 
   const [customerName, setCustomerName] = useState("");
-  const [phone , setPhone] = useState("");
-  const [paymentType, setPaymentType] = useState("");
-  const [price, setPrice] = useState("");
+  const [phone, setPhone] = useState("");
   const [status, setStatus] = useState("");
-  const [orderNote, setOrderNote] = useState("");
-  const [quantity, setQuantity] = useState(0);
-  
+   
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         console.log("id", id);
-        const product = await getSingleOrders(`${API}/${id}`);
-        console.log("product", product);
-        setCustomerName(product.customerName);
-        setPhone(product.phone);
-        setPaymentType(product.paymentType);
-        setPrice(product.price);
-        setStatus(product.status);
-        setOrderNote(product.orderNote);
-        setQuantity(product.quantity);
+        const { data } = await getSingleCustomer(id);
+        console.log("data", data);
+        setCustomerName(data.customerName);
+        setPhone(data.phone);
+        setStatus(data.status);
       } catch (error) {
         console.error("Error fetching product:", error);
       }
@@ -53,6 +43,8 @@ const ViewOrder = () => {
     <div>
       <Navbar title={"Inventory"} />
       <BreadCrum title={"Inventory"} back={"/"} />
+
+      <h1>{customerName}</h1>
 
       <div className="px-[40px]">
         <div className="flex justify-between items-center">
@@ -120,14 +112,10 @@ const ViewOrder = () => {
                     <h2 className="text-slate-400">
                       Total amount :
                       <br />
-                      <span className="text-black"> $ {price} </span>
+                      <span className="text-black"> $lkv </span>
                     </h2>
                   </div>
-                  {/* <h2 className="text-slate-400">
-                    Email :
-                    <span className="text-black"> ajitKushwaha@gmail.com </span>
-                  </h2> */}
-                </div>
+                 </div>
               </div>
             </div>
 
@@ -144,9 +132,9 @@ const ViewOrder = () => {
                 <div className="flex w-[100%] text-start px-[18px]">
                   <div className="w-[50%]">
                     <h2 className="text-slate-400">
-                       Quantity : <br />
+                      Quantity : <br />
                       <span className="text-black text-medium text-[17px] px-[3px]">
-                         {quantity}
+                        {/* {quantity} */}
                       </span>
                     </h2>
                   </div>
@@ -155,7 +143,7 @@ const ViewOrder = () => {
                       New Customer :
                       <br />
                       <span className="text-black text-[17px] px-[3px]">
-                         True
+                        True
                       </span>
                     </h2>
                   </div>
@@ -177,7 +165,7 @@ const ViewOrder = () => {
                   <div className="w-[50%]">
                     <h2 className="text-slate-400">
                       Payment Method : <br />
-                      <span className="text-black"> {paymentType} </span>
+                      <span className="text-black"> kjgjkh </span>
                     </h2>
                   </div>
                   <div className="w-[50%]">
@@ -194,11 +182,11 @@ const ViewOrder = () => {
         </div>
 
         <div className="bg-white p-12">
-          <SingleOrderTable />
-        </div>
-      </div>
+          <ViewCustomerTable />
+        </div> 
+       </div>  
     </div>
   );
 };
 
-export default ViewOrder;
+export default ViewCustomer;

@@ -27,6 +27,7 @@ import ViewOrder from './Pages/ViewOrder'
 import Customer from './Pages/Customers/Customer'
 import NewCustomer from './Pages/Customers/AddCustomer'
 import UpdateCustomer from './Pages/Customers/UpdateCustomer'
+import ViewCustomer from './Pages/Customers/ViewCustomer'
 
 function App() {
 
@@ -60,6 +61,7 @@ function App() {
             <Route path='/inventory/view/:id' element={<ViewProduct />} />
             <Route path='/order-view/:id' element={<ViewOrder />} />
             <Route path='/customer/edit/:id' element={<UpdateCustomer />} />
+            <Route path="/customer/view/:id" element={<ViewCustomer /> } />
             {/* <Route path="/add-customer" element={<NewCustomer />} /> */}
           </Routes>
 

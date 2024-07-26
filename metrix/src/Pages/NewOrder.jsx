@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import { CiSearch } from "react-icons/ci";
 import toast , {Toaster} from 'react-hot-toast';
 import { createOrderValidate } from "../helper/validate";
+import { addCustomers } from "../helper/helper";
 
 const NewOrder = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -124,27 +125,40 @@ const formik = useFormik({
     phone: "8178739633",
     price: 2999,
     paymentType: "Cash",
-    status: "pending",
+    orderStatus: "pending",
     orderNote: "",
     products: [{ product: "product", quantities: "quantities" }],
     quantity: 0,
+    customerImage: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/1.png",
+    imageColor: "tertiary",
   },
   validate: createOrderValidate,
   validateOnBlur: false,
   validateOnChange: false,
   onSubmit: async (values) => {
-
     values.products = AddedProduct;
+
+    console.log("Form Values", values);
+
     try {
       if (AddedProduct.length === 0) {
         toast.error("Add Products to Cart... !");
-      }else
-      {
+      } else {
         let orderPromise = handleOrder(values);
         toast.promise(orderPromise, {
           loading: "Creating...",
           success: <b>Order Created Successfully... !</b>,
           error: <b>Couldn't Create Order... !</b>,
+        });
+
+        // values.orders = values;
+
+        console.log("Added Proddfgldkjuct", values);
+        let customerPromise = addCustomers(values);
+        toast.promise(customerPromise, {
+          loading: "Creating...",
+          success: <b>Customer Added Successfully... !</b>,
+          error: <b>Couldn't Add Customer... !</b>,
         });
 
         formik.resetForm();
@@ -344,7 +358,7 @@ const formik = useFormik({
                           Order Status
                         </label>
                         <select
-                          {...formik.getFieldProps("status")}
+                          {...formik.getFieldProps("orderStatus")}
                           id="Order Status"
                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-3 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                         >

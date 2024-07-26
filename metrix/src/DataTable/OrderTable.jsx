@@ -150,7 +150,7 @@ export default function OrderTable() {
                 total: order.price,
                 phone: order.phone,
                 totalProducts : totalProducts,
-                status: order.status,
+                status: order.orderStatus,
                 newCustomer: order.newCustomer,
                 customerName: order.customerName,
                 orderNote: order.orderNote,

@@ -9,7 +9,7 @@ customers.post("/", Auth, async (req, res) => {
   try {
     const { userId } = req.user;
     console.log(userId);
-    const { customerName, phone, imageColor , OrderPrice, status , customerImage, order } = req.body;
+    const { customerName, phone, imageColor , OrderPrice, status , customerImage, products } = req.body;
     const newCustomer = new Customer({
       userId: userId,
       phone,
@@ -18,7 +18,7 @@ customers.post("/", Auth, async (req, res) => {
       customerImage,
       customerName,
       status,
-      order,
+      products,
     });
     const savedCustomer = await newCustomer.save();
     res.status(200).json(savedCustomer);

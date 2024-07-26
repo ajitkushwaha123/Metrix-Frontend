@@ -3,7 +3,8 @@ import mongoose, { Schema } from "mongoose";
 const OrderSchema = new mongoose.Schema(
   {
     userId: { type: String },
-    products: {
+    customerId : { type: String },
+    products : {
       type: Array,
     },
     customerName : {
@@ -21,7 +22,7 @@ const OrderSchema = new mongoose.Schema(
     },
     paymentType: { type: String },
     price : { type: Number },
-    status: {
+    orderStatus: {
       type: String,
     },
     orderNote: { type: String },

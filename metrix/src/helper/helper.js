@@ -259,6 +259,34 @@ export async function handleCustomers(values , id)  {
 };
 
 
+export async function addCustomers(values){
+  const token = localStorage.getItem("token");
+  console.log(token);
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  };
+
+  try {
+    const { data } = await axios.post(
+      "http://localhost:8000/api/customer",
+      values,
+      config
+    );
+
+    console.log("Customer Added", data);
+    return Promise.resolve({ customer: data });
+  } catch (err) {
+    console.error("Error adding customer :", err.message);
+    return Promise.reject({ err: err.message });
+  }
+};
+
+
+
 export async function updateUser(response) {
   try {
     const token = localStorage.getItem("token");

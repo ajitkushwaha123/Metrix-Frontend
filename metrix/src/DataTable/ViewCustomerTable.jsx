@@ -30,7 +30,7 @@ import { ChevronDownIcon } from "./ChevronDownIcon";
 import { capitalize } from "./utils";
 import { NavLink } from "react-router-dom";
 import NewOrder from "../Pages/NewOrder";
-import { getSingleOrders } from "../helper/helper";
+import { getSingleCustomer, getSingleOrders } from "../helper/helper";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import config from "../../../Backend/config";
@@ -73,7 +73,7 @@ const INITIAL_VISIBLE_COLUMNS = [
 
 const API = "http://localhost:8000/api/orders/find";
 
-export default function SingleOrderTable() {
+export default function ViewCustomerTable() {
   const { id } = useParams();
   console.log("iddddd", id);
 
@@ -107,42 +107,41 @@ export default function SingleOrderTable() {
     }
   };
 
- const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([]);
 
- useEffect(() => {
-   const fetchOrders = async () => {
-     try {
-       const orders = await getSingleOrders(`${API}/${id}`);
-       console.log("Orderrrrr:", orders);
-       const order = orders.products;
-       console.log("Ordersss:", order);
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const {data} = await getSingleCustomer(id);
+        console.log("Orderrrrr:", data);
+        const order = data.products;
+        console.log("Ordersss:", order);
 
-       const singleproduct = order.map((product) => product.product);
-       console.log("singleproduct", singleproduct);
+        const singleproduct = order.map((product) => product.product);
+        console.log("singleproduct", singleproduct);
 
-       const updatedUsers = singleproduct.map((product) => ({
-         id: product._id,
-         name: product.productName,
-         productImages: product.photos,
-         category: product.category,
-         status: product.orderStatus,
-         avatar: product.photos[0],
-         price: product.price,
-         stock: product.stock,
-         discountPrice: product.discountPrice,
-       }));
+        const updatedUsers = singleproduct.map((product) => ({
+          id: product._id,
+          name: product.productName,
+          productImages: product.photos,
+          category: product.category,
+          status: product.orderStatus,
+          avatar: product.photos[0],
+          price: product.price,
+          stock: product.stock,
+          discountPrice: product.discountPrice,
+        }));
 
-       setUsers(updatedUsers);
-     } catch (error) {
-       console.error("Error fetching orders:", error);
-     }
-   };
+        setUsers(updatedUsers);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
 
-   fetchOrders();
- }, [id]);
+    fetchOrders();
+  }, [id]);
 
- console.log("Users:", users);
-
+  console.log("Users:", users);
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));

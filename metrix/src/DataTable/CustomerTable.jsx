@@ -74,7 +74,7 @@ export default function InvTable() {
   const handleDelete = (id) => {
     // const {id} = useParams();
     console.log("id", id);
-    if (window.confirm("Are you sure you want to delete this product?")) {
+    if (window.confirm("Are you sure you want to delete this customer ?")) {
       const token = localStorage.getItem("token");
       const config = {
         headers: {
@@ -118,10 +118,10 @@ export default function InvTable() {
           phone: product.phone,
           status: product.status,
           imageColor : product.imageColor,
-          orderLength : product.order.length,
+          orderLength : product.products.length | 0, 
           customerImage: product.customerImage,
           price: product.OrderPrice,
-          order: product.order,
+          order: product.products,
           customerSince: formatCustomerSince(product.createdAt),
         }));
 
@@ -218,8 +218,11 @@ export default function InvTable() {
           <div className="p-1">
             <Avatar
               isBordered
-              color={user.imageColor}
-              src={user.customerImage}
+              color={user.imageColor || "success"}
+              src={
+                user.customerImage ||
+                "https://d2u8k2ocievbld.cloudfront.net/memojis/female/1.png"
+              }
             />
           </div>
         );
@@ -263,7 +266,7 @@ export default function InvTable() {
               </DropdownTrigger>
               <DropdownMenu>
                 <DropdownItem>
-                  <NavLink to={`/inventory/view/${user.id}`}>{user.id}</NavLink>
+                  <NavLink to={`/customer/view/${user.id}`}>View</NavLink>
                 </DropdownItem>
                 <DropdownItem>
                     <NavLink to={`/customer/edit/${user.id}`}>Edit</NavLink>

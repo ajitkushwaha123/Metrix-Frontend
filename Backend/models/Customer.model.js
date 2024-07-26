@@ -24,9 +24,9 @@ const CustomerSchema = new mongoose.Schema(
     },
     status : {
         type : String,
-        default : "Active",
+        default : "active",
     },
-    order : {type : Array},
+    products : {type : Array},
   },
   { timestamps: true }
 );
