@@ -1,4 +1,4 @@
-import React from 'react'
+import React , { useState } from 'react'
 import Navbar from '../components/Navbar'
 import BreadCrum from '../components/BreadCrum'
 import Stats from '../components/Stats'
@@ -15,47 +15,56 @@ import { BsCart3 } from "react-icons/bs";
 import RecentOrders from '../components/RecentOrders';
 
 const Dashboard = () => {
-  
   return (
     <div className="w-full">
       <Navbar title="Dashboard" />
       <BreadCrum />
 
       <div className="px-[40px] flex">
-        <div className="w-[30%] pr-[15px]">
+        <div className="w-[33.33%] pr-[15px]">
           <Stats
+            sale={true}
             icon={<AiOutlinePieChart />}
             title1={"Sales"}
-            title2={"Volume"}
+            title2={"Orders"}
             stat1={"$0.00"}
             stat1per={"0.00%"}
-            stat2={"$0.00"}
-            stat2per={"0.00%"}
+            stat2={"0"}
+            // stat2per={"0.00%"}
+            title3={"Pending"}
+            stat3={"4"}
+            // stat3per={"0.00%"}
+            present={"1"}
           />
         </div>
-        <div className="w-[30%] pl-[15px]">
+        <div className="w-[33.33%] pl-[15px]">
           <Stats
             icon={<LuUsers2 />}
             title1={"Customers"}
             title2={"Active"}
-            stat1={"$0.00"}
-            stat1per={"0.00%"}
-            stat2={"$0.00"}
-            stat2per={"0.00%"}
+            title3={"In-Active"}
+            stat1={"7"}
+            // stat1per={"0.00%"}
+            stat2={"7"}
+            // stat2per={"0.00%"}
+            stat3={"5"}
+            // stat3per={"0.00%"}
+            present={"1"}
           />
         </div>
-        <div className="w-[40%] pl-[30px]">
+        <div className="w-[33.33%] pl-[30px]">
           <Stats
+            orderStatus={true}
             icon={<BsHandbag />}
-            title1={"All Orders"}
+            title1={"In Progress"}
             title2={"Pending"}
             title3={"Completed"}
             stat1={"$0.00"}
-            stat1per={"0.00%"}
+            // stat1per={"0.00%"}
             stat2={"$0.00"}
-            stat2per={"0.00%"}
+            // stat2per={"0.00%"}
             stat3={"$0.00"}
-            stat3per={"0.00%"}
+            // stat3per={"0.00%"}
             present={"1"}
           />
         </div>
@@ -65,7 +74,7 @@ const Dashboard = () => {
         <div className="w-[62%]">
           <div className="px-[40px] flex">
             <div className="w-[50%] bg-white pb-[20px] h-[327px] rounded-xl ">
-              <Graph title={<ChartPie />} height='327px' present2={"1"} />
+              <Graph title={<ChartPie />} height="327px" present2={"1"} />
             </div>
 
             <div className="w-[100%] ml-[28px]">

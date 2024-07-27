@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken';
 import ENV from '../config.js';
 import otpGenerator from 'otp-generator';
 import { Product } from "../models/Product.model.js";
+import { Order } from "../models/Order.models.js";
+import Auth from "../middleware/auth.js";
 // Middleware for verifying user
 export async function verifyUser(req, res, next) {
   try {
@@ -199,4 +201,11 @@ export async function resetPassword(req, res) {
   } catch (error) {
       return res.status(500).send({ error: "Unable to hash password" });
   }
+}
+
+
+export async function weeklySales(req , res){
+   const userId = req.user.userId;
+
+   console.log("userId" , userId);
 }

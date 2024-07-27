@@ -439,3 +439,25 @@ export async function resetPassword({ username, password }) {
   }
 }
 
+
+export async function getSales(OrderAPI){
+  try {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const res = await axios.get(`${OrderAPI}/sales`, config);
+
+    const sales = res;
+    console.log("sales:", sales);
+    return sales;
+  }
+  catch (error) {
+    console.error("Error fetching daily sales:", error);
+    return { error: "Couldn't fetch sales" };
+  }
+};
