@@ -15,6 +15,7 @@ import { BsCart3 } from "react-icons/bs";
 import RecentOrders from '../components/RecentOrders';
 
 const Dashboard = () => {
+  
   return (
     <div className="w-full">
       <Navbar title="Dashboard" />
