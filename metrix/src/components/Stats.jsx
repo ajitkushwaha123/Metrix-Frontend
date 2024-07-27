@@ -26,7 +26,9 @@ const Stats = ({
           {icon}
         </p>
         <p className={`flex text-${txtColor} text-txtPrimary justify-center items-center`}>
-          This Week <MdOutlineKeyboardArrowDown className='text-[22px]' />
+          {/* This Week <MdOutlineKeyboardArrowDown className='text-[22px]' /> */}
+
+          
         </p>
       </div>
 

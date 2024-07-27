@@ -15,9 +15,9 @@ export default class ChartPie extends PureComponent {
         <Pie
           data={data}
           cx={200}
-          cy={125}
-          innerRadius={80}
-          outerRadius={120}
+          cy={110}
+          innerRadius={60}
+          outerRadius={100}
           fill="#8884d8"
           paddingAngle={5}
           dataKey="value"

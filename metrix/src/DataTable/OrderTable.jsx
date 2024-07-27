@@ -119,10 +119,10 @@ export default function OrderTable() {
   };
 
   const fetchOrders = async () => {
-    const orders = await getOrders(API);
+    const {data} = await getOrders(API);
 
-    console.log("Orders:", orders);
-    const newUsers = orders.map((order) => {
+    console.log("Orders:", data);
+    const newUsers = data.map((order) => {
       console.log("Order:", order.products);
       const singleproduct = order.products.map((product) => {
         return product.product;

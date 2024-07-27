@@ -53,7 +53,8 @@ export async function getOrders(url) {
     console.log("URL:", url);
     const { data } = await axios.get(`${url}/${userId}`, config);
     console.log("Orders:", data);
-    return  data  ;
+    return  {data};
+
   } catch (error) {
     return { error: "Couldn't fetch Orders" };
   }
