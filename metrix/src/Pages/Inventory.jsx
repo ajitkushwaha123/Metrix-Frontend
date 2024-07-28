@@ -1,4 +1,4 @@
-import React from 'react'
+import React , {useState , useEffect} from 'react'
 import Navbar from '../components/Navbar'
 import BreadCrum from '../components/BreadCrum'
 import { LuUsers2 } from "react-icons/lu";
@@ -8,8 +8,33 @@ import { BsFolder2Open } from 'react-icons/bs';
 import { TiPlus } from "react-icons/ti";
 import InvTable from '../DataTable/Table';
 import { NavLink } from 'react-router-dom';
+import { getProductDetail , getCustomerDetail } from '../helper/helper';
+
 
 const Inventory = () => {
+
+  const ProductAPI = "http://localhost:8000/api/products";
+
+  const [totalProduct, setTotalProduct] = useState(0);
+  const [totalPublished, setTotalPublished] = useState(0);
+  const [totalDraft , setTotalDraft] = useState(0);
+
+  const fetchProductsDetails = async () => {
+    try {
+      const res = await getProductDetail(ProductAPI);
+      setTotalProduct(res.data.productDetail.total);
+      setTotalPublished(res.data.productDetail.totalPublished);
+      setTotalDraft(res.data.productDetail.totalDraft);
+      console.log("product Detail");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProductsDetails();
+  }, [ProductAPI]);
+
   return (
     <div>
       <Navbar title={"Inventory"}/>
@@ -28,11 +53,15 @@ const Inventory = () => {
              height='170px'
              icon={<BsFolder2Open />}
              title1={"All Products"}
-             title2={"Active"}
-             stat1={"45"}
-             stat2={"32"}
+             title2={"Published"}
+             title3={"Draft"}
+             stat1={totalProduct}
+             stat2={totalPublished}
+             stat3={totalDraft}
              padY={"10"}
              txtColor={"white"}
+             present={"1"}
+             dropdown={false}
            />
           </div>
         <div className='w-[55%] pl-[30px]'>

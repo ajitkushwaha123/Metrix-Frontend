@@ -21,6 +21,8 @@ const UpdateComponent = () => {
   const [cloudinaryPhotos, setCloudinaryPhotos] = useState([]);
   const [uploadedPhotos, setUploadedPhotos] = useState([]);
   const [imageUrl, setImageUrl] = useState(); // Replace with your initial image URL
+  const [draft, setDraft] = useState(false);
+
 
   useEffect(() => {
     getSingleProduct(`${API}/${id}`);
@@ -35,10 +37,6 @@ const UpdateComponent = () => {
       formik.setFieldValue("price", singleProduct.price);
       formik.setFieldValue("discountPrice", singleProduct.discountPrice);
       formik.setFieldValue("stock", singleProduct.stock);
-      formik.setFieldValue("orderType", singleProduct.orderType);
-      formik.setFieldValue("shortDescription", singleProduct.shortDescription);
-      formik.setFieldValue("longDescription", singleProduct.longDescription);
-      formik.setFieldValue("variant", singleProduct.variant);
     }
   }, [singleProduct]);
 
@@ -85,10 +83,6 @@ const UpdateComponent = () => {
       price: singleProduct.price,
       discountPrice: singleProduct.discountPrice,
       stock: singleProduct.stock,
-      orderType: singleProduct.orderType,
-      shortDescription: singleProduct.shortDescription,
-      longDescription: singleProduct.longDescription,
-      variant: singleProduct.variant,
       photos: [...cloudinaryPhotos, ...uploadedPhotos],
     },
     validateOnBlur: false,
@@ -111,28 +105,27 @@ const UpdateComponent = () => {
     },
   });
 
-  return (
-    <div className="w-[100%]">
-      <Toaster position="top-center" reverseOrder={false}></Toaster>
-      <div className="flex px-[40px] py-[20px] bg-white justify-between items-center">
-        <p className="text-[22px] font-medium">Update New Product</p>
+  
+  const handleDraft = () => {
+    setDraft(true);
+    formik.handleSubmit();
+  };
 
-        <div className="flex justify-center items-center">
-          <button className="bg-black mx-[15px] rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2">
-            <MdOutlineArrowDropDown className="mr-[15px]" />
-            Save as Draft
-          </button>
-          <button
-            onClick={formik.handleSubmit}
-            className="bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
-          >
-            Save & Publish
-          </button>
-        </div>
+  const handlePublished = () => {
+    setDraft(false);
+    formik.handleSubmit();
+  };
+  
+
+  return (
+    <div className="">
+      <Toaster position="top-center" reverseOrder={false}></Toaster>
+      <div className="flex px-[40px] py-[20px] items-center">
+        <p className="text-[22px] font-medium">Update New Product</p>
       </div>
-      <form>
-        <div className="px-[40px] w-full flex bg-white">
-          <div className="w-[35%] font-poppins">
+      <form className="flex justify-center rounded-xl w-[full] items-center">
+        <div className="px-[40px] mb-[30px] bg-white py-[20px] justify-center items-center flex ">
+          <div className="font-poppins bg-white">
             <div className="w-[370px] mb-[20px]">
               <Input
                 {...formik.getFieldProps("productName")}
@@ -143,7 +136,7 @@ const UpdateComponent = () => {
                 size="lg"
                 startContent={
                   <div className="pointer-events-none flex items-center">
-                    <span className="text-default-400 w-[full] text-medium">
+                    <span className="text-default-400 text-medium">
                       <LuShirt />
                     </span>
                   </div>
@@ -161,7 +154,7 @@ const UpdateComponent = () => {
                 size="lg"
                 startContent={
                   <div className="pointer-events-none flex items-center">
-                    <span className="text-default-400 w-[full] text-medium">
+                    <span className="text-default-400 text-medium">
                       <LuShirt />
                     </span>
                   </div>
@@ -179,9 +172,7 @@ const UpdateComponent = () => {
                 size="lg"
                 startContent={
                   <div className="pointer-events-none flex items-center">
-                    <span className="text-default-400 w-[full] text-medium">
-                      $
-                    </span>
+                    <span className="text-default-400 text-medium">$</span>
                   </div>
                 }
               />
@@ -197,9 +188,7 @@ const UpdateComponent = () => {
                 size="lg"
                 startContent={
                   <div className="pointer-events-none flex items-center">
-                    <span className="text-default-400 w-[full] text-medium">
-                      $
-                    </span>
+                    <span className="text-default-400 text-medium">$</span>
                   </div>
                 }
               />
@@ -215,7 +204,7 @@ const UpdateComponent = () => {
                 size="lg"
                 startContent={
                   <div className="pointer-events-none flex items-center">
-                    <span className="text-default-400 w-[full] text-medium">
+                    <span className="text-default-400 text-medium">
                       <LuShirt />
                     </span>
                   </div>
@@ -223,76 +212,24 @@ const UpdateComponent = () => {
               />
             </div>
 
-            <div className="w-[370px] mb-[20px]">
-              <Input
-                {...formik.getFieldProps("orderType")}
-                type="text"
-                placeholder="Order Type"
-                labelPlacement="outside"
-                radius="sm"
-                size="lg"
-                startContent={
-                  <div className="pointer-events-none flex items-center">
-                    <span className="text-default-400 w-[full] text-medium">
-                      <LuShirt />
-                    </span>
-                  </div>
-                }
-              />
-            </div>
-          </div>
-          <div className="w-[35%] mx-[30px]">
-            <div className="mb-[20px]">
-              <Textarea
-                variant="faded"
-                label="Short Description"
-                placeholder="Enter a Short description ..."
-                className="bg-txtArea bg-[#EFF1F9] outline-none"
-                {...formik.getFieldProps("shortDescription")}
-              />
-            </div>
-
-            <div className="mb-[20px]">
-              <Textarea
-                variant="faded"
-                label="Description"
-                placeholder="Enter a description ..."
-                // className="bg-txtArea bg-[#EFF1F9] outline-none".
-                className="bg-txtArea"
-                {...formik.getFieldProps("longDescription")}
-              />
-            </div>
-
-            <div className="mb-[20px]">
-              <Textarea
-                variant="faded"
-                label="Description"
-                placeholder="Enter a description ..."
-                className="bg-txtArea bg-[#EFF1F9] outline-none"
-                {...formik.getFieldProps("longDescription")}
-              />
-            </div>
-
-            <div className="mb-[20px]">
-              <Input
-                {...formik.getFieldProps("variant")}
-                type="text"
-                placeholder="Variant"
-                labelPlacement="outside"
-                radius="sm"
-                size="lg"
-                startContent={
-                  <div className="pointer-events-none flex items-center">
-                    <span className="text-default-400 w-[full] text-medium">
-                      <LuShirt />
-                    </span>
-                  </div>
-                }
-              />
+            <div className="flex justify-center items-center">
+              <button
+                onClick={handleDraft}
+                className="bg-black mx-[15px] rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
+              >
+                <MdOutlineArrowDropDown className="mr-[15px]" />
+                Save as Draft
+              </button>
+              <button
+                onClick={handlePublished}
+                className="bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
+              >
+                Save & Publish
+              </button>
             </div>
           </div>
 
-          <div className="w-[33%] flex justify-center items-center flex-col bg-[white]">
+          <div className="flex justify-center items-center flex-col">
             <div>
               <div>
                 <img

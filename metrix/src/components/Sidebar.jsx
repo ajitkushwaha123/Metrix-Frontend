@@ -40,11 +40,6 @@ const Sidebar = () => {
       link: '/customer',
     },
     {
-      title: 'Conversations',
-      icon: <IoChatbubbleEllipsesOutline />,
-      link: '/conversations',
-    },
-    {
       title: 'Settings',
       icon: <IoSettingsOutline />,
       link: '/profile',

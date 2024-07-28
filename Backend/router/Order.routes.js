@@ -1,6 +1,7 @@
 import { Order } from "../models/Order.models.js";
 import Auth from "../middleware/auth.js";
 import express from "express";
+import moment from "moment";
 
 const orders = express();
 
@@ -97,6 +98,26 @@ orders.get("/sales", Auth, async (req, res) => {
               $cond: [{ $eq: ["$orderStatus", "progress"] }, 1, 0],
             },
           },
+          totalCancelled: {
+            $sum: {
+              $cond: [{ $eq: ["$orderStatus", "cancelled"] }, 1, 0],
+            },
+          },
+          orderTypeDineIn: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "dineIn"] }, 1, 0],
+            },
+          },
+          orderTypeTakeAway: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "takeAway"] }, 1, 0],
+            },
+          },
+          orderTypeHomeDelivery: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "homeDelivery"] }, 1, 0],
+            },
+          },
         },
       },
     ]);
@@ -128,6 +149,26 @@ orders.get("/sales", Auth, async (req, res) => {
               $cond: [{ $eq: ["$orderStatus", "progress"] }, 1, 0],
             },
           },
+          totalCancelled: {
+            $sum: {
+              $cond: [{ $eq: ["$orderStatus", "cancelled"] }, 1, 0],
+            },
+          },
+          orderTypeDineIn: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "dineIn"] }, 1, 0],
+            },
+          },
+          orderTypeTakeAway: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "takeAway"] }, 1, 0],
+            },
+          },
+          orderTypeHomeDelivery: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "homeDelivery"] }, 1, 0],
+            },
+          },
         },
       },
     ]);
@@ -157,6 +198,26 @@ orders.get("/sales", Auth, async (req, res) => {
           totalProgress: {
             $sum: {
               $cond: [{ $eq: ["$orderStatus", "progress"] }, 1, 0],
+            },
+          },
+          totalCancelled: {
+            $sum: {
+              $cond: [{ $eq: ["$orderStatus", "cancelled"] }, 1, 0],
+            },
+          },
+          orderTypeDineIn: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "dineIn"] }, 1, 0],
+            },
+          },
+          orderTypeTakeAway: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "takeAway"] }, 1, 0],
+            },
+          },
+          orderTypeHomeDelivery: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "homeDelivery"] }, 1, 0],
             },
           },
         },
@@ -220,6 +281,26 @@ orders.get("/sales", Auth, async (req, res) => {
               $cond: [{ $eq: ["$orderStatus", "progress"] }, 1, 0],
             },
           },
+          totalCancelled: {
+            $sum: {
+              $cond: [{ $eq: ["$orderStatus", "cancelled"] }, 1, 0],
+            },
+          },
+          orderTypeDineIn: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "dineIn"] }, 1, 0],
+            },
+          },
+          orderTypeTakeAway: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "takeAway"] }, 1, 0],
+            },
+          },
+          orderTypeHomeDelivery: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "homeDelivery"] }, 1, 0],
+            },
+          },
         },
       },
     ]);
@@ -249,6 +330,26 @@ orders.get("/sales", Auth, async (req, res) => {
           totalProgress: {
             $sum: {
               $cond: [{ $eq: ["$orderStatus", "progress"] }, 1, 0],
+            },
+          },
+          totalCancelled: {
+            $sum: {
+              $cond: [{ $eq: ["$orderStatus", "cancelled"] }, 1, 0],
+            },
+          },
+          orderTypeDineIn: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "dineIn"] }, 1, 0],
+            },
+          },
+          orderTypeTakeAway: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "takeAway"] }, 1, 0],
+            },
+          },
+          orderTypeHomeDelivery: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "homeDelivery"] }, 1, 0],
             },
           },
         },
@@ -296,6 +397,26 @@ orders.get("/sales", Auth, async (req, res) => {
               $cond: [{ $eq: ["$orderStatus", "progress"] }, 1, 0],
             },
           },
+          totalCancelled: {
+            $sum: {
+              $cond: [{ $eq: ["$orderStatus", "cancelled"] }, 1, 0],
+            },
+          },
+          orderTypeDineIn: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "dineIn"] }, 1, 0],
+            },
+          },
+          orderTypeTakeAway: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "takeAway"] }, 1, 0],
+            },
+          },
+          orderTypeHomeDelivery: {
+            $sum: {
+              $cond: [{ $eq: ["$orderType", "homeDelivery"] }, 1, 0],
+            },
+          },
         },
       },
     ]);
@@ -314,6 +435,10 @@ orders.get("/sales", Auth, async (req, res) => {
             totalCompleted: 0,
             totalPending: 0,
             totalProgress: 0,
+            totalCancelled: 0,
+            orderTypeDineIn: 0,
+            orderTypeTakeAway: 0,
+            orderTypeHomeDelivery: 0,
           };
     const yesterdaySalesData =
       yesterdaySales.length > 0
@@ -330,6 +455,10 @@ orders.get("/sales", Auth, async (req, res) => {
             totalCompleted: 0,
             totalPending: 0,
             totalProgress: 0,
+            totalCancelled: 0,
+            orderTypeDineIn: 0,
+            orderTypeTakeAway: 0,
+            orderTypeHomeDelivery: 0,
           };
     const lastWeekSalesData =
       lastWeekSales.length > 0
@@ -346,6 +475,10 @@ orders.get("/sales", Auth, async (req, res) => {
             totalCompleted: 0,
             totalPending: 0,
             totalProgress: 0,
+            totalCancelled: 0,
+            orderTypeDineIn: 0,
+            orderTypeTakeAway: 0,
+            orderTypeHomeDelivery: 0,
           };
     const lastMonthSalesData =
       lastMonthSales.length > 0
@@ -362,6 +495,11 @@ orders.get("/sales", Auth, async (req, res) => {
             totalCompleted: 0,
             totalPending: 0,
             totalProgress: 0,
+            totalPending: 0,
+            totalCancelled: 0,
+            orderTypeDineIn: 0,
+            orderTypeTakeAway: 0,
+            orderTypeHomeDelivery: 0,
           };
     const lastYearSalesData =
       lastYearSales.length > 0
@@ -378,6 +516,10 @@ orders.get("/sales", Auth, async (req, res) => {
             totalCompleted: 0,
             totalPending: 0,
             totalProgress: 0,
+            totalCancelled: 0,
+            orderTypeDineIn: 0,
+            orderTypeTakeAway: 0,
+            orderTypeHomeDelivery: 0,
           };
 
     console.log("Daily sales:", dailySalesData);
@@ -464,6 +606,43 @@ orders.get("/sales", Auth, async (req, res) => {
   }
 });
 
+orders.get("/sales-graph", Auth, async (req, res) => {
+  const userId = req.user.userId;
+  
+  try {
+    const today = new Date();
+    const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+    const startOfSevenDaysAgo = new Date(startOfToday);
+    startOfSevenDaysAgo.setDate(startOfSevenDaysAgo.getDate() - 6);
+
+    const salesData = await Order.aggregate([
+      {
+        $match: {
+          userId,
+          createdAt: { $gte: startOfSevenDaysAgo, $lt: new Date() },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+          },
+          totalSales: { $sum: "$price" },
+          totalOrders: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+
+    res.status(200).json(salesData);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 // Create a new Order
 orders.post("/", Auth, async (req, res) => {
   try {
@@ -479,6 +658,7 @@ orders.post("/", Auth, async (req, res) => {
       phone,
       orderStatus,
       orderNote,
+      orderType,
     } = req.body;
     const newOrder = new Order({
       userId,
@@ -492,6 +672,7 @@ orders.post("/", Auth, async (req, res) => {
       price,
       orderStatus,
       orderNote,
+      orderType,
     });
     const savedOrder = await newOrder.save();
     res.status(200).json(savedOrder);
@@ -541,16 +722,33 @@ orders.get("/find/:orderId", Auth, async (req, res) => {
 });
 
 // Get all orders
-orders.get("/:userId", Auth, async (req, res) => {
+orders.get("/", Auth, async (req, res) => {
+  const { userId } = req.user;
+
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
   try {
-    const orders = await Order.find({
-      userId: req.params.userId,
-    });
-    res.status(200).json(orders);
+    const orders = await Order.aggregate([
+      {
+        $match: {
+          userId,
+        },
+      },
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+    ]);
+    const totalOrders = await Order.countDocuments({ userId });
+    res.status(200).json({ orders, totalOrders });
   } catch (err) {
     res.status(500).json(err);
   }
 });
+
+
+
 
 // Get all orders based on Customer Id;
 orders.get("/customer/:customerId", Auth, async (req, res) => {

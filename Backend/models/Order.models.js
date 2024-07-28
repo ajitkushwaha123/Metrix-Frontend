@@ -25,6 +25,9 @@ const OrderSchema = new mongoose.Schema(
     orderStatus: {
       type: String,
     },
+    orderType: {
+      type: String,
+    },
     orderNote: { type: String },
   },
   { timestamps: true }

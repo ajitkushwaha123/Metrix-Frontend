@@ -6,6 +6,49 @@ import { upload } from "../middleware/multer.js";
 
 const products = express();
 
+products.get("/size", Auth, async (req, res) => {
+  const userId = req.user.userId;
+  try {
+    const productData = await Product.aggregate([
+      {
+        $match: {},
+      },
+      {
+        $group: {
+          _id: "$size",
+          total: { $sum: 1 },
+          _id: null,
+          totalPublished: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "published"] }, 1, 0],
+            },
+          },
+          totalDraft: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "draft"] }, 1, 0],
+            },
+          },
+        },
+      },
+    ]);
+
+    console.log(productData);
+    const productResData =
+      productData.length > 0
+        ? productData[0]
+        : {
+            total: 0,
+            totalPublished: 0,
+            totalDraft: 0,
+          };
+
+    return res.status(200).json({productDetail : productResData});
+  } catch (err) {
+    console.error(err); // Log the error for debugging
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 // Create a new product
 products.post("/", upload.array("photos", 4), Auth, async (req, res) => {
   try {
@@ -22,8 +65,8 @@ products.post("/", upload.array("photos", 4), Auth, async (req, res) => {
       status,
       // photos,
     } = req.body;
-    
-    console.log( "red"  , req.body);
+
+    console.log("red", req.body);
 
     console.log("req.files", req.files);
 
@@ -40,7 +83,7 @@ products.post("/", upload.array("photos", 4), Auth, async (req, res) => {
 
       const newProduct = new Product({
         productName,
-        discountPrice, 
+        discountPrice,
         orderType,
         longDescription,
         variant,
@@ -108,8 +151,6 @@ products.put("/:id", upload.array("photos"), Auth, async (req, res, next) => {
   }
 });
 
-
-
 //Delete
 products.delete("/:id", Auth, async (req, res) => {
   // const newProduct = new Product(req.body);
@@ -132,20 +173,22 @@ products.get("/:id", Auth, async (req, res) => {
   }
 });
 
-products.get('/', async (req, res) => {
-    try {
-        const searchQuery = req.query.search;
-        console.log(searchQuery);
-        let products;
-        if (searchQuery) {
-            products = await Product.find({ productName : { $regex: searchQuery, $options: 'i' } });
-        } else {
-            products = await Product.find();
-        }
-        res.status(200).json(products);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+products.get("/", async (req, res) => {
+  try {
+    const searchQuery = req.query.search;
+    console.log(searchQuery);
+    let products;
+    if (searchQuery) {
+      products = await Product.find({
+        productName: { $regex: searchQuery, $options: "i" },
+      });
+    } else {
+      products = await Product.find();
     }
+    res.status(200).json(products);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 products.get("/", Auth, async (req, res) => {

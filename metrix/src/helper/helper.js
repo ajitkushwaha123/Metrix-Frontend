@@ -51,7 +51,7 @@ export async function getOrders(url) {
 
   try {
     console.log("URL:", url);
-    const { data } = await axios.get(`${url}/${userId}`, config);
+    const { data } = await axios.get(`${url}`, config);
     console.log("Orders:", data);
     return  {data};
 
@@ -461,3 +461,111 @@ export async function getSales(OrderAPI){
     return { error: "Couldn't fetch sales" };
   }
 };
+
+export async function getSalesForGraph(OrderAPI){
+  try {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const res = await axios.get(`${OrderAPI}/sales-graph`, config);
+
+    const sales = res;
+    console.log("sales-graph:", sales);
+    return sales;
+  }
+  catch (error) {
+    console.error("Error fetching daily sales:", error);
+    return { error: "Couldn't fetch sales" };
+  }
+};
+
+export async function getCustomerForGraph(OrderAPI){
+  try {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const res = await axios.get(`${OrderAPI}/customer-graph`, config);
+
+    const customer = res;
+    console.log("customer-graph:", customer);
+    return customer;
+  }
+  catch (error) {
+    console.error("Error fetching daily customer:", error);
+    return { error: "Couldn't fetch customer" };
+  }
+};
+
+export async function getProductDetail(ProductAPI){
+  try {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const res = await axios.get(`${ProductAPI}/size`, config);
+
+    const product = res;
+    console.log("product-detail:", product);
+    return product;
+  }
+  catch (error) {
+    console.error("Error fetching product detail:", error);
+    return { error: "Couldn't fetch product detail" };
+  }
+}
+
+export async function getProducts(ProductAPI) {
+  try {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const {data} = await axios.get(`${ProductAPI}`, config);
+
+    const product = {data};
+    console.log("product-detail:", product);
+    return product;
+  } catch (error) {
+    console.error("Error fetching product detail:", error);
+    return { error: "Couldn't fetch product detail" };
+  }
+}
+
+export async function getCustomerDetail(CustomerAPI) {
+  try {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const res = await axios.get(`${CustomerAPI}/customer-detail`, config);
+
+    const customer = res;
+    console.log("customer-detail:", customer);
+    return customer;
+  } catch (error) {
+    console.error("Error fetching customer detail:", error);
+    return { error: "Couldn't fetch customer detail" };
+  }
+}

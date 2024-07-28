@@ -1,8 +1,36 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import DayChart from './DayCharts';
+import ChartPie from './ChartPie';
 import Chart from './Chart'
 import { IoIosArrowDown } from "react-icons/io";
+import {
+  Dropdown,
+  Link,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Button,
+} from "@nextui-org/react";
+import { getSalesForGraph } from '../helper/helper';
+
 const Graph = ({title , present , present2 , height="327px"}) => {
+  const [selected , setSelected] = useState('sales');
+ 
+
+  const renderTimePeriod = () => {
+    switch (selected) {
+      case "sales":
+        return "Sales";
+      case "order":
+        return "Orders";
+      case "customers":
+        return "Customers";
+      default:
+        return "";
+    }
+  };
+
   return (
     <div className={`rounded-xl font-poppins`}>
       <div className="flex justify-between px-7 py-4">
@@ -11,8 +39,44 @@ const Graph = ({title , present , present2 , height="327px"}) => {
             Marketting
           </p>
           {present == 1 && (
-            <button className="bg-secondary flex justify-center items-center px-[16px] py-[8px] rounded-xl mr-[20px]">
-              Sales <IoIosArrowDown className="ml-[10px]" />
+            <button className="bg-secondary flex justify-center items-center px-[6px] py-[1px] rounded-xl mr-[20px]">
+              <Dropdown backdrop="blur">
+                <DropdownTrigger
+                  color="slate-400"
+                  classNames="text-[40px] text-txtPrimary"
+                >
+                  <Button className="text-[16px]">
+                    {renderTimePeriod()}
+                    <MdOutlineKeyboardArrowDown />
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu variant="faded" aria-label="Static Actions">
+                  <DropdownItem
+                    onClick={() => {
+                      setSelected("sales");
+                    }}
+                    key="sales"
+                  >
+                    Sales
+                  </DropdownItem>
+                  <DropdownItem
+                    onClick={() => {
+                      setSelected("order");
+                    }}
+                    key="order"
+                  >
+                    Orders
+                  </DropdownItem>
+                  <DropdownItem
+                    onClick={() => {
+                      setSelected("customers");
+                    }}
+                    key="customers"
+                  >
+                    Customers
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
             </button>
           )}
         </div>
@@ -24,14 +88,27 @@ const Graph = ({title , present , present2 , height="327px"}) => {
       {present2 && (
         <div className="flex px-7 justify-center items-center">
           <li className="mr-[10px]  text-center focus:list-disc text-primary">
-            Acquisition
+            TakeAway
           </li>
-          <li className="mr-[10px]  text-center text-[#97A5EB]">Purchase</li>
-          <li className="mr-[10px]  text-center text-[#FFCC91]">Retention</li>
+          <li className="mr-[10px]  text-center text-[#97A5EB]">DineIn</li>
+          <li className="mr-[10px]  text-center text-[#FFCC91]">HomeDelivery</li>
         </div>
       )}
 
-      <div className="mx-auto flex justify-center items-center">{title}</div>
+      <div className="mx-auto flex justify-center items-center">
+        {title === "1" && (
+          <div>
+            <DayChart select={selected}/>
+          </div>
+        )}
+        {
+          title !== "1" && (
+            <div>
+              <ChartPie />
+            </div>
+          )
+        }
+      </div>
     </div>
   );
 }

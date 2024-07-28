@@ -46,6 +46,7 @@ const columns = [
   { name: "TOTAL PRICE", uid: "total", sortable: true },
   { name: "PHONE", uid: "phone" },
   { name: "STATUS", uid: "status", sortable: true },
+  { name : "ORDER TYPE" , uid : "orderType"},
   { name: "ORDER NOTE", uid: "orderNote" },
   { name: "ACTIONS", uid: "actions" },
 ];
@@ -56,6 +57,18 @@ const statusOptions = [
   { name: "In-Progress", uid: "progress" },
   { name : "Cancelled" , uid : "cancelled"}
 ];
+
+const orderTypeOptions = [
+  { name: "Dine-In", uid: "dineIn" },
+  { name: "Take-Away", uid: "takeAway"},
+  { name: "Home-Delivery", uid: "homeDelivery"}
+];
+
+const orderTypeColorMap = {
+  dineIn: "success",
+  takeAway: "danger",
+  homeDelivery: "warning",
+};
 
 const statusColorMap = {
   completed: "success",
@@ -73,6 +86,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "total",
   "status",
   "actions",
+  // "orderType"
 ];
 
 const API = "http://localhost:8000/api/orders";
@@ -122,7 +136,7 @@ export default function OrderTable() {
     const {data} = await getOrders(API);
 
     console.log("Orders:", data);
-    const newUsers = data.map((order) => {
+    const newUsers = data.orders.map((order) => {
       console.log("Order:", order.products);
       const singleproduct = order.products.map((product) => {
         return product.product;
@@ -159,7 +173,8 @@ export default function OrderTable() {
         paymentType: order.paymentType,
         products: order.products,
         quantity: order.quantity,
-        orderDate: `${orderDate.toLocaleDateString()} ${orderDate.toLocaleTimeString()}`,
+        orderType: order.orderType,
+        orderDate: `${orderDate.toLocaleDateString()}`,
       };
     });
 
@@ -235,7 +250,7 @@ export default function OrderTable() {
       case "name":
         return (
           <NavLink to={`/singleproduct/${user.id}`}>
-           <h2>{user.name}</h2>
+            <h2>{user.name}</h2>
           </NavLink>
         );
       case "productImages":
@@ -263,14 +278,18 @@ export default function OrderTable() {
         return (
           <div className="flex font-poppins flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>
+            <p className="text-bold text-tiny capitalize text-default-500">
+              {user.team}
+            </p>
           </div>
         );
       case "orderDate":
         return (
           <div className="flex font-poppins flex-col">
             <p className="text-bold text-small capitalize">{cellValue}</p>
-            <p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>
+            <p className="text-bold text-tiny capitalize text-default-500">
+              {user.team}
+            </p>
           </div>
         );
       case "status":
@@ -278,6 +297,17 @@ export default function OrderTable() {
           <Chip
             className="capitalize font-poppins border-none gap-1 text-default-600"
             color={statusColorMap[user.status]}
+            size="sm"
+            variant="dot"
+          >
+            {cellValue}
+          </Chip>
+        );
+      case "orderType":
+        return (
+          <Chip
+            className="capitalize font-poppins border-none gap-1 text-default-600"
+            color={orderTypeColorMap[user.orderType]}
             size="sm"
             variant="dot"
           >
@@ -294,9 +324,14 @@ export default function OrderTable() {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                <DropdownItem><NavLink to={`/order-view/${user.id}`}>View</NavLink></DropdownItem>
+                <DropdownItem>
+                  <NavLink to={`/order-view/${user.id}`}>View</NavLink>
+                </DropdownItem>
                 <DropdownItem>Edit</DropdownItem>
-                <DropdownItem onClick={() => deleteOrder(user.id)}> Delete </DropdownItem>
+                <DropdownItem onClick={() => deleteOrder(user.id)}>
+                  {" "}
+                  Delete{" "}
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -340,6 +375,31 @@ export default function OrderTable() {
             onValueChange={onSearchChange}
           />
           <div className="flex gap-3">
+            <Dropdown>
+              <DropdownTrigger className="hidden sm:flex">
+                <Button
+                  endContent={<ChevronDownIcon className="text-small" />}
+                  size="sm"
+                  variant="flat"
+                >
+                  Order Type
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Table Columns"
+                closeOnSelect={false}
+                selectedKeys={statusFilter}
+                selectionMode="multiple"
+                onSelectionChange={setStatusFilter}
+              >
+                {orderTypeOptions.map((orderType) => (
+                  <DropdownItem key={orderType.uid} className="capitalize">
+                    {orderType.name}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
@@ -401,7 +461,9 @@ export default function OrderTable() {
           </div>
         </div>
         <div className="flex font-poppins justify-between items-center">
-          <span className="text-default-400 text-small">Total {users.length} users</span>
+          <span className="text-default-400 text-small">
+            Total {users.length} users
+          </span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
             <select

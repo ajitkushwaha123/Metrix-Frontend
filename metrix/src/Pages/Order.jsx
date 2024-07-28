@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState , useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import BreadCrum from '../components/BreadCrum'
 import { LuUsers2 } from "react-icons/lu";
@@ -10,8 +10,10 @@ import InvTable from '../DataTable/Table';
 import { NavLink } from 'react-router-dom';
 import OrderTable from '../DataTable/OrderTable';
 import NewOrder from './NewOrder';
+import { getSales } from '../helper/helper';
 
 const Order = () => {
+
   return (
     <div>
       <Navbar title={"Order"}/>
@@ -30,14 +32,16 @@ const Order = () => {
            <Stats 
              icon={<BsFolder2Open />}
              bgColor={"primary"}
-             title1={"All Orders"}
-             title2={"Pending"}
+             title2={"All Orders"}
+             title1={"Total Sales"}
              txtColor={"white"}
-             title3={"Completed"}
+             title3={"Cancelled"}
              stat1={"23"}
              stat2={"3"}
              stat3={"2"}
              present={"1"}
+             sale={true}
+            //  orderStatus={true}
           />
         </div>
           </div>
@@ -45,14 +49,15 @@ const Order = () => {
         <div className='w-full pl-[30px]'>
            <Stats 
              icon={<BsHandbag />}
-             title1={"Cancelled"}
-             title2={"Return"}
+             title3={"Cancelled"}
+             title1={"In-Progress"}
              txtColor={"text-red-200"}
-             title3={"Customers"}
+             title2={"Pending"}
              stat1={"23"}
              stat2={"3"}
              stat3={"2"}
              present={"1"}
+             orderStatus={true}
            />
         </div>
       </div>

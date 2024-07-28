@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { AiOutlinePieChart } from "react-icons/ai";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import {loader} from '../assets'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 import {
   Dropdown,
@@ -12,6 +14,7 @@ import {
   Button,
 } from "@nextui-org/react";
 import { getSales } from "../helper/helper";
+import SkeletonLoader from "./SkeletonLoader";
 
 const Stats = ({
   title1,
@@ -31,6 +34,7 @@ const Stats = ({
   txtColor,
   sale,
   orderStatus,
+  dropdown="true",
 }) => {
   const [selected, setSelected] = useState("today");
   const [sales, setSales] = useState({});
@@ -174,6 +178,25 @@ const Stats = ({
     }
   };
 
+   const cancelledOrders = () => {
+     switch (selected) {
+       case "today":
+         return sale && <p>{sales.dailySales.totalCancelled}</p>;
+       case "yesterday":
+         return sale && <p>{sales.yesterdaySales.totalCancelled}</p>;
+       case "weekly":
+         return sale && <p>{sales.weeklySales.totalCancelled}</p>;
+       case "monthly":
+         return sale && <p>{sales.monthlySales.totalCancelled}</p>;
+       case "yearly":
+         return sale && <p>{sales.yearlySales.totalCancelled}</p>;
+       case "total":
+         return sale && <p>{sales.totalSales.totalCancelled}</p>;
+       default:
+         return null;
+     }
+   };
+
   const inProgress = () => {
     switch (selected) {
       case "today":
@@ -213,130 +236,140 @@ const Stats = ({
   };
 
   return (
-    <div
-      className={`font-poppins h-${height} text-${txtColor} flex justify-center flex-col pb-[19px] bg-${bgColor} rounded-xl`}
-    >
-      {isLoading && (
-        <div>
-          <img src={loader} />
-        </div>
-      )}
+    <>
+      {isLoading && 
+      <Skeleton height={140}/>
+      
+      }
       {!isLoading && (
-        <div>
-          <div className={`flex justify-between py-5 px-5`}>
-            <p className="bg-secondary text-[24px] text-primary p-2 rounded-lg">
-              {icon}
-            </p>
-            <p
-              className={`flex text-${txtColor} text-txtPrimary justify-center items-center`}
-            >
-              <Dropdown backdrop="blur">
-                <DropdownTrigger
-                  color="slate-400"
-                  classNames="text-[40px] text-txtPrimary"
-                >
-                  <Button className="text-[16px]">
-                    {renderTimePeriod()}
-                    <MdOutlineKeyboardArrowDown />
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu variant="faded" aria-label="Static Actions">
-                  <DropdownItem
-                    onClick={() => {
-                      setSelected("today");
-                    }}
-                    key="today"
-                  >
-                    Today
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => {
-                      setSelected("yesterday");
-                    }}
-                    key="yesterday"
-                  >
-                    Yesterday
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => {
-                      setSelected("weekly");
-                    }}
-                    key="weekly"
-                  >
-                    This Week
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => {
-                      setSelected("monthly");
-                    }}
-                    key="monthly"
-                  >
-                    This Month
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => {
-                      setSelected("yearly");
-                    }}
-                    key="yearly"
-                  >
-                    This Year
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => {
-                      setSelected("total");
-                    }}
-                    key="total"
-                  >
-                    Total Sales
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </p>
-          </div>
-
-          <div className="flex px-5">
-            <div className="w-[50%]">
-              <p className={`text-txtPrimary text-start text-${txtColor}`}>
-                {title1}
+        <div
+          className={`font-poppins h-${height} text-${txtColor} flex justify-center flex-col pb-[19px] bg-${bgColor} rounded-xl`}
+        >
+          <div>
+            <div className={`flex justify-between py-5 px-5`}>
+              <p className="bg-secondary text-[24px] text-primary p-2 rounded-lg">
+                {icon}
               </p>
-              <div className="flex">
-                {sale == true && renderSales()}
-                {orderStatus && inProgress()}
-                {!sale && !orderStatus && <p>{stat1}</p>}
-                <p className={`flex text-txtGreen text-${txtColor} ml-[10px]`}>
-                  {sale && renderSalesPercentage()}
-                  {/* {stat1per} */}
-                </p>
-              </div>
-            </div>
-            <div className="w-[50%]">
-              <p className={`text-txtPrimary text-start text-${txtColor}`}>
-                {title2}
+              <p
+                className={`flex text-${txtColor} text-txtPrimary justify-center items-center`}
+              >
+                {dropdown && (
+                  <Dropdown backdrop="blur">
+                    <DropdownTrigger
+                      color="slate-400"
+                      classNames="text-[40px] text-txtPrimary"
+                    >
+                      <Button className="text-[16px]">
+                        {renderTimePeriod()}
+                        <MdOutlineKeyboardArrowDown />
+                      </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu variant="faded" aria-label="Static Actions">
+                      <DropdownItem
+                        onClick={() => {
+                          setSelected("today");
+                        }}
+                        key="today"
+                      >
+                        Today
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => {
+                          setSelected("yesterday");
+                        }}
+                        key="yesterday"
+                      >
+                        Yesterday
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => {
+                          setSelected("weekly");
+                        }}
+                        key="weekly"
+                      >
+                        This Week
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => {
+                          setSelected("monthly");
+                        }}
+                        key="monthly"
+                      >
+                        This Month
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => {
+                          setSelected("yearly");
+                        }}
+                        key="yearly"
+                      >
+                        This Year
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => {
+                          setSelected("total");
+                        }}
+                        key="total"
+                      >
+                        Total Sales
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
+                )}
               </p>
-              <div className="flex">
-                {sale == true && renderOrders()}
-                {orderStatus == true && <p>{pendingOrders()}</p>}
-                {!sale && !orderStatus && <p>{stat2}</p>}
-                <p className={`text-txtGreen text-${txtColor} ml-[10px]`}>
-                  {stat2per}
-                </p>
-              </div>
             </div>
 
-            {present == 1 && (
+            <div className="flex px-5">
               <div className="w-[50%]">
-                <p className="text-txtPrimary text-start">{title3}</p>
+                <p className={`text-txtPrimary text-start text-${txtColor}`}>
+                  {title1}
+                </p>
                 <div className="flex">
-                  {orderStatus == true && <p>{completedOrders()}</p>}
-                  {!orderStatus && <p>{stat3}</p>}
-                  <p className="text-txtGreen ml-[10px]">{stat3per}</p>
+                  {sale == true && renderSales()}
+                  {orderStatus && inProgress()}
+                  {!sale && !orderStatus && <p>{stat1}</p>}
+                  <p
+                    className={`flex text-txtGreen text-${txtColor} ml-[10px]`}
+                  >
+                    {sale && renderSalesPercentage()}
+                    {/* {stat1per} */}
+                  </p>
                 </div>
               </div>
-            )}
+              <div className="w-[50%]">
+                <p className={`text-txtPrimary text-start text-${txtColor}`}>
+                  {title2}
+                </p>
+                <div className="flex">
+                  {sale == true && renderOrders()}
+                  {orderStatus == true && <p>{pendingOrders()}</p>}
+                  {!sale && !orderStatus && <p>{stat2}</p>}
+                  <p className={`text-txtGreen text-${txtColor} ml-[10px]`}>
+                    {stat2per}
+                  </p>
+                </div>
+              </div>
+
+              {present == 1 && (
+                <div className="w-[50%]">
+                  <p className={`text-txtPrimary text-${txtColor} text-start`}>
+                    {title3}
+                  </p>
+                  <div className="flex">
+                    {sale == true && cancelledOrders()}
+                    {orderStatus == true && sale != true && (
+                      <p>{completedOrders()}</p>
+                    )}
+                    {!orderStatus && !sale && <p>{stat3}</p>}
+                    <p className="text-txtGreen ml-[10px]">{stat3per}</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

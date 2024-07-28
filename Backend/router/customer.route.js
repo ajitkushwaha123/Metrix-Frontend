@@ -5,6 +5,92 @@ import express from "express";
 const customers = express();
 
 // Create a new Customer
+
+customers.get("/customer-detail", Auth, async (req, res) => {
+  const userId = req.user.userId;
+  console.log(userId);
+
+  try {
+    const customerDetails = await Customer.aggregate([
+      {
+        $match: {
+          // userId,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalCustomers: { $sum: 1 },
+          totalActive: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "active"] }, 1, 0],
+            },
+          },
+          totalInactive: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "inactive"] }, 1, 0],
+            },
+        },
+      },
+    },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+
+    const customerResData =
+      customerDetails.length > 0
+        ? customerDetails[0]
+        : {
+            total: 0,
+            totalActive: 0,
+            totalInactive: 0,
+          };
+
+    res.status(200).json({customerDetails : customerResData});
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+customers.get("/customer-graph" , Auth , async (req , res) => {
+  const userId = req.user.userId;
+  console.log(userId);
+
+  try {
+    const today = new Date();
+    const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+    const startOfSevenDaysAgo = new Date(startOfToday);
+    startOfSevenDaysAgo.setDate(startOfSevenDaysAgo.getDate() - 6);
+
+    console.log(startOfSevenDaysAgo);
+
+    const customerData = await Customer.aggregate([
+      {
+        $match: {
+          // userId,
+          createdAt: { $gte: startOfSevenDaysAgo, $lt: new Date() },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+          },
+          totalCustomers: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+
+    res.status(200).json(customerData);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+})
+
 customers.post("/", Auth, async (req, res) => {
   try {
     const { userId } = req.user;

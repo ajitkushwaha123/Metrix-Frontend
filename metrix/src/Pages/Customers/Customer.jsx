@@ -1,4 +1,4 @@
-import React from "react";
+import React , {useState , useEffect} from "react";
 import Navbar from "../../components/Navbar";
 import BreadCrum from "../../components/BreadCrum";
 import { LuUsers2 } from "react-icons/lu";
@@ -8,8 +8,35 @@ import { BsFolder2Open } from "react-icons/bs";
 import { TiPlus } from "react-icons/ti";
 import CustomerTable from "../../DataTable/CustomerTable";
 import { NavLink } from "react-router-dom";
+import { getCustomerDetail } from "../../helper/helper";
+
 
 const Customer = () => {
+    const CustomerAPI = "http://localhost:8000/api/customer";
+
+   const [totalCustomer, setTotalCustomer] = useState(0);
+   const [totalActiveCustomer, setTotalActiveCustomer] = useState(0);
+   const [totalInactiveCustomer, setTotalInactiveCustomer] = useState(0);
+
+   const fetchCustomersDetails = async () => {
+     try {
+       const res = await getCustomerDetail(CustomerAPI);
+       console.log("aklscj" , res);
+       setTotalCustomer(res.data.customerDetails.totalCustomers);
+       setTotalActiveCustomer(res.data.customerDetails.totalActive);
+       setTotalInactiveCustomer(res.data.customerDetails.totalInactive);
+       console.log("product Detail" , totalInactiveCustomer);
+
+       console.log("totalCustomer", totalCustomer);
+     } catch (error) {
+       console.log(error);
+     }
+   };
+
+     useEffect(() => {
+       fetchCustomersDetails();
+     }, [CustomerAPI]);
+
   return (
     <div>
       <Navbar title={"Customer"} />
@@ -21,7 +48,7 @@ const Customer = () => {
         <NavLink to={"/inventory/new-product"}>
           <button className="bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2">
             <TiPlus className="mr-[15px]" />
-            Add a New Product
+            Add a New Customer
           </button>
         </NavLink>
       </div>
@@ -33,12 +60,15 @@ const Customer = () => {
             bgColor="primary"
             height="170px"
             icon={<BsFolder2Open />}
-            title1={"All Products"}
+            title1={"All Customers"}
             title2={"Active"}
-            stat1={"45"}
-            stat2={"32"}
-            padY={"10"}
+            title3={"In-Active"}
+            stat1={totalCustomer}
+            stat2={totalActiveCustomer}
+            stat3={totalInactiveCustomer}
+            // padY={"10px"}
             txtColor={"white"}
+            present={"1"}
           />
         </div>
         <div className="w-[55%] pl-[30px]">

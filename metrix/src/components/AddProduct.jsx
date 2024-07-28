@@ -10,7 +10,8 @@ import { Textarea, Input } from "@nextui-org/react";
 import { loader } from "../assets";
 import { useNavigate } from "react-router-dom";
 import toast , { Toaster } from 'react-hot-toast';
-import CustomerSearch from "./CustomerSearch";
+import { Select, SelectItem, Avatar } from "@nextui-org/react";
+import axios from "axios";
 
 
 const AddProduct = () => {
@@ -18,6 +19,38 @@ const AddProduct = () => {
   const [imageUrl, setImageUrl] = useState(upload); 
   const [loading ,setLoader] = useState(false);
   const [draft , setDraft] = useState(false);
+  const [category, setCategory] = useState([]);
+  const [selectCategory, setSelectCategory] = useState("");
+ 
+  console.log("Category data", selectCategory);
+
+  const fetchCategory = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      };
+
+      const response = await axios.get(
+        `http://localhost:8000/api/category`,
+        config
+      );
+      setCategory(response.data.categories);
+      console.log("Category ed successfully", response.data.categories);
+
+      console.log("Category data fetched successfully", category);
+    } catch (error) {
+      console.log("Error while fetching category data", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategory();
+  }, []);
+
 
   const navigate = useNavigate();
 
@@ -54,16 +87,13 @@ const AddProduct = () => {
       price: "",
       discountPrice: "",
       stock: "",
-      orderType: "",
-      shortDescription: "",
-      longDescription: "",
-      variant: "",
       photos: [],
       status : "published",
     },
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
+      values.category = selectCategory;
       if(draft  === true){
         values.status = "draft";
       }
@@ -80,13 +110,8 @@ const AddProduct = () => {
       });
 
       addProductPromise.then(() => {
-        // navigate("/inventory");
-        // window.location.reload();
         formik.resetForm();
       });
-      // addProductPromise.then(function () {
-      //   // navigate("/inventory");
-      // });
     },
   });
 
@@ -106,33 +131,17 @@ const AddProduct = () => {
         <Toaster position="top-center" reverseOrder="false"></Toaster>
         {loading && (
           <div>
-            <img src={loader} />{" "}
+            <img src={loader} />
           </div>
         )}
         {!loading && (
-          <div className="w-[100%]">
-            <div className="flex px-[40px] py-[20px] bg-white justify-between items-center">
+          <div className="">
+            <div className="flex px-[40px] py-[20px] justify-between items-center">
               <p className="text-[22px] font-medium">Add New Product</p>
-
-              <div className="flex justify-center items-center">
-                <button
-                  onClick={handleDraft}
-                  className="bg-black mx-[15px] rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
-                >
-                  <MdOutlineArrowDropDown className="mr-[15px]" />
-                  Save as Draft
-                </button>
-                <button
-                  onClick={handlePublished}
-                  className="bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
-                >
-                  Save & Publish
-                </button>
-              </div>
             </div>
-            <form>
-              <div className="px-[40px] w-full flex bg-white">
-                <div className="w-[35%] font-poppins">
+            <form className="flex justify-center rounded-xl w-[full] items-center">
+              <div className="px-[40px] mb-[30px] rounded-xl bg-white py-[20px] justify-center items-center flex ">
+                <div className="font-poppins mr-[30px] bg-white">
                   <div className="w-[370px] mb-[20px]">
                     <Input
                       {...formik.getFieldProps("productName")}
@@ -151,28 +160,72 @@ const AddProduct = () => {
                     />
                   </div>
 
-                  {/* <div className="w-[370px] mb-[20px]">
-                <Input
-                  {...formik.getFieldProps("category")}
-                  type="text"
-                  placeholder="Category"
-                  labelPlacement="outside"
-                  radius="sm"
-                  size="lg"
-                  startContent={
-                    <div className="pointer-events-none flex items-center">
-                      <span className="text-default-400 w-[full] text-medium">
-                        <LuShirt />
-                      </span>
-                    </div>
-                  }
-                />
-              </div> */}
-
                   {/* Show Category */}
 
-                  <div className="pt-[3px] pb-[20px]">
-                    <CustomerSearch />
+                  <div className="pt-[3px] flex justify-center items-center pb-[20px]">
+                    <div className="w-[250px]">
+                      <Select
+                        items={category}
+                        placeholder="Select a Category"
+                        labelPlacement="outside"
+                        classNames={{
+                          base: "max-w-xs",
+                          trigger: "h-12",
+                        }}
+                        renderValue={(items) =>
+                          items.map((item) => (
+                            <div
+                              key={item.key}
+                              className="flex py-[4px] px-[4px] items-center gap-2"
+                            >
+                              <Avatar
+                                alt={item.data.photo}
+                                className="flex-shrink-0"
+                                size="sm"
+                                src={item.data.photo}
+                                isBordered
+                                color="success"
+                              />
+                              <div className="flex flex-col">
+                                <span >{item.data.name}</span>
+                                <span className="text-default-500 text-tiny">
+                                  {/* {item.data.phone} */}
+                                </span>
+                              </div>
+                            </div>
+                          ))
+                        }
+                      >
+                        {(user) => (
+                          <SelectItem key={user._id} textValue={user.name}>
+                            <div
+                              onClick={() => setSelectCategory(user.name)}
+                              className="flex gap-2 py-[3px] px-[4px] items-center"
+                            >
+                              <Avatar
+                                isBordered
+                                // color={"suc"}
+                                alt={user.name}
+                                className="flex-shrink-0"
+                                size="sm"
+                                src={user.photo}
+                              />
+                              <div className="flex flex-col">
+                                <span className="text-small">{user.name}</span>
+                                <span className="text-tiny text-default-400">
+                                  {user.phone}
+                                </span>
+                              </div>
+                            </div>
+                          </SelectItem>
+                        )}
+                      </Select>
+                    </div>
+                    <NavLink to={"/add-category"}>
+                      <button className="bg-primary ml-[10px] text-white px-4 py-2 rounded-lg">
+                        Create New
+                      </button>
+                    </NavLink>
                   </div>
 
                   <div className="mb-[20px] w-[370px]">
@@ -193,7 +246,7 @@ const AddProduct = () => {
                     />
                   </div>
 
-                  <div className="mb-[20px] w-[370px]">
+                  {/* <div className="mb-[20px] w-[370px]">
                     <Input
                       {...formik.getFieldProps("discountPrice")}
                       type="number"
@@ -209,7 +262,7 @@ const AddProduct = () => {
                         </div>
                       }
                     />
-                  </div>
+                  </div> */}
 
                   <div className="w-[370px] mb-[20px]">
                     <Input
@@ -229,76 +282,24 @@ const AddProduct = () => {
                     />
                   </div>
 
-                  <div className="w-[370px] mb-[20px]">
-                    <Input
-                      {...formik.getFieldProps("orderType")}
-                      type="text"
-                      placeholder="Order Type"
-                      labelPlacement="outside"
-                      radius="sm"
-                      size="lg"
-                      startContent={
-                        <div className="pointer-events-none flex items-center">
-                          <span className="text-default-400 w-[full] text-medium">
-                            <LuShirt />
-                          </span>
-                        </div>
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="w-[35%] mx-[30px]">
-                  <div className="mb-[20px]">
-                    <Textarea
-                      variant="faded"
-                      label="Short Description"
-                      placeholder="Enter a Short description ..."
-                      className="bg-txtArea bg-[#EFF1F9] outline-none"
-                      {...formik.getFieldProps("shortDescription")}
-                    />
-                  </div>
-
-                  <div className="mb-[20px]">
-                    <Textarea
-                      variant="faded"
-                      label="Description"
-                      placeholder="Enter a description ..."
-                      // className="bg-txtArea bg-[#EFF1F9] outline-none".
-                      className="bg-txtArea"
-                      {...formik.getFieldProps("longDescription")}
-                    />
-                  </div>
-
-                  <div className="mb-[20px]">
-                    <Textarea
-                      variant="faded"
-                      label="Description"
-                      placeholder="Enter a description ..."
-                      className="bg-txtArea bg-[#EFF1F9] outline-none"
-                      {...formik.getFieldProps("longDescription")}
-                    />
-                  </div>
-
-                  <div className="mb-[20px]">
-                    <Input
-                      {...formik.getFieldProps("variant")}
-                      type="text"
-                      placeholder="Variant"
-                      labelPlacement="outside"
-                      radius="sm"
-                      size="lg"
-                      startContent={
-                        <div className="pointer-events-none flex items-center">
-                          <span className="text-default-400 w-[full] text-medium">
-                            <LuShirt />
-                          </span>
-                        </div>
-                      }
-                    />
+                  <div className="flex justify-center items-center">
+                    <button
+                      onClick={handleDraft}
+                      className="bg-black mx-[15px] rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
+                    >
+                      <MdOutlineArrowDropDown className="mr-[15px]" />
+                      Save as Draft
+                    </button>
+                    <button
+                      onClick={handlePublished}
+                      className="bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
+                    >
+                      Save & Publish
+                    </button>
                   </div>
                 </div>
 
-                <div className="w-[33%] flex justify-center items-center flex-col bg-[white]">
+                <div className="flex justify-center items-center flex-col">
                   <div>
                     <div>
                       <img

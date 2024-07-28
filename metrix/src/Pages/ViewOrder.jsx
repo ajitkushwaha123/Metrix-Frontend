@@ -27,6 +27,7 @@ const ViewOrder = () => {
   const [status, setStatus] = useState("");
   const [orderNote, setOrderNote] = useState("");
   const [quantity, setQuantity] = useState(0);
+  const [orderType, setOrderType] = useState("");
   
   useEffect(() => {
     const fetchProduct = async () => {
@@ -41,6 +42,7 @@ const ViewOrder = () => {
         setStatus(product.status);
         setOrderNote(product.orderNote);
         setQuantity(product.quantity);
+        setOrderType(product.orderType);
       } catch (error) {
         console.error("Error fetching product:", error);
       }
@@ -184,7 +186,7 @@ const ViewOrder = () => {
                     <h2 className="text-slate-400">
                       Order Type :
                       <br />
-                      <span className="text-black"> Home Delivery </span>
+                      <span className="text-black"> {orderType} </span>
                     </h2>
                   </div>
                 </div>

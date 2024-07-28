@@ -37,7 +37,7 @@ const statusColorMap = {
   draft: "warning",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["name","category" , "price" , "role", "status", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ["name","category" , "price" , "role", "stock", "status", "actions"];
 
 export default function InvTable() {
 
@@ -87,11 +87,11 @@ products.forEach((product) => {
     name: product.productName,
     category: product.category,
     status: product.status,
-    age: product.age,
+    // age: product.age,
     avatar: product.photos[0],
     price: product.price,
     stock: product.stock,
-    discountPrice : product.discountPrice,
+    // discountPrice : product.discountPrice,
   };
 
   users.push(user);
