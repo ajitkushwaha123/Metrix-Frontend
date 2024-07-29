@@ -74,7 +74,7 @@ export default function InvTable() {
   const handleDelete = (id) => {
     // const {id} = useParams();
     console.log("id", id);
-    if (window.confirm("Are you sure you want to delete this customer ?")) {
+    // if (window.confirm("Are you sure you want to delete this customer ?")) {
       const token = localStorage.getItem("token");
       const config = {
         headers: {
@@ -90,54 +90,51 @@ export default function InvTable() {
         .then((res) => {
           setLoading(false);
           console.log(res);
-          window.location.reload();
+          // window.location.reload();
+          fetchCustomers();
         })
         .catch((err) => {
           setLoading(false);
           console.log(err);
         });
-    }
+    // }
   };
 
   // const users = [];
 
+  const formatCustomerSince = (dateString) => {
+    const date = new Date(dateString);
+    const options = { day: "numeric", month: "short", year: "numeric" };
+    return new Intl.DateTimeFormat("en-US", options).format(date);
+  };
+
+  const fetchCustomers = async () => {
+    try {
+      const response = await getCustomers(API);
+      console.log("data", response);
+
+      const newCustomers = response.map((product) => ({
+        id: product._id,
+        name: product.customerName,
+        phone: product.phone,
+        status: product.status,
+        imageColor: product.imageColor,
+        orderLength: product.products.length | 0,
+        customerImage: product.customerImage,
+        price: product.OrderPrice,
+        order: product.products,
+        customerSince: formatCustomerSince(product.createdAt),
+      }));
+
+      setUsers(newCustomers);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+      // Handle the error (e.g., show an error message to the user)
+    }
+  };
+
   const API = "http://localhost:8000/api/customer/";
   useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const response = await getCustomers(API);
-        //  if (!response.ok) {
-        //    throw new Error("Network response was not ok");
-        //  }
-        //  const data = await response.json();
-        console.log("data", response);
-
-        const newCustomers = response.map((product) => ({
-          id: product._id,
-          name: product.customerName,
-          phone: product.phone,
-          status: product.status,
-          imageColor : product.imageColor,
-          orderLength : product.products.length | 0, 
-          customerImage: product.customerImage,
-          price: product.OrderPrice,
-          order: product.products,
-          customerSince: formatCustomerSince(product.createdAt),
-        }));
-
-        setUsers(newCustomers);
-      } catch (error) {
-        console.error("Error fetching customers:", error);
-        // Handle the error (e.g., show an error message to the user)
-      }
-    };
-
-    const formatCustomerSince = (dateString) => {
-      const date = new Date(dateString);
-      const options = { day: "numeric", month: "short", year: "numeric" };
-      return new Intl.DateTimeFormat("en-US", options).format(date);
-    };
-
     fetchCustomers();
   }, []);
   //   console.log("chrrc", response);

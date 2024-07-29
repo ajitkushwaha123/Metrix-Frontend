@@ -62,52 +62,63 @@ const RecentOrders = () => {
             <Skeleton height={600} width={501} />
           </div>
         ) : (
-          <div className="px-7">
-            {orders.map((order, index) => (
-              <div
-                key={index}
-                className="flex border-b-2 rounded-lg border-slate-100 px-5 py-2 justify-between"
-              >
-                <div className="flex">
-                  <div>
-                    <img
-                      className="w-[60px] rounded-md"
-                      src={firstImage[index]}
-                      alt="Order item"
-                    />
-                  </div>
-                  <div className="ml-[20px] flex flex-col text-start">
+          <div className="px-7 min-h-[600px]">
+            {totalOrders === 0 && <div>No orders found</div>}
+            {totalOrders > 0 && (
+              <div>
+                {orders.map((order, index) => (
+                  <div
+                    key={index}
+                    className="flex border-b-2 rounded-lg border-slate-100 px-5 py-2 justify-between"
+                  >
+                    <div className="flex">
+                      <div>
+                        <img
+                          className="w-[60px] rounded-md"
+                          src={firstImage[index]}
+                          alt="Order item"
+                        />
+                      </div>
+                      <div className="ml-[20px] flex flex-col text-start">
+                        <div>
+                          <h2>{order.customerName}</h2>
+                        </div>
+                        <div>{order.price}</div>
+                      </div>
+                    </div>
                     <div>
-                      <h2>{order.customerName}</h2>
+                      <div>
+                        <p>{formattedDate(order.createdAt)}</p>
+                      </div>
+
+                      {order.orderStatus === "completed" && (
+                        <div className="bg-secondary rounded-sm mt-[8px]">
+                          <h2 className="text-success">Completed</h2>
+                        </div>
+                      )}
+
+                      {order.orderStatus === "pending" && (
+                        <div className="bg-secondary rounded-sm mt-[8px]">
+                          <h2 className="text-primary">Pending</h2>
+                        </div>
+                      )}
+
+                      {order.orderStatus === "progress" && (
+                        <div className="bg-secondary rounded-sm px-[4px] mt-[8px]">
+                          <h2 className="text-warning">In - Progress</h2>
+                        </div>
+                      )}
+
+                      {order.orderStatus === "cancelled" && (
+                        <div className="bg-secondary rounded-sm px-[4px] mt-[8px]">
+                          <h2 className="text-warning">Cancelled</h2>
+                        </div>
+                      )}
                     </div>
-                    <div>{order.price}</div>
                   </div>
-                </div>
-                <div>
-                  <div>
-                    <p>{formattedDate(order.createdAt)}</p>
-                  </div>
-
-                  {order.orderStatus === "completed" && (
-                    <div className="bg-secondary rounded-sm mt-[8px]">
-                      <h2 className="text-success">Completed</h2>
-                    </div>
-                  )}
-
-                  {order.orderStatus === "pending" && (
-                    <div className="bg-secondary rounded-sm mt-[8px]">
-                      <h2 className="text-primary">Pending</h2>
-                    </div>
-                  )}
-
-                  {order.orderStatus === "progress" && (
-                    <div className="bg-secondary rounded-sm px-[4px] mt-[8px]">
-                      <h2 className="text-warning">In - Progress</h2>
-                    </div>
-                  )}
-                </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>

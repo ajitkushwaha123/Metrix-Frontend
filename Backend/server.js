@@ -5,21 +5,20 @@ import connect from "./database/connection.js";
 import router from "./router/route.js";
 
 const app = express();
+const port = 8000;
 
-app.use(express.json({ limit: "50mb" })); // Parse JSON body first
-app.use(express.urlencoded({ extended: true, limit: "50mb" })); // Parse URL-encoded bodies
-app.use(cors()); // Enable CORS
+// Middleware
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+app.use(cors({ origin: "http://localhost:5173" })); // Specify the allowed origin
 app.use(morgan("tiny"));
 app.disable("x-powered-by");
 
-const port = 8000;
-
+// Routes
 app.get("/", (req, res) => {
   res.status(201).json("Home GET Request");
 });
 
-
-// API routes
 app.use("/api", router);
 
 // Global error handler
@@ -28,6 +27,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Something went wrong!" });
 });
 
+// Database connection and server start
 connect()
   .then(() => {
     app.listen(port, () => {

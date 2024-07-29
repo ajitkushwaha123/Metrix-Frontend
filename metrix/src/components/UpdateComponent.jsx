@@ -1,4 +1,4 @@
-import React, { useEffect , useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LuShirt } from "react-icons/lu";
 import { upload, upload2 } from "../assets";
 import { useFormik } from "formik";
@@ -9,7 +9,10 @@ import { useProductContext } from "../context/productContext";
 import { updateProduct } from "../helper/helper";
 import { Textarea, Input } from "@nextui-org/react";
 import toast, { Toaster } from "react-hot-toast";
- 
+import axios from "axios";
+import { Select, SelectItem  , Avatar} from "@nextui-org/react";
+
+
 const API = "http://localhost:8000/api/products";
 
 const UpdateComponent = () => {
@@ -22,10 +25,37 @@ const UpdateComponent = () => {
   const [uploadedPhotos, setUploadedPhotos] = useState([]);
   const [imageUrl, setImageUrl] = useState(); // Replace with your initial image URL
   const [draft, setDraft] = useState(false);
+  const [category, setCategory] = useState([]);
+  const [selectCategory, setSelectCategory] = useState("");
 
+  console.log("Category data", selectCategory);
+
+  const fetchCategory = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      };
+
+      const response = await axios.get(
+        `http://localhost:8000/api/category`,
+        config
+      );
+      setCategory(response.data.categories);
+      console.log("Category ed successfully", response.data.categories);
+
+      console.log("Category data fetched successfully", category);
+    } catch (error) {
+      console.log("Error while fetching category data", error);
+    }
+  };
 
   useEffect(() => {
     getSingleProduct(`${API}/${id}`);
+    fetchCategory();
   }, [id]);
 
   useEffect(() => {
@@ -35,8 +65,8 @@ const UpdateComponent = () => {
       formik.setFieldValue("productName", singleProduct.productName);
       formik.setFieldValue("category", singleProduct.category);
       formik.setFieldValue("price", singleProduct.price);
-      formik.setFieldValue("discountPrice", singleProduct.discountPrice);
       formik.setFieldValue("stock", singleProduct.stock);
+      setSelectCategory(singleProduct.category);
     }
   }, [singleProduct]);
 
@@ -81,17 +111,21 @@ const UpdateComponent = () => {
       productName: singleProduct.productName,
       category: singleProduct.category,
       price: singleProduct.price,
-      discountPrice: singleProduct.discountPrice,
       stock: singleProduct.stock,
       photos: [...cloudinaryPhotos, ...uploadedPhotos],
+      status : "published",
     },
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      // console.log("valu", values.photos);
+      values.category = selectCategory;
+      values.photos = [...cloudinaryPhotos, ...uploadedPhotos];
+      values._id = singleProduct._id;
 
-      // console.log("val", values._id);
-      // const { product } = await updateProduct(values);
+      if(draft){
+        values.status = "draft";
+      }
+      console.log("Formik values", values);
       let updateProductPromise = updateProduct(values);
       toast.promise(updateProductPromise, {
         loading: "Creating...",
@@ -105,17 +139,17 @@ const UpdateComponent = () => {
     },
   });
 
-  
-  const handleDraft = () => {
+  const handleDraft = (e) => {
+    e.preventDefault();
     setDraft(true);
     formik.handleSubmit();
   };
 
-  const handlePublished = () => {
+  const handlePublished = (e) => {
+    e.preventDefault();
     setDraft(false);
     formik.handleSubmit();
   };
-  
 
   return (
     <div className="">
@@ -144,22 +178,70 @@ const UpdateComponent = () => {
               />
             </div>
 
-            <div className="w-[370px] mb-[20px]">
-              <Input
-                {...formik.getFieldProps("category")}
-                type="text"
-                placeholder="Category"
-                labelPlacement="outside"
-                radius="sm"
-                size="lg"
-                startContent={
-                  <div className="pointer-events-none flex items-center">
-                    <span className="text-default-400 text-medium">
-                      <LuShirt />
-                    </span>
-                  </div>
-                }
-              />
+            <div className="pt-[3px] flex justify-center items-center pb-[20px]">
+              <div className="w-[250px]">
+                <Select
+                  items={category}
+                  placeholder="Select a Category"
+                  labelPlacement="outside"
+                  classNames={{
+                    base: "max-w-xs",
+                    trigger: "h-12",
+                  }}
+                  renderValue={(items) =>
+                    items.map((item) => (
+                      <div
+                        key={item.key}
+                        className="flex py-[4px] px-[4px] items-center gap-2"
+                      >
+                        <Avatar
+                          alt={item.data.photo}
+                          className="flex-shrink-0"
+                          size="sm"
+                          src={item.data.photo}
+                          isBordered
+                          color="success"
+                        />
+                        <div className="flex flex-col">
+                          <span>{selectCategory}</span>
+                          <span className="text-default-500 text-tiny">
+                            {/* {item.data.phone} */}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  }
+                >
+                  {(user) => (
+                    <SelectItem key={user._id} textValue={user.name}>
+                      <div
+                        onClick={() => setSelectCategory(user.name)}
+                        className="flex gap-2 py-[3px] px-[4px] items-center"
+                      >
+                        <Avatar
+                          isBordered
+                          // color={"suc"}
+                          alt={user.name}
+                          className="flex-shrink-0"
+                          size="sm"
+                          src={user.photo}
+                        />
+                        <div className="flex flex-col">
+                          <span className="text-small">{user.name}</span>
+                          <span className="text-tiny text-default-400">
+                            {user.phone}
+                          </span>
+                        </div>
+                      </div>
+                    </SelectItem>
+                  )}
+                </Select>
+              </div>
+              <NavLink to={"/add-category"}>
+                <button className="bg-primary ml-[10px] text-white px-4 py-2 rounded-lg">
+                  Create New
+                </button>
+              </NavLink>
             </div>
 
             <div className="mb-[20px] w-[370px]">
@@ -167,22 +249,6 @@ const UpdateComponent = () => {
                 {...formik.getFieldProps("price")}
                 type="number"
                 placeholder="Price"
-                labelPlacement="outside"
-                radius="sm"
-                size="lg"
-                startContent={
-                  <div className="pointer-events-none flex items-center">
-                    <span className="text-default-400 text-medium">$</span>
-                  </div>
-                }
-              />
-            </div>
-
-            <div className="mb-[20px] w-[370px]">
-              <Input
-                {...formik.getFieldProps("discountPrice")}
-                type="number"
-                placeholder="Discount Price"
                 labelPlacement="outside"
                 radius="sm"
                 size="lg"
@@ -214,14 +280,14 @@ const UpdateComponent = () => {
 
             <div className="flex justify-center items-center">
               <button
-                onClick={handleDraft}
+                onClick={(e) => {handleDraft(e)}}
                 className="bg-black mx-[15px] rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
               >
                 <MdOutlineArrowDropDown className="mr-[15px]" />
                 Save as Draft
               </button>
               <button
-                onClick={handlePublished}
+                onClick={(e)=> {handlePublished(e)}}
                 className="bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
               >
                 Save & Publish

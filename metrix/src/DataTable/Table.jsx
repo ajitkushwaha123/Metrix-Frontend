@@ -28,7 +28,6 @@ import {ChevronDownIcon} from "./ChevronDownIcon";
 import {columns, statusOptions} from "./data";
 import {capitalize} from "./utils";
 import { NavLink, useParams } from "react-router-dom";
-// import { set } from "mongoose";
 import { loader } from "../assets";
 
 const statusColorMap = {
@@ -98,6 +97,10 @@ products.forEach((product) => {
 });
 
 console.log("u" , users); 
+
+const reloadFunction = () => {
+  window.location.reload();
+};
 
 
   const [filterValue, setFilterValue] = React.useState("");
@@ -208,9 +211,9 @@ console.log("u" , users);
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                <DropdownItem>
-                  <NavLink to={`/inventory/view/${user.id}`}>View</NavLink>
-                </DropdownItem>
+                {/* <DropdownItem> */}
+                  {/* <NavLink to={`/inventory/view/${user.id}`}></NavLink> */}
+                {/* </DropdownItem> */}
                 <DropdownItem>
                   <NavLink to={`/inventory/update-product/${user.id}`}>
                     Edit
@@ -318,15 +321,16 @@ console.log("u" , users);
               </DropdownMenu>
             </Dropdown>
 
-            <NavLink to={"/inventory/new-product"}>
+            {/* <NavLink to={"/inventory/new-product"}> */}
               <Button
+                onClick={reloadFunction}
                 className="bg-primary text-background"
                 endContent={<PlusIcon />}
                 size="sm"
               >
-                Add New
+                Sync Data
               </Button>
-            </NavLink>
+            {/* </NavLink> */}
           </div>
         </div>
         <div className="flex justify-between items-center">

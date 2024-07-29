@@ -1,6 +1,9 @@
-import React, { useEffect , useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getSingleOrders } from "../helper/helper";
+import {
+  getSingleOrders,
+  updateOrder as updateOrderHelper,
+} from "../helper/helper";
 import Navbar from "../components/Navbar";
 import BreadCrum from "../components/BreadCrum";
 import { MdOutlineArrowDropDown } from "react-icons/md";
@@ -12,44 +15,100 @@ import { MdOutlinePayment } from "react-icons/md";
 import { CiLocationOn } from "react-icons/ci";
 import { capitalize } from "../DataTable/utils";
 import SingleOrderTable from "../DataTable/SingleOrderTable";
-
-
+import { useFormik } from "formik";
+import toast, { Toaster } from "react-hot-toast";
 
 const API = "http://localhost:8000/api/orders/find";
+const orderAPI = "http://localhost:8000/api/orders";
+
 const ViewOrder = () => {
   const { id } = useParams();
-  console.log("id", id);
+  console.log("id:", id);
 
   const [customerName, setCustomerName] = useState("");
-  const [phone , setPhone] = useState("");
+  const [phone, setPhone] = useState("");
   const [paymentType, setPaymentType] = useState("");
   const [price, setPrice] = useState("");
   const [status, setStatus] = useState("");
   const [orderNote, setOrderNote] = useState("");
   const [quantity, setQuantity] = useState(0);
   const [orderType, setOrderType] = useState("");
-  
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        console.log("id", id);
-        const product = await getSingleOrders(`${API}/${id}`);
-        console.log("product", product);
-        setCustomerName(product.customerName);
-        setPhone(product.phone);
-        setPaymentType(product.paymentType);
-        setPrice(product.price);
-        setStatus(product.status);
-        setOrderNote(product.orderNote);
-        setQuantity(product.quantity);
-        setOrderType(product.orderType);
-      } catch (error) {
-        console.error("Error fetching product:", error);
-      }
-    };
+  const [orderedStatus, setOrderedStatus] = useState("pending");
+  const [cancelled , setCancelled] = useState(orderedStatus);
+  const [completed , setCompleted] = useState(orderedStatus);
 
+  const fetchProduct = async () => {
+    try {
+      console.log("Fetching product with id:", id);
+      const product = await getSingleOrders(`${API}/${id}`);
+      console.log("Fetched product:", product);
+      setCustomerName(product.customerName);
+      setPhone(product.phone);
+      setPaymentType(product.paymentType);
+      setPrice(product.price);
+      setStatus(product.status);
+      setOrderNote(product.orderNote);
+      setQuantity(product.quantity);
+      setOrderType(product.orderType);
+    } catch (error) {
+      console.error("Error fetching product:", error);
+    }
+  };
+
+  const updateOrder = async (id, orderStatus) => {
+    try {
+      const { data } = await updateOrderHelper(
+        `${orderAPI}/${id}`,
+        orderStatus
+      );
+      console.log("Updated order data:", data);
+    } catch (error) {
+      console.error("Error updating order:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchProduct();
   }, [id]);
+
+  const handleCancelOrder = (e) => {
+    e.preventDefault();
+    setOrderedStatus("cancelled");
+    setCancelled(true);
+    formik.handleSubmit();
+  };
+
+  const handleCompleteOrder = (e) => {
+    e.preventDefault();
+    setCompleted(true);
+    setOrderedStatus("completed");
+    formik.handleSubmit();
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      orderStatus: "published",
+    },
+    validateOnBlur: false,
+    validateOnChange: false,
+    onSubmit: async (values) => {
+      if (orderedStatus === "cancelled") {
+        values.orderStatus = "cancelled";
+      }
+
+      if (orderedStatus === "completed") {
+        values.orderStatus = "completed";
+      }
+      console.log("Formik values:", values);
+      console.log("Ordered status:", id);
+      let updateOrderPromise = updateOrder(id, values);
+      toast.promise(updateOrderPromise, {
+        loading: "Updating...",
+        success: <b>Order Updated Successfully!</b>,
+        error: <b>Error Updating Order!</b>,
+      });
+    },
+  });
 
   return (
     <div>
@@ -72,15 +131,24 @@ const ViewOrder = () => {
           </div>
 
           <div className="flex justify-center items-center">
-            <button className="bg-black mx-[15px] rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2">
+            <button
+              onClick={(e) => {
+                handleCancelOrder(e);
+              }}
+              className="bg-black mx-[15px] rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
+            >
               <MdOutlineArrowDropDown className="mr-[15px]" />
-              Cancel Order
+              {cancelled === "cancelled" && <p>Cancelled</p>}
+              {cancelled !== "cancelled" && <p>Cancel Order</p>}
             </button>
             <button
-              //   onClick={formik.handleSubmit}
+              onClick={(e) => {
+                handleCompleteOrder(e);
+              }}
               className="bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
             >
-              Mark as Complete
+              {completed === "completed" && <p>Completed</p>}
+              {completed !== "completed" && <p>Mark As Completed</p>}
             </button>
           </div>
         </div>
@@ -146,9 +214,9 @@ const ViewOrder = () => {
                 <div className="flex w-[100%] text-start px-[18px]">
                   <div className="w-[50%]">
                     <h2 className="text-slate-400">
-                       Quantity : <br />
+                      Quantity : <br />
                       <span className="text-black text-medium text-[17px] px-[3px]">
-                         {quantity}
+                        {quantity}
                       </span>
                     </h2>
                   </div>
@@ -157,7 +225,7 @@ const ViewOrder = () => {
                       New Customer :
                       <br />
                       <span className="text-black text-[17px] px-[3px]">
-                         True
+                        True
                       </span>
                     </h2>
                   </div>

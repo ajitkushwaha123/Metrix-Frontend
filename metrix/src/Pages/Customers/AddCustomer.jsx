@@ -194,7 +194,7 @@ const handleImage = (e, user) => {
                   <div className="flex w-[100%] justify-center item-center flex-col">
                     <div className="flex justify-between items-center">
                       <h2>Customer Information</h2>
-                      <h2
+                      {/* <h2
                         onChange={(e) => handleCustomer(e)}
                         className="flex ml-[20px] justify-center items-center"
                       >
@@ -205,7 +205,7 @@ const handleImage = (e, user) => {
                           checked={newCustomer}
                           onChange={(e) => handleCustomer}
                         />
-                      </h2>
+                      </h2> */}
                     </div>
                     <div className="my-[10px] mb-4">
                       {newCustomer && (

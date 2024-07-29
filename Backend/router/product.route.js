@@ -6,18 +6,31 @@ import { upload } from "../middleware/multer.js";
 
 const products = express();
 
+products.get("/" , Auth , async (req , res) => {
+  const userId = req.user.userId;
+  console.log("User ID:" , userId);
+  try{
+    const products = await Product.find({userId : req.user.userId});
+    res.status(200).json(products);
+  }
+  catch(err){
+    console.error("Error fetching products:" , err);
+    res.status(500).json({error : "Failed to fetch products. Please try again later."});
+  }
+});
+
 products.get("/size", Auth, async (req, res) => {
   const userId = req.user.userId;
+  console.log("User ID:", userId);
   try {
     const productData = await Product.aggregate([
       {
-        $match: {},
+        $match: { userId: req.user.userId },
       },
       {
         $group: {
           _id: "$size",
           total: { $sum: 1 },
-          _id: null,
           totalPublished: {
             $sum: {
               $cond: [{ $eq: ["$status", "published"] }, 1, 0],
@@ -26,6 +39,21 @@ products.get("/size", Auth, async (req, res) => {
           totalDraft: {
             $sum: {
               $cond: [{ $eq: ["$status", "draft"] }, 1, 0],
+            },
+          },
+          lowStock: {
+            $sum: {
+              $cond: [{ $lt: ["$stock", 5] }, 1, 0],
+            },
+          },
+          expired: {
+            $sum: {
+              $cond: [{ $lte: ["$stock", 0] }, 1, 0],
+            },
+          },
+          sufficientStock: {
+            $sum: {
+              $cond: [{ $gte: ["$stock", 5] }, 1, 0],
             },
           },
         },
@@ -40,14 +68,18 @@ products.get("/size", Auth, async (req, res) => {
             total: 0,
             totalPublished: 0,
             totalDraft: 0,
+            lowStock: 0,
+            expired: 0,
+            sufficientStock: 0,
           };
 
-    return res.status(200).json({productDetail : productResData});
+    return res.status(200).json({ productDetail: productResData });
   } catch (err) {
     console.error(err); // Log the error for debugging
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 // Create a new product
 products.post("/", upload.array("photos", 4), Auth, async (req, res) => {
@@ -63,6 +95,7 @@ products.post("/", upload.array("photos", 4), Auth, async (req, res) => {
       price,
       stock,
       status,
+      userId,
       // photos,
     } = req.body;
 
@@ -93,6 +126,7 @@ products.post("/", upload.array("photos", 4), Auth, async (req, res) => {
         stock,
         status,
         photos: photoUrls, // Store array of photo URLs
+        userId: req.user.userId,
       });
 
       console.log("newProduct", newProduct);
@@ -173,7 +207,7 @@ products.get("/:id", Auth, async (req, res) => {
   }
 });
 
-products.get("/", async (req, res) => {
+products.get("/",  Auth , async (req, res) => {
   try {
     const searchQuery = req.query.search;
     console.log(searchQuery);
@@ -191,29 +225,39 @@ products.get("/", async (req, res) => {
   }
 });
 
-products.get("/", Auth, async (req, res) => {
-  const qNew = req.query.new;
-  const qCategory = req.query.category;
-  try {
-    let products;
-    if (qNew) {
-      // Fetch the latest 5 products based on creation date
-      products = await Product.find().sort({ createdAt: -1 }).limit(5);
-    } else if (qCategory) {
-      // Fetch products based on the specified category
-      products = await Product.find({
-        category: {
-          $in: [qCategory],
-        },
-      });
-    } else {
-      // Fetch all products
-      products = await Product.find();
-    }
-    res.status(200).json(products);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
+// products.get("/", Auth, async (req, res) => {
+//   const qNew = req.query.new;
+//   const qCategory = req.query.category;
+//   const { userId } = req.user;
+
+//   try {
+//     let products;
+//     if (qNew) {
+//       // Fetch the latest 5 products based on creation date
+//       products = await Product.find({ userId })
+//         .sort({ createdAt: -1 })
+//         .limit(5);
+//     } else if (qCategory) {
+//       // Fetch products based on the specified category
+//       products = await Product.find({
+//         userId,
+//         category: {
+//           $in: [qCategory],
+//         },
+//       });
+//     } else {
+//       // Fetch all products
+//       products = await Product.find({ userId });
+//     }
+//     res.status(200).json(products);
+//   } catch (err) {
+//     console.error("Error fetching products:", err);
+//     res
+//       .status(500)
+//       .json({ error: "Failed to fetch products. Please try again later." });
+//   }
+// });
+
+
 
 export default products;

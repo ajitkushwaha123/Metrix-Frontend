@@ -188,24 +188,25 @@ export async function addProduct(values) {
 export async function updateProduct(values) {
   try {
     const token = localStorage.getItem("token");
-    console.log("valueId", values._id);
+    if (!token) throw new Error("No token found");
 
     const formData = new FormData();
     formData.append("productName", values.productName);
-    formData.append("discountPrice", values.discountPrice);
+    // formData.append("discountPrice", values.discountPrice);
     formData.append("orderType", values.orderType);
-    formData.append("longDescription", values.longDescription);
-    formData.append("variant", values.variant);
-    formData.append("shortDescription", values.shortDescription);
+    // formData.append("longDescription", values.longDescription);
+    // formData.append("variant", values.variant);
+    // formData.append("shortDescription", values.shortDescription);
     formData.append("category", values.category);
     formData.append("price", values.price);
     formData.append("stock", values.stock);
-    formData.append("photos", values.photos[0]);
-    if (values.photos[1]) formData.append("photos", values.photos[1]);
-    if (values.photos[2]) formData.append("photos", values.photos[2]);
-    if (values.photos[3]) formData.append("photos", values.photos[3]);
+    formData.append("status", values.status);
 
-    console.log("Form Data:", values.photos);
+    if (values.photos && values.photos.length > 0) {
+      values.photos.forEach((photo, index) => {
+        formData.append(`photos[${index}]`, photo);
+      });
+    }
 
     const config = {
       headers: {
@@ -213,8 +214,6 @@ export async function updateProduct(values) {
         "Content-Type": "multipart/form-data",
       },
     };
-
-    console.log(`/api/products/${values._id}`);
 
     const { data } = await axios.put(
       `/api/products/${values._id}`,
@@ -230,6 +229,7 @@ export async function updateProduct(values) {
     return { error: error.message };
   }
 }
+
 
 export async function handleCustomers(values , id)  {
   console.log("csnxv" , id);
@@ -567,5 +567,33 @@ export async function getCustomerDetail(CustomerAPI) {
   } catch (error) {
     console.error("Error fetching customer detail:", error);
     return { error: "Couldn't fetch customer detail" };
+  }
+}
+
+export async function updateOrder(orderAPI, values) {
+  console.log("values:", values);
+
+  const token = localStorage.getItem("token");
+  console.log("Token:", token);
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  };
+
+  console.log("Order API:", orderAPI);
+
+  try {
+    const res = await axios.put(orderAPI, values, config);
+    console.log("Updated order:", res.data);
+    return res.data; // Return the response data directly
+  } catch (error) {
+    console.error(
+      "Error updating order:",
+      error.response ? error.response.data : error.message
+    );
+    return { error: "Couldn't update order" };
   }
 }

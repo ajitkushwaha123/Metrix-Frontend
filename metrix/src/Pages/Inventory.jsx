@@ -18,6 +18,9 @@ const Inventory = () => {
   const [totalProduct, setTotalProduct] = useState(0);
   const [totalPublished, setTotalPublished] = useState(0);
   const [totalDraft , setTotalDraft] = useState(0);
+  const [lowStock, setLowStock] = useState(0);
+  const [expired, setExpired] = useState(0);
+  const [sufficientStock, setSufficientStock] = useState(0);
 
   const fetchProductsDetails = async () => {
     try {
@@ -25,6 +28,9 @@ const Inventory = () => {
       setTotalProduct(res.data.productDetail.total);
       setTotalPublished(res.data.productDetail.totalPublished);
       setTotalDraft(res.data.productDetail.totalDraft);
+      setLowStock(res.data.productDetail.lowStock);
+      setExpired(res.data.productDetail.expired);
+      setSufficientStock(res.data.productDetail.sufficientStock);
       console.log("product Detail");
     } catch (error) {
       console.log(error);
@@ -70,11 +76,12 @@ const Inventory = () => {
              title1={"Low Stock Alert"}
              title2={"Expired"}
              txtColor={"text-red-200"}
-             title3={"1 Start Rating"}
-             stat1={"23"}
-             stat2={"3"}
-             stat3={"2"}
+             title3={"Sufficient Stock"}
+             stat1={lowStock}
+             stat2={expired}
+             stat3={sufficientStock}
              present={"1"}
+             dropdown={false}
            />
         </div>
       </div>

@@ -115,12 +115,14 @@ const AddProduct = () => {
     },
   });
 
-  const handleDraft = () => {
+  const handleDraft = (e) => {
+    e.preventDefault();
     setDraft(true);
     formik.handleSubmit();
   }
 
-  const handlePublished = () => {
+  const handlePublished = (e) => {
+    e.preventDefault();
     setDraft(false);
     formik.handleSubmit();
   }
@@ -284,14 +286,14 @@ const AddProduct = () => {
 
                   <div className="flex justify-center items-center">
                     <button
-                      onClick={handleDraft}
+                      onClick={(e) => {handleDraft(e)}}
                       className="bg-black mx-[15px] rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
                     >
                       <MdOutlineArrowDropDown className="mr-[15px]" />
                       Save as Draft
                     </button>
                     <button
-                      onClick={handlePublished}
+                      onClick={(e) => {handlePublished(e)}}
                       className="bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
                     >
                       Save & Publish

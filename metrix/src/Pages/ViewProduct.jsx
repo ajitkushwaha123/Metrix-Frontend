@@ -70,65 +70,37 @@ const ViewProduct = () => {
                 title1={"Price"}
                 title2={"In Stock"}
                 txtColor={"text-red-200"}
-                stat1={"25,000"}
-                stat2={"30"}
+                stat1={singleProduct.price}
+                stat2={singleProduct.stock}
                 present={"1"}
+                dropdown={false}
               />
             </div>
             <div className="mx-[10px] w-[29%]">
-              <Stats
-                icon={<BsHandbag />}
-                title1={"Orders"}
-                title2={"Expired"}
-                txtColor={"text-red-200"}
-                stat1={"23"}
-                stat2={"3"}
-                present={"1"}
-              />
-            </div>
-            <div className="mx-[10px] w-[29%]">
-              <Stats
-                icon={<BsHandbag />}
-                title1={"View"}
-                title2={"Favourites"}
-                txtColor={"text-red-200"}
-                stat1={"23"}
-                stat2={"3"}
-                present={"1"}
-              />
-            </div>
-          </div>
-
-          <div className="flex my-[30px]">
-            <div className="w-[50%] mr-[16px]">
               <Stats
                 icon={<BsHandbag />}
                 title1={"All Orders"}
                 title2={"Pending"}
                 txtColor={"text-red-200"}
-                title3={"Completed"}
                 stat1={"23"}
                 stat2={"3"}
-                stat3={"2"}
                 present={"1"}
               />
             </div>
-            <div className="w-[50%] mx-[8px]">
+            <div className="mx-[10px] w-[29%]">
               <Stats
                 icon={<BsHandbag />}
-                title1={"Exchanges"}
-                title2={"Return"}
+                title1={"Completed"}
+                title2={"Cancelled"}
                 txtColor={"text-red-200"}
-                title3={"Damaged"}
                 stat1={"23"}
                 stat2={"3"}
-                stat3={"2"}
                 present={"1"}
               />
             </div>
           </div>
 
-          <div className="bg-white p-12">
+          <div className="bg-white mt-[25px] p-12">
             <ViewProductTable />
           </div>
         </div>

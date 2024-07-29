@@ -3,8 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const CustomerSchema = new mongoose.Schema(
   {
     userId : {
-      type : mongoose.Schema.Types.ObjectId,
-      ref : "User",
+      type : String,
     },
     customerName: {
       type: String,

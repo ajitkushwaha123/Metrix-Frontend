@@ -5,18 +5,16 @@ import express from "express";
 const customers = express();
 
 // Create a new Customer
-
 customers.get("/customer-detail", Auth, async (req, res) => {
   const userId = req.user.userId;
-  console.log(userId);
+  console.log("User ID:", userId);
 
   try {
+    const customers = await Customer.find({ userId: req.user.userId });
+
+    console.log("Customers:", customers);
     const customerDetails = await Customer.aggregate([
-      {
-        $match: {
-          // userId,
-        },
-      },
+      { $match: { userId: req.user.userId } },
       {
         $group: {
           _id: null,
@@ -30,28 +28,36 @@ customers.get("/customer-detail", Auth, async (req, res) => {
             $sum: {
               $cond: [{ $eq: ["$status", "inactive"] }, 1, 0],
             },
+          },
         },
       },
-    },
-      {
-        $sort: { _id: 1 },
-      },
     ]);
+
+    console.log("Customer Details:", customerDetails);
 
     const customerResData =
       customerDetails.length > 0
         ? customerDetails[0]
         : {
-            total: 0,
+            totalCustomers: 0,
             totalActive: 0,
             totalInactive: 0,
           };
 
-    res.status(200).json({customerDetails : customerResData});
+    res.status(200).json({ customerDetails: customerResData });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error fetching customer details:", error);
+    res
+      .status(500)
+      .json({
+        error: "Failed to fetch customer details. Please try again later.",
+      });
   }
 });
+
+
+
+
 
 customers.get("/customer-graph" , Auth , async (req , res) => {
   const userId = req.user.userId;
@@ -158,7 +164,9 @@ customers.get("/find/:Id", Auth, async (req, res) => {
 customers.get("/", Auth, async (req, res) => {
   try {
     console.log(req.user.userId);
-    const customers = await Customer.find({ userId: req.user.userId });
+    const customers = await Customer.find({ userId: req.user.userId }).sort({
+      createdAt: -1,
+    });;
     res.status(200).json(customers);
   } catch (err) {
     res.status(500).json(err);

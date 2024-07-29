@@ -9,6 +9,7 @@ import { TiPlus } from "react-icons/ti";
 import CustomerTable from "../../DataTable/CustomerTable";
 import { NavLink } from "react-router-dom";
 import { getCustomerDetail } from "../../helper/helper";
+import NewCustomer from "./AddCustomer";
 
 
 const Customer = () => {
@@ -45,12 +46,9 @@ const Customer = () => {
         <h3 className="font-normal pt-[10px] text-[20px] font-poppins">
           Customer Summary
         </h3>
-        <NavLink to={"/inventory/new-product"}>
-          <button className="bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2">
-            <TiPlus className="mr-[15px]" />
-            Add a New Customer
-          </button>
-        </NavLink>
+       
+            {/* <NewCustomer /> */}
+    
       </div>
 
       {/* Stats */}
@@ -69,6 +67,7 @@ const Customer = () => {
             // padY={"10px"}
             txtColor={"white"}
             present={"1"}
+            dropdown={false}
           />
         </div>
         <div className="w-[55%] pl-[30px]">

@@ -69,10 +69,19 @@ const NewOrder = () => {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    console.log(token);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
     axios
-      .get("http://localhost:8000/api/products")
+      .get("http://localhost:8000/api/products" , config)
       .then((response) => {
-        console.log(response.data);
+        console.log( response.data);
         setProducts(response.data);
       })
       .catch((err) => {
@@ -85,11 +94,22 @@ const NewOrder = () => {
     setLoading(true);
     setError(null);
 
+    console.log("Search Query", query);
+
+    const token = localStorage.getItem("token");
+    console.log(token);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+    
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/products?search=${query}`
+        `http://localhost:8000/api/products?search=${query}` , config
       );
-      console.log(response.data);
+      console.log("searchhhhhh" , response.data);
       setProducts(response.data);
     } catch (err) {
       setError("Error fetching data");

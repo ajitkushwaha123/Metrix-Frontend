@@ -642,6 +642,24 @@ orders.get("/sales-graph", Auth, async (req, res) => {
   }
 });
 
+orders.get("/single/:productId", Auth, async (req, res) => {
+  try {
+    console.log("Fetching order...");
+    console.log(req.params.productId);
+    
+    const order = await Order.findById(req.params.productId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    res.status(200).json({ order });
+  } catch (err) {
+    console.error("Error fetching order:", err);
+    res
+      .status(500)
+      .json({ message: "Failed to fetch order", error: err.message });
+  }
+});
+
 
 // Create a new Order
 orders.post("/", Auth, async (req, res) => {
