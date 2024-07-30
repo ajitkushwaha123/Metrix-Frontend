@@ -18,15 +18,14 @@ const Order = () => {
     <div>
       <Navbar title={"Order"}/>
       <BreadCrum title={"Order"} back={"/"} />
-      <div className='flex justify-between items-center px-[30px] py-[10px]'>
-        <h3 className='font-normal pt-[10px] text-[20px] font-poppins'>Order Summary</h3>
-        <NavLink to={"/inventory/new-product"}><button className='bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2'><TiPlus className='mr-[15px]'/>Add a New Order</button></NavLink>
-        {/* <NewOrder /> */}
+      <div className='flex justify-between  items-center px-[20px] py-[10px]'>
+        <h3 className='font-normal pt-[10px] md:text-[20px] text-[17px] font-poppins'>Order Summary</h3>
+        <NavLink to={""}><button className='bg-primary rounded-lg flex justify-center items-center text-white px-3 md:px-6 text-[15px] md:text-[18px] py-2'><TiPlus className='mr-[8px] md:mr-[15px]'/>Create Order</button></NavLink>
       </div>
 
 
       {/* Stats */}
-      <div className='flex px-[28px] py-[10px]'>
+      <div className='flex md:flex-row overflow-x-hidden flex-col px-[20px] md:px-[28px] py-[10px]'>
       <div className='w-full mt-[4px]'>
           <div className='w-full'>
            <Stats 
@@ -46,7 +45,7 @@ const Order = () => {
         </div>
           </div>
 
-        <div className='w-full pl-[30px]'>
+        <div className='w-full py-[20px] md:py-[0px] md:pl-[30px]'>
            <Stats 
              icon={<BsHandbag />}
              title3={"Cancelled"}
@@ -62,8 +61,8 @@ const Order = () => {
         </div>
       </div>
 
-      <div className='px-[30px] py-[30px]'>
-        <div className='bg-white py-[40px] px-[40px]'>
+      <div className='px-[30px] pb-[20px] md:py-[30px]'>
+        <div className='bg-white rounded-xl overflow-x-scroll py-[40px] px-[40px]'>
           <OrderTable />
         </div>
       </div>

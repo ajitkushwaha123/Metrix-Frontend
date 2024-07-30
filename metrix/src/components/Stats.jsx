@@ -40,8 +40,6 @@ const Stats = ({
   const [sales, setSales] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
-  const OrderAPI = "http://localhost:8000/api/orders";
-
   const fetchSales = async () => {
     setIsLoading(true);
     const res = await getSales();

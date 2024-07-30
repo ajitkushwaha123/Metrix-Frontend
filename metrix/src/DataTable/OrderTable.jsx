@@ -30,10 +30,11 @@ import {ChevronDownIcon} from "./ChevronDownIcon";
 import {capitalize} from "./utils";
 import { NavLink } from "react-router-dom";
 import NewOrder from "../Pages/NewOrder";
-import { getOrders } from "../helper/helper";
+import { deleteAPI, getOrders } from "../helper/helper";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import config from "../../../Backend/config";
+import toast from "react-hot-toast";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -89,8 +90,6 @@ const INITIAL_VISIBLE_COLUMNS = [
   // "orderType"
 ];
 
-const API = "http://localhost:8000/api/orders";
-
 export default function OrderTable() {
   const [isOpen, setIsOpen] = useState(false);
   const [users, setUsers] = useState([]);
@@ -99,41 +98,29 @@ export default function OrderTable() {
 
   const toggleModal = () => {
     setIsOpen((prevState) => !prevState);
-    console.log(isOpen); // This will log the previous state value
+    console.log(isOpen); 
   };
 
   const deleteOrder = async (id) => {
     // alert("Are you sure you want to delete this order... ?");
     setLoading(true);
 
-    const token = localStorage.getItem("token");
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    };
-
     try {
-      const res = await axios.delete(
-        `http://localhost:8000/api/orders/${id}`,
-        config
-      );
+      const res = await deleteAPI(id);
       console.log("Response:", res);
-      // window.location.reload();
       setLoading(false);
       fetchOrders();
-      // window.reload();
+      toast.success("Order deleted successfully");
     } catch (error) {
       console.error("Error deleting order:", error);
+      toast.error("Error deleting order");
     } finally {
       setLoading(false);
     }
   };
 
   const fetchOrders = async () => {
-    const {data} = await getOrders(API);
+    const {data} = await getOrders(`/orders`);
 
     console.log("Orders:", data);
     const newUsers = data.orders.map((order) => {
@@ -450,13 +437,7 @@ export default function OrderTable() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            {/* <Button
-              className="bg-primary text-background"
-              endContent={<PlusIcon />}
-              size="sm"
-            >
-            </Button> */}
-            <NewOrder />
+            <NewOrder className="text-sm"/>
             {/* {isOpen == true && <NewOrder />} */}
           </div>
         </div>

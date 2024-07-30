@@ -49,10 +49,11 @@ export async function getOrders(url) {
     },
   };
 
-
   try {
-    console.log("URL:", url);
-    const { data } = await axios.get(`${url}`, config);
+    const { data } = await axios.get(
+      `${API_URL}/${url}`,
+      config
+    );
     console.log("Orders:", data);
     return  {data};
 
@@ -463,7 +464,7 @@ export async function getSales(){
   }
 };
 
-export async function getSalesForGraph(OrderAPI){
+export async function getSalesForGraph(){
   try {
     const token = localStorage.getItem("token");
     const config = {
@@ -473,7 +474,7 @@ export async function getSalesForGraph(OrderAPI){
       },
     };
 
-    const res = await axios.get(`${OrderAPI}/sales-graph`, config);
+    const res = await axios.get(`${API_URL}/orders/sales-graph`, config);
 
     const sales = res;
     console.log("sales-graph:", sales);
@@ -485,7 +486,7 @@ export async function getSalesForGraph(OrderAPI){
   }
 };
 
-export async function getCustomerForGraph(OrderAPI){
+export async function getCustomerForGraph(){
   try {
     const token = localStorage.getItem("token");
     const config = {
@@ -495,7 +496,7 @@ export async function getCustomerForGraph(OrderAPI){
       },
     };
 
-    const res = await axios.get(`${OrderAPI}/customer-graph`, config);
+    const res = await axios.get(`${API_URL}/customer/customer-graph`, config);
 
     const customer = res;
     console.log("customer-graph:", customer);
@@ -507,7 +508,7 @@ export async function getCustomerForGraph(OrderAPI){
   }
 };
 
-export async function getProductDetail(ProductAPI){
+export async function getProductDetail(){
   try {
     const token = localStorage.getItem("token");
     const config = {
@@ -517,7 +518,7 @@ export async function getProductDetail(ProductAPI){
       },
     };
 
-    const res = await axios.get(`${ProductAPI}/size`, config);
+    const res = await axios.get(`${API_URL}/products/size`, config);
 
     const product = res;
     console.log("product-detail:", product);
@@ -550,7 +551,7 @@ export async function getProducts(ProductAPI) {
   }
 }
 
-export async function getCustomerDetail(CustomerAPI) {
+export async function getCustomerDetail() {
   try {
     const token = localStorage.getItem("token");
     const config = {
@@ -560,7 +561,7 @@ export async function getCustomerDetail(CustomerAPI) {
       },
     };
 
-    const res = await axios.get(`${CustomerAPI}/customer-detail`, config);
+    const res = await axios.get(`${API_URL}/customer/customer-detail`, config);
 
     const customer = res;
     console.log("customer-detail:", customer);
@@ -630,5 +631,102 @@ export async function bulkUploader(file){
   {
     console.log("Error submitting form:", err);
     return Promise.reject({ error: "Couldn't upload file" });
+  }
+}
+
+export async function deleteAPI(id)
+{
+  try{
+    const token = localStorage.getItem("token");
+    console.log(token);
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const response = await axios.delete(
+      `${API_URL}/orders/${id}`,
+      config
+    );
+
+    console.log("Item Deleted :", response);
+
+    return Promise.resolve({ response });
+  }catch(err){
+    console.log("Error deleting file:", err);
+    return Promise.reject({ error: "Couldn't delete file" });
+  }
+}
+
+export async function getAllProducts() {
+  try {
+    const token = localStorage.getItem("token");
+    console.log(token);
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const {data} = await axios.get(`${API_URL}/products`, config);
+    console.log("All Products:", data);
+    // return data.data; 
+    return Promise.resolve({ data });
+  } catch (err) {
+    console.log("Error fetching products:", err);
+    // throw new Error("Couldn't fetch products"); 
+    return Promise.reject({ error: "Couldn't fetch products" });
+  }
+}
+
+export async function searchProduct(query){
+  try{
+    const token = localStorage.getItem("token");
+    console.log(token);
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const {data} = await axios.get(`${API_URL}/products?search=${query}`, config);
+    console.log("Search Products:", data);
+    return Promise.resolve({ data });
+  }catch(err)
+  {
+    console.log("Error fetching products:", err);
+    return Promise.reject({ error: "Couldn't find products" });
+  }
+}
+
+export async function insertOrders(values){
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  };
+
+  try {
+    const { data } = await axios.post(
+      `${API_URL}/orders`,
+      values,
+      config
+    );
+
+    console.log("Orders Added", data);
+    return Promise.resolve({ data });
+  }catch(err)
+  {
+    console.error("Error adding orders:", err);
+    return Promise.reject({ error: "Couldn't add orders" });
   }
 }

@@ -17,7 +17,7 @@ const RecentOrders = () => {
     setIsLoading(true);
     try {
       const { data } = await getOrders(
-        `http://localhost:8000/api/orders?page=${page}&limit=${ordersPerPage}`
+        `orders?page=${page}&limit=${ordersPerPage}`
       );
       setIsLoading(false);
       setOrders(data.orders);

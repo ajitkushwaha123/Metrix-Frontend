@@ -16,11 +16,6 @@ import RecentOrders from '../components/RecentOrders';
 import { getProductDetail , getCustomerDetail } from '../helper/helper';
 
 const Dashboard = () => {
-
-  const ProductAPI = "http://localhost:8000/api/products";
-
-  const CustomerAPI = "http://localhost:8000/api/customer";
-
   const [totalCustomer, setTotalCustomer] = useState(0);
   const [totalActiveCustomer, setTotalActiveCustomer] = useState(0);
   const [totalInactiveCustomer, setTotalInactiveCustomer] = useState(0);
@@ -31,7 +26,7 @@ const Dashboard = () => {
 
   const fetchProductsDetails = async () => {
     try {
-      const res = await getProductDetail(ProductAPI);  
+      const res = await getProductDetail();  
       setTotalProduct(res.data.productDetail.total);
       setTotalPublished(res.data.productDetail.totalPublished);
 
@@ -43,7 +38,7 @@ const Dashboard = () => {
 
   const fetchCustomersDetails = async () => {
     try {
-      const res = await getCustomerDetail(CustomerAPI);
+      const res = await getCustomerDetail();
       console.log("aklscj", res);
       setTotalCustomer(res.data.customerDetails.totalCustomers);
       setTotalActiveCustomer(res.data.customerDetails.totalActive);
@@ -59,7 +54,7 @@ const Dashboard = () => {
   useEffect(() => {
     fetchProductsDetails();
     fetchCustomersDetails();
-  } , [CustomerAPI  , ProductAPI]);
+  } , []);
 
   return (
     <div className="w-full overflow-x-hidden">

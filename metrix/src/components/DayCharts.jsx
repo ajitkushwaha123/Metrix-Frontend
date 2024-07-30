@@ -18,20 +18,20 @@ const DayChart = ({ select }) => {
   const [sales, setSales] = useState([]);
   const [customer, setCustomer] = useState([]);
 
-  const fetchSalesData = async (OrderAPI) => {
-    const data = await getSalesForGraph(OrderAPI);
+  const fetchSalesData = async () => {
+    const data = await getSalesForGraph();
     setSales(data.data);
   };
 
-  const fetchCustomerData = async (API) => {
-    const { data } = await getCustomerForGraph(API);
+  const fetchCustomerData = async () => {
+    const { data } = await getCustomerForGraph();
     setCustomer(data);
   };
 
   useEffect(() => {
-    fetchSalesData(OrderAPI);
-    fetchCustomerData(API);
-  }, [OrderAPI, API]);
+    fetchSalesData();
+    fetchCustomerData();
+  }, []);
 
   const defaultData = [
     { _id: "Day 1", value: 10 },

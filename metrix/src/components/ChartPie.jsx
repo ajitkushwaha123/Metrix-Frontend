@@ -19,12 +19,11 @@ const ChartPie = () => {
   const [sales, setSales] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState("today");
-  const OrderAPI = "http://localhost:8000/api/orders";
 
   const fetchSales = async () => {
     setIsLoading(true);
     try {
-      const res = await getSales(OrderAPI);
+      const res = await getSales();
       console.log("reowwow", res);
       setSales(res.data);
       setIsLoading(false);
@@ -37,7 +36,7 @@ const ChartPie = () => {
 
   useEffect(() => {
     fetchSales();
-  }, [OrderAPI]);
+  }, []);
 
   const takeAway = () => {
     switch (selected) {
