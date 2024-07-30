@@ -33,56 +33,53 @@ const Graph = ({title , present , present2 , height="327px"}) => {
 
   return (
     <div className={`rounded-xl font-poppins`}>
-      <div className="flex justify-between px-7 py-4">
-        <div className="flex justify-center items-center">
+      <div className="flex justify-between items-center w-full px-[20px] md:px-7 py-4">
+        <div className="">
           <p className="text-[18px] font-poppins text-medium mr-[15px]">
             Marketting
           </p>
-          {present == 1 && (
-            <button className="bg-secondary flex justify-center items-center px-[6px] py-[1px] rounded-xl mr-[20px]">
-              <Dropdown backdrop="blur">
-                <DropdownTrigger
-                  color="slate-400"
-                  classNames="text-[40px] text-txtPrimary"
-                >
-                  <Button className="text-[16px]">
-                    {renderTimePeriod()}
-                    <MdOutlineKeyboardArrowDown />
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu variant="faded" aria-label="Static Actions">
-                  <DropdownItem
-                    onClick={() => {
-                      setSelected("sales");
-                    }}
-                    key="sales"
-                  >
-                    Sales
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => {
-                      setSelected("order");
-                    }}
-                    key="order"
-                  >
-                    Orders
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => {
-                      setSelected("customers");
-                    }}
-                    key="customers"
-                  >
-                    Customers
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </button>
-          )}
         </div>
-        <p className="flex text-txtPrimary justify-center items-center">
-          This Week <MdOutlineKeyboardArrowDown className="text-[22px]" />
-        </p>
+        <div>
+          <button className="bg-secondary flex justify-center items-center md:px-[6px] py-[1px] rounded-xl mr-[20px]">
+            <Dropdown backdrop="blur">
+              <DropdownTrigger
+                color="slate-400"
+                classNames="text-[40px] text-txtPrimary"
+              >
+                <Button className="text-[16px]">
+                  {renderTimePeriod()}
+                  <MdOutlineKeyboardArrowDown />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu variant="faded" aria-label="Static Actions">
+                <DropdownItem
+                  onClick={() => {
+                    setSelected("sales");
+                  }}
+                  key="sales"
+                >
+                  Sales
+                </DropdownItem>
+                <DropdownItem
+                  onClick={() => {
+                    setSelected("order");
+                  }}
+                  key="order"
+                >
+                  Orders
+                </DropdownItem>
+                <DropdownItem
+                  onClick={() => {
+                    setSelected("customers");
+                  }}
+                  key="customers"
+                >
+                  Customers
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </button>
+        </div>
       </div>
 
       {present2 && (
@@ -91,23 +88,16 @@ const Graph = ({title , present , present2 , height="327px"}) => {
             TakeAway
           </li>
           <li className="mr-[10px]  text-center text-[#97A5EB]">DineIn</li>
-          <li className="mr-[10px]  text-center text-[#FFCC91]">HomeDelivery</li>
+          <li className="mr-[10px]  text-center text-[#FFCC91]">
+            HomeDelivery
+          </li>
         </div>
       )}
 
-      <div className="mx-auto flex justify-center items-center">
-        {title === "1" && (
-          <div>
-            <DayChart select={selected}/>
-          </div>
-        )}
-        {
-          title !== "1" && (
-            <div>
-              <ChartPie />
-            </div>
-          )
-        }
+      <div className="flex justify-center items-center">
+        <div className='w-[100%]'>
+          <DayChart select={selected} />
+        </div>
       </div>
     </div>
   );

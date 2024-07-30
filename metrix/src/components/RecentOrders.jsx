@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { getOrders } from "../helper/helper";
 import Skeleton from "react-loading-skeleton";
 import { Pagination } from "@nextui-org/react";
+import { productImg } from "../assets";
+import { NavLink } from "react-router-dom";
 
 const RecentOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -62,10 +64,27 @@ const RecentOrders = () => {
             <Skeleton height={600} width={501} />
           </div>
         ) : (
-          <div className="px-7 min-h-[600px]">
-            {totalOrders === 0 && <div>No orders found</div>}
+          <div className="md:px-7">
+            {totalOrders === 0 && (
+              <div className="flex py-[50px] justify-center items-center flex-col">
+                <img width={"200px"} src={productImg} />
+                <p className="font-medium my-[20px] font-poppins text-[22px]">
+                  No Orders Yet
+                </p>
+                <p>
+                  Add products to your store and start selling to see orders
+                  here.
+                </p>
+
+                <NavLink to={"/inventory/new-product"}>
+                  <button className="bg-primary text-white px-5 py-2 rounded-md mt-5">
+                    + Add Products
+                  </button>
+                </NavLink>
+              </div>
+            )}
             {totalOrders > 0 && (
-              <div>
+              <div className=" min-h-[600px]">
                 {orders.map((order, index) => (
                   <div
                     key={index}

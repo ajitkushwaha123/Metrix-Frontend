@@ -44,7 +44,7 @@ const Stats = ({
 
   const fetchSales = async () => {
     setIsLoading(true);
-    const res = await getSales(OrderAPI);
+    const res = await getSales();
     console.log("resooooo", res);
     setSales(res.data);
     setIsLoading(false);
@@ -54,7 +54,7 @@ const Stats = ({
 
   useEffect(() => {
     fetchSales();
-  }, [OrderAPI])
+  }, [])
 
   const renderSales = () => {
     switch (selected) {

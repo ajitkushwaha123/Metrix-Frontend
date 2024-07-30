@@ -4,6 +4,7 @@ import axios from "axios";
 axios.defaults.baseURL = "http://localhost:8000";
 import { jwtDecode } from "jwt-decode";
 
+const API_URL = "http://localhost:8000/api";
 // Authentication function
 export async function authenticate(username) {
   try {
@@ -440,7 +441,7 @@ export async function resetPassword({ username, password }) {
 }
 
 
-export async function getSales(OrderAPI){
+export async function getSales(){
   try {
     const token = localStorage.getItem("token");
     const config = {
@@ -450,7 +451,7 @@ export async function getSales(OrderAPI){
       },
     };
 
-    const res = await axios.get(`${OrderAPI}/sales`, config);
+    const res = await axios.get(`${API_URL}/orders/sales`, config);
 
     const sales = res;
     console.log("sales:", sales);
@@ -595,5 +596,39 @@ export async function updateOrder(orderAPI, values) {
       error.response ? error.response.data : error.message
     );
     return { error: "Couldn't update order" };
+  }
+}
+
+
+export async function bulkUploader(file){
+  try{
+    const token = localStorage.getItem("token");
+    console.log(token);
+
+
+    console.log("file" , file);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    console.log("Form Data:", formData);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    const  response  = await axios.post(
+      "http://localhost:8000/api/bulkupload/upload",
+      formData,
+      config
+    );
+    console.log("Bulk Upload:", response);
+
+    return Promise.resolve({ response });
+  }catch(err)
+  {
+    console.log("Error submitting form:", err);
+    return Promise.reject({ error: "Couldn't upload file" });
   }
 }

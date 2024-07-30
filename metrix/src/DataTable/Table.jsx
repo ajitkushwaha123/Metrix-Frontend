@@ -29,6 +29,7 @@ import {columns, statusOptions} from "./data";
 import {capitalize} from "./utils";
 import { NavLink, useParams } from "react-router-dom";
 import { loader } from "../assets";
+import BulkUpload from "../components/BulkUpload";
 
 const statusColorMap = {
   published: "success",
@@ -321,16 +322,7 @@ const reloadFunction = () => {
               </DropdownMenu>
             </Dropdown>
 
-            {/* <NavLink to={"/inventory/new-product"}> */}
-              <Button
-                onClick={reloadFunction}
-                className="bg-primary text-background"
-                endContent={<PlusIcon />}
-                size="sm"
-              >
-                Sync Data
-              </Button>
-            {/* </NavLink> */}
+            <BulkUpload />
           </div>
         </div>
         <div className="flex justify-between items-center">

@@ -62,12 +62,12 @@ const Dashboard = () => {
   } , [CustomerAPI  , ProductAPI]);
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-hidden">
       <Navbar title="Dashboard" />
       <BreadCrum />
 
-      <div className="px-[40px] flex">
-        <div className="w-[33.33%] pr-[15px]">
+      <div className="px-[20px] md:px-[40px] flex flex-col md:flex-row">
+        <div className="w-[100%] mb-[20px] md:mb-[0px] md:w-[33.33%] md:pr-[15px]">
           <Stats
             sale={true}
             icon={<AiOutlinePieChart />}
@@ -83,23 +83,23 @@ const Dashboard = () => {
             present={"1"}
           />
         </div>
-        <div className="w-[33.33%] pl-[15px]">
+        <div className="w-[100%] mb-[20px] md:mb-[0px] md:w-[33.33%] md:pl-[15px]">
           <Stats
             icon={<LuUsers2 />}
             title1={"Customers"}
             title2={"Active"}
             title3={"In-Active"}
-            stat1={totalCustomer}
+            stat1={totalCustomer || "0"}
             // stat1per={"0.00%"}
-            stat2={totalActiveCustomer}
+            stat2={totalActiveCustomer || "0"}
             // stat2per={"0.00%"}
-            stat3={totalInactiveCustomer}
+            stat3={totalInactiveCustomer || "0"}
             // stat3per={"0.00%"}
             present={"1"}
             dropdown={false}
           />
         </div>
-        <div className="w-[33.33%] pl-[30px]">
+        <div className="w-[100%] mb-[20px] md:mb-[0px] md:w-[33.33%] md:pl-[30px]">
           <Stats
             orderStatus={true}
             icon={<BsHandbag />}
@@ -117,15 +117,15 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="flex py-[30px]">
-        <div className="w-[62%]">
-          <div className="px-[40px] flex">
+      <div className="flex md:py-[30px]">
+        <div className="w-[100%] md:w-[62%]">
+          <div className="px-[20px] md:px-[40px] flex md:flex-row flex-col">
             <div className="w-[100%] bg-white pb-[20px] h-[327px] rounded-xl ">
               <ChartPie />
             </div>
 
-            <div className="w-[100%] ml-[28px]">
-              <div className="mt-[4px]">
+            <div className="w-[100%] md:ml-[28px]">
+              <div className="mt-[20px] md:mt-[4px]">
                 <Stats
                   bgColor="primary"
                   height="170px"
@@ -140,7 +140,7 @@ const Dashboard = () => {
                 />
               </div>
 
-              <div className="mt-[30px]">
+              <div className="mt-[20px] md:mt-[30px]">
                 <Stats
                   height="159px"
                   icon={<BsCart3 />}
@@ -154,17 +154,23 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="px-[40px] flex py-[20px]">
-            <div className="w-[100%] bg-white">
+          <div className="px-[20px] md:px-[40px] flex py-[20px]">
+            <div className="w-[100%] rounded-xl bg-white">
               <Graph title="1" height="400px" present={"1"} />
             </div>
           </div>
         </div>
 
-        <div className="w-[35%]">
-          <div className="bg-white rounded-xl  pr-[15px] w-full">
+        <div className="hidden md:block w-[100%] md:w-[35%]">
+          <div className="bg-white rounded-xl  md:pr-[15px] w-full">
             <RecentOrders />
           </div>
+        </div>
+      </div>
+
+      <div className=" md:hidden pb-[20px] px-[20px] w-[100%]">
+        <div className="bg-white rounded-xl">
+          <RecentOrders />
         </div>
       </div>
     </div>

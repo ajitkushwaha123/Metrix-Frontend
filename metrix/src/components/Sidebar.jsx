@@ -55,7 +55,7 @@ const Sidebar = () => {
   }, [location]); 
 
   return (
-    <div className="hover:w-[296px] w-[88px] pb-[30px] h-screen font-poppins group bg-[#fff]">
+    <div className="hover:w-[296px] hidden sm:block w-[88px] pb-[30px] h-screen font-poppins group bg-[#fff]">
       <div className="w-[100%] flex justify-start group-hover:px-[50px] px-[20px] items-center h-[100px]">
         <img className="w-[50px] h-[50px]" src={metrix} alt="Metrix Logo" />
         <h3 className="text-black ml-[10px] font-poppins font-bold text-[25px] hidden group-hover:block">

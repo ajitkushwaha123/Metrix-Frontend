@@ -10,7 +10,7 @@ products.get("/" , Auth , async (req , res) => {
   const userId = req.user.userId;
   console.log("User ID:" , userId);
   try{
-    const products = await Product.find({userId : req.user.userId});
+    const products = await Product.find({userId : userId});
     res.status(200).json(products);
   }
   catch(err){
