@@ -5,7 +5,8 @@ import { useFormik } from "formik";
 import { CiSearch } from "react-icons/ci";
 import toast, { Toaster } from "react-hot-toast";
 import { createOrderValidate } from "../../helper/validate";
-import { Avatar } from "@nextui-org/react";
+import { Avatar , Button } from "@nextui-org/react";
+import { addCustomers } from "../../helper/helper";
 
 const NewCustomer = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,16 +28,20 @@ const NewCustomer = () => {
   const [error, setError] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
 
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const response = await getProd();
+      setProducts(response.data);
+      setLoading(false);
+    } catch (error) {
+      setError(error);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/products")
-      .then((response) => {
-        console.log(response.data);
-        setProducts(response.data);
-      })
-      .catch((err) => {
-        setError("Error fetching data");
-      });
+    fetchProducts();
   }, []);
 
   const handleCustomer = () => {
@@ -45,22 +50,8 @@ const NewCustomer = () => {
   };
 
   const handleCustomers = async (values) => {
-    const token = localStorage.getItem("token");
-    console.log(token);
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    };
-
     try {
-      const { data } = await axios.post(
-        "http://localhost:8000/api/customer",
-        values,
-        config
-      );
+      const  data  = await addCustomers(values)
 
       console.log("Customer Added", data);
       return Promise.resolve({ customer: data });
@@ -135,14 +126,14 @@ const handleImage = (e, user) => {
   return (
     <>
       {/* Modal toggle */}
-      <button
+      <Button
         onClick={toggleModal}
         className="block flex justify-center items-center font-poppins text-white bg-primary font-medium rounded-lg text-sm px-5 py-1.5 text-center "
         type="button"
         size="sm"
       >
         <span className="text-[21px] mr-[8px]">+</span> Add Customer
-      </button>
+      </Button>
 
       {/* Main modal */}
       {isOpen && (
@@ -154,7 +145,7 @@ const handleImage = (e, user) => {
             aria-hidden="true"
             className="fixed shadow-lg shadow-indigo-500/40 backdrop-blur-sm bg-indigo-500/10 font-poppins top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full overflow-y-auto overflow-x-hidden"
           >
-            <div className="relative p-4 max-w-[450px] max-h-full">
+            <div className="relative p-4 min-w-[350px] max-w-[450px] max-h-full">
               {/* Modal content */}
               <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
                 {/* Modal header */}

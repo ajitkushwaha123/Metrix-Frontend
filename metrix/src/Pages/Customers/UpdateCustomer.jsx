@@ -183,7 +183,7 @@ const UpdateCustomer = () => {
             aria-hidden="true"
             className="fixed shadow-lg shadow-indigo-500/40 backdrop-blur-sm bg-indigo-500/10 font-poppins top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full overflow-y-auto overflow-x-hidden"
           >
-            <div className="relative p-4 max-w-[450px] max-h-full">
+            <div className="relative p-4 min-w-[350px] max-w-[450px] max-h-full">
               {/* Modal content */}
               <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
                 {/* Modal header */}

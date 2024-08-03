@@ -4,8 +4,7 @@ import reducer from "../reducer/productReducer";
 
 const AppContext = createContext();
 
-const API = "http://localhost:8000/api/products";
-const OrderAPI = "http://localhost:8000/api/orders";
+const API = "http://localhost:8000/api";
 
 const initialState = {
   isLoading: false,
@@ -50,7 +49,7 @@ const AppProvider = ({ children }) => {
 
     dispatch({ type: "SET_SINGLE_LOADING" });
     try {
-      const res = await axios.get(url, config);
+      const res = await axios.get(`${API}/${url}`, config);
       console.log("res", res);
       const singleProduct = res.data;
       console.log("singleproduct : ", singleProduct);
@@ -62,7 +61,7 @@ const AppProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    getProducts(API);
+    getProducts(`${API}/products`);
   }, [API]);
 
   return (

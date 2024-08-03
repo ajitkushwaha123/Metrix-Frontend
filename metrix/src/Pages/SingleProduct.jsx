@@ -6,9 +6,6 @@ import { StarIcon } from '@heroicons/react/solid'
 import { RadioGroup } from '@headlessui/react'
 import { CurrencyDollarIcon, GlobeIcon } from '@heroicons/react/outline'
 
-
-const API = "http://localhost:8000/api/products";
-
 const SingleProduct = () => {
   const { getSingleProduct, isSingleLoading, singleProduct } = useProductContext();
   const { id } = useParams();
@@ -17,7 +14,7 @@ const SingleProduct = () => {
 
   useEffect(() => {
     console.log("id", id);
-    getSingleProduct(`${API}/${id}`)
+    getSingleProduct(`products/${id}`)
   }, []);
 
  // const photos = [];

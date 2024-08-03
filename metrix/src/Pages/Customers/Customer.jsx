@@ -1,4 +1,4 @@
-import React , {useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import BreadCrum from "../../components/BreadCrum";
 import { LuUsers2 } from "react-icons/lu";
@@ -11,54 +11,48 @@ import { NavLink } from "react-router-dom";
 import { getCustomerDetail } from "../../helper/helper";
 import NewCustomer from "./AddCustomer";
 
-
 const Customer = () => {
-    const CustomerAPI = "http://localhost:8000/api/customer";
+  const [totalCustomer, setTotalCustomer] = useState(0);
+  const [totalActiveCustomer, setTotalActiveCustomer] = useState(0);
+  const [totalInactiveCustomer, setTotalInactiveCustomer] = useState(0);
 
-   const [totalCustomer, setTotalCustomer] = useState(0);
-   const [totalActiveCustomer, setTotalActiveCustomer] = useState(0);
-   const [totalInactiveCustomer, setTotalInactiveCustomer] = useState(0);
+  const fetchCustomersDetails = async () => {
+    try {
+      const res = await getCustomerDetail();
+      console.log("aklscj", res);
+      setTotalCustomer(res.data.customerDetails.totalCustomers);
+      setTotalActiveCustomer(res.data.customerDetails.totalActive);
+      setTotalInactiveCustomer(res.data.customerDetails.totalInactive);
+      console.log("product Detail", totalInactiveCustomer);
 
-   const fetchCustomersDetails = async () => {
-     try {
-       const res = await getCustomerDetail(CustomerAPI);
-       console.log("aklscj" , res);
-       setTotalCustomer(res.data.customerDetails.totalCustomers);
-       setTotalActiveCustomer(res.data.customerDetails.totalActive);
-       setTotalInactiveCustomer(res.data.customerDetails.totalInactive);
-       console.log("product Detail" , totalInactiveCustomer);
+      console.log("totalCustomer", totalCustomer);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-       console.log("totalCustomer", totalCustomer);
-     } catch (error) {
-       console.log(error);
-     }
-   };
-
-     useEffect(() => {
-       fetchCustomersDetails();
-     }, [CustomerAPI]);
+  useEffect(() => {
+    fetchCustomersDetails();
+  }, []);
 
   return (
     <div>
       <Navbar title={"Customer"} />
       <BreadCrum title={"Customer"} back={"/"} />
-      <div className="flex justify-between items-center px-[30px] py-[10px]">
+      <div className="flex justify-between items-center px-[20px] md:px-[30px] py-[10px]">
         <h3 className="font-normal pt-[10px] text-[20px] font-poppins">
           Customer Summary
         </h3>
-       
-            {/* <NewCustomer /> */}
-    
       </div>
 
       {/* Stats */}
-      <div className="flex px-[28px] py-[10px]">
-        <div className="w-[45%] mt-[4px]">
+      <div className="flex flex-col md:flex-row px-[28px] py-[10px]">
+        <div className="w-[100%] md:w-[45%] mt-[4px]">
           <Stats
             bgColor="primary"
             height="170px"
             icon={<BsFolder2Open />}
-            title1={"All Customers"}
+            title1={"All"}
             title2={"Active"}
             title3={"In-Active"}
             stat1={totalCustomer}
@@ -70,7 +64,7 @@ const Customer = () => {
             dropdown={false}
           />
         </div>
-        <div className="w-[55%] pl-[30px]">
+        <div className="w-[100%] md:w-[55%] mt-[20px] md:mt-[0px] md:pl-[30px]">
           <Stats
             icon={<BsHandbag />}
             title1={"Low Stock Alert"}
@@ -85,8 +79,8 @@ const Customer = () => {
         </div>
       </div>
 
-      <div className="px-[30px] py-[30px]">
-        <div className="bg-white py-[40px] px-[40px]">
+      <div className="px-[20px] md:px-[30px] py-[30px]">
+        <div className="bg-white py-[40px] px-[20px] md:px-[40px]">
           <CustomerTable />
         </div>
       </div>

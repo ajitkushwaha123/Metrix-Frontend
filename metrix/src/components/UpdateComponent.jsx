@@ -6,8 +6,8 @@ import { MdOutlineArrowDropDown } from "react-icons/md";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useProductContext } from "../context/productContext";
-import { updateProduct } from "../helper/helper";
-import { Textarea, Input } from "@nextui-org/react";
+import { updateProduct , getCategory } from "../helper/helper";
+import { Textarea, Input, Checkbox } from "@nextui-org/react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import { Select, SelectItem  , Avatar} from "@nextui-org/react";
@@ -31,30 +31,16 @@ const UpdateComponent = () => {
   console.log("Category data", selectCategory);
 
   const fetchCategory = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      };
+    const response = await getCategory();
+    console.log("Category data", response);
+    setCategory(response.data.categories);
+    console.log("Category ed successfully", response.data.categories);
 
-      const response = await axios.get(
-        `http://localhost:8000/api/category`,
-        config
-      );
-      setCategory(response.data.categories);
-      console.log("Category ed successfully", response.data.categories);
-
-      console.log("Category data fetched successfully", category);
-    } catch (error) {
-      console.log("Error while fetching category data", error);
-    }
+    console.log("Category data fetched successfully", category);
   };
 
   useEffect(() => {
-    getSingleProduct(`${API}/${id}`);
+    getSingleProduct(`/products/${id}`);
     fetchCategory();
   }, [id]);
 
@@ -155,12 +141,69 @@ const UpdateComponent = () => {
     <div className="">
       <Toaster position="top-center" reverseOrder={false}></Toaster>
       <div className="flex px-[40px] py-[20px] items-center">
-        <p className="text-[22px] font-medium">Update New Product</p>
+        <p className="text-[22px] font-medium">Update Product</p>
       </div>
-      <form className="flex justify-center rounded-xl w-[full] items-center">
-        <div className="px-[40px] mb-[30px] bg-white py-[20px] justify-center items-center flex ">
+      <form className="flex w-full flex-col px-[30px] justify-center items-center rounded-xl items-center">
+        <div className="px-[40px] min-w-[300px] max-w-[480px] mb-[30px] bg-white py-[20px] justify-center items-center flex ">
           <div className="font-poppins bg-white">
-            <div className="w-[370px] mb-[20px]">
+            <div className="flex justify-center items-center flex-col">
+              <div>
+                <div className="flex justify-center items-center">
+                  <img
+                    className="rounded-xl p-2 w-[180px] h-[180px] cursor-pointer"
+                    src={imageUrl}
+                    onClick={() => document.getElementById("photos").click()}
+                  />
+                  <input
+                    onChange={fileHandler}
+                    type="file"
+                    id="photos"
+                    name="photos"
+                    multiple
+                    className="hidden"
+                  />
+                </div>
+                <h3 className="font-medium text-[20px] mt-4">
+                  Additional Images
+                </h3>
+                <div className="grid grid-cols-3 pb-[40px] gap-4 mt-2">
+                  {cloudinaryPhotos.map((photo, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={photo}
+                        alt={`Cloudinary Photo ${index}`}
+                        className="rounded-lg w-[100px] h-[100px]"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                        onClick={() => deletePhoto(index, "cloudinary")}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  {uploadedPhotos.map((photo, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={URL.createObjectURL(photo)}
+                        alt={`Uploaded Photo ${index}`}
+                        className="rounded-lg w-[100px] h-[100px]"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-0 right-0 bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center"
+                        onClick={() => deletePhoto(index, "uploaded")}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className=" mb-[20px]">
               <Input
                 {...formik.getFieldProps("productName")}
                 type="text"
@@ -179,7 +222,7 @@ const UpdateComponent = () => {
             </div>
 
             <div className="pt-[3px] flex justify-center items-center pb-[20px]">
-              <div className="w-[250px]">
+              <div className="min-w-[220px] max-w-[480px]">
                 <Select
                   items={category}
                   placeholder="Select a Category"
@@ -204,9 +247,7 @@ const UpdateComponent = () => {
                         />
                         <div className="flex flex-col">
                           <span>{selectCategory}</span>
-                          <span className="text-default-500 text-tiny">
-                            {/* {item.data.phone} */}
-                          </span>
+                          <span className="text-default-500 text-tiny"></span>
                         </div>
                       </div>
                     ))
@@ -238,13 +279,14 @@ const UpdateComponent = () => {
                 </Select>
               </div>
               <NavLink to={"/add-category"}>
-                <button className="bg-primary ml-[10px] text-white px-4 py-2 rounded-lg">
+                <input type="checkbox" />Add New
+                {/* <button className="bg-primary ml-[10px] text-white px-4 py-2 rounded-lg">
                   Create New
-                </button>
+                </button> */}
               </NavLink>
             </div>
 
-            <div className="mb-[20px] w-[370px]">
+            <div className="mb-[20px] ">
               <Input
                 {...formik.getFieldProps("price")}
                 type="number"
@@ -260,7 +302,7 @@ const UpdateComponent = () => {
               />
             </div>
 
-            <div className="w-[370px] mb-[20px]">
+            <div className=" mb-[20px]">
               <Input
                 {...formik.getFieldProps("stock")}
                 type="number"
@@ -277,78 +319,24 @@ const UpdateComponent = () => {
                 }
               />
             </div>
-
             <div className="flex justify-center items-center">
               <button
-                onClick={(e) => {handleDraft(e)}}
+                onClick={(e) => {
+                  handleDraft(e);
+                }}
                 className="bg-black mx-[15px] rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
               >
                 <MdOutlineArrowDropDown className="mr-[15px]" />
-                Save as Draft
+                <span className="hidden md:block">Save as</span> Draft
               </button>
               <button
-                onClick={(e)=> {handlePublished(e)}}
+                onClick={(e) => {
+                  handlePublished(e);
+                }}
                 className="bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
               >
-                Save & Publish
+                <span className="hidden md:block">Save & </span> Publish
               </button>
-            </div>
-          </div>
-
-          <div className="flex justify-center items-center flex-col">
-            <div>
-              <div>
-                <img
-                  className="rounded-xl p-2 w-[300px] h-[300px] cursor-pointer"
-                  src={imageUrl}
-                  onClick={() => document.getElementById("photos").click()}
-                />
-                <input
-                  onChange={fileHandler}
-                  type="file"
-                  id="photos"
-                  name="photos"
-                  multiple
-                  className="hidden"
-                />
-              </div>
-              <h3 className="font-medium text-[20px] mt-4">
-                Additional Images
-              </h3>
-              <div className="grid grid-cols-3 pb-[40px] gap-4 mt-2">
-                {cloudinaryPhotos.map((photo, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={photo}
-                      alt={`Cloudinary Photo ${index}`}
-                      className="rounded-lg w-[100px] h-[100px]"
-                    />
-                    <button
-                      type="button"
-                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                      onClick={() => deletePhoto(index, "cloudinary")}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-                {uploadedPhotos.map((photo, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={URL.createObjectURL(photo)}
-                      alt={`Uploaded Photo ${index}`}
-                      className="rounded-lg w-[100px] h-[100px]"
-                    />
-                    <button
-                      type="button"
-                      className="absolute top-0 right-0 bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center"
-                      onClick={() => deletePhoto(index, "uploaded")}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { CiSearch } from "react-icons/ci";
 import NewOrder from "../Pages/NewOrder";
+import { getProd , searchProducts  } from "../helper/helper";
 
 const ProductSearch = () => {
   const [quantities, setQuantities] = useState({});
@@ -29,16 +30,23 @@ const ProductSearch = () => {
     });
   };
 
+  const fetchProducts = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await getProd();
+      console.log("resmmm" ,  response.data);
+      setProducts(response.data);
+    } catch (err) {
+      setError("Error fetching data");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/products")
-      .then((response) => {
-        console.log(response.data);
-        setProducts(response.data);
-      })
-      .catch((err) => {
-        setError("Error fetching data");
-      });
+      fetchProducts();
   }, []);
 
   const AddedProduct = [];
@@ -49,17 +57,15 @@ const ProductSearch = () => {
     setLoading(true);
     setError(null);
 
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/api/products?search=${query}`
-      );
-      console.log(response.data);
+    const response = await searchProducts(query);
+    console.log("response", response);
+    if (response.error) {
+      setError(response.error);
+    } else {
       setProducts(response.data);
-    } catch (err) {
-      setError("Error fetching data");
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   return (

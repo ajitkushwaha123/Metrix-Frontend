@@ -28,7 +28,7 @@ import { capitalize } from "./utils";
 import { NavLink, useParams } from "react-router-dom";
 // import { set } from "mongoose";
 import { loader } from "../assets";
-import { getCustomers, getOrders } from "../helper/helper";
+import { deleteCustomers, getCustomers, getOrders } from "../helper/helper";
 import NewCustomer from "../Pages/Customers/AddCustomer";
 import UpdateCustomer from "../Pages/Customers/UpdateCustomer";
 
@@ -71,33 +71,14 @@ export default function InvTable() {
   const [users, setUsers] = useState([]);
 
   const navigate = useNavigate();
-  const handleDelete = (id) => {
-    // const {id} = useParams();
-    console.log("id", id);
-    // if (window.confirm("Are you sure you want to delete this customer ?")) {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      };
+  const handleDelete = async (id) => {
 
       setLoading(true);
 
-      axios
-        .delete(`http://localhost:8000/api/customer/${id}`, config)
-        .then((res) => {
-          setLoading(false);
-          console.log(res);
-          // window.location.reload();
-          fetchCustomers();
-        })
-        .catch((err) => {
-          setLoading(false);
-          console.log(err);
-        });
-    // }
+      const res = await deleteCustomers(id);
+      fetchCustomers();
+
+      setLoading(false);
   };
 
   // const users = [];
@@ -110,7 +91,7 @@ export default function InvTable() {
 
   const fetchCustomers = async () => {
     try {
-      const response = await getCustomers(API);
+      const response = await getCustomers('/customer');
       console.log("data", response);
 
       const newCustomers = response.map((product) => ({
@@ -133,7 +114,6 @@ export default function InvTable() {
     }
   };
 
-  const API = "http://localhost:8000/api/customer/";
   useEffect(() => {
     fetchCustomers();
   }, []);
@@ -450,7 +430,7 @@ export default function InvTable() {
         </div>
       )}
       {!loading && (
-        <Table
+        <Table className="overflow-x-scroll"
           isCompact
           removeWrapper
           aria-label="Example table with custom cells, pagination and sorting"

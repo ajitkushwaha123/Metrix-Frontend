@@ -2,6 +2,7 @@ import React , {useEffect, useState} from 'react'
 import { loader } from '../assets';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { getSingleCategory } from '../helper/helper';
 
 const DetailCategory = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -17,21 +18,23 @@ const DetailCategory = () => {
       },
     };
 
+    const getCategory = async (id) => {
+      setIsLoading(true);
+       try{
+        const res = await getSingleCategory(id);
+        console.log("resm" , res);
+        setIsLoading(false);
+        setCategory(res.data.category);
+        console.log(category);
+       }catch(err){
+          console.log(err);
+          setIsLoading(false);
+       }
+    }
+
     useEffect(() => {
-        
-        setIsLoading(true);
-        axios.get(`http://localhost:8000/api/category/${params.id}`, config)
-        .then(res=>{
-            console.log(res.data);
-            setIsLoading(false);
-            setCategory(res.data.category);
-            console.log(category);
-        })
-        .catch(err=>{
-            console.log(err);
-            setIsLoading(false);
-        });
-    } , []);
+      getCategory(params.id);
+    } , [params.id]);
 
   return (
     <>{isLoading && <div><img src={loader}/></div>}

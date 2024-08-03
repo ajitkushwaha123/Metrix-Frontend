@@ -30,10 +30,9 @@ import { ChevronDownIcon } from "./ChevronDownIcon";
 import { capitalize } from "./utils";
 import { NavLink } from "react-router-dom";
 import NewOrder from "../Pages/NewOrder";
-import { getSingleOrders } from "../helper/helper";
+import { deleteAPI, getSingleOrders } from "../helper/helper";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import config from "../../../Backend/config";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -71,73 +70,59 @@ const INITIAL_VISIBLE_COLUMNS = [
   "actions",
 ];
 
-const API = "http://localhost:8000/api/orders/find";
-
 export default function SingleOrderTable() {
+  
   const { id } = useParams();
   console.log("iddddd", id);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [isOpen, setIsOpen] = useState(false);
 
   const deleteOrder = async (id) => {
-    alert("Are you sure you want to delete this order... ?");
-    setLoading(true);
-
-    const token = localStorage.getItem("token");
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    };
-
+    setIsLoading(true);
     try {
-      const res = await axios.delete(
-        `http://localhost:8000/api/orders/${id}`,
-        config
-      );
-      console.log("Response:", res);
-      // window.location.reload();
-      setLoading(false);
+      const response = await deleteAPI(`${id}`);
+      console.log("Response:", response);
+      fetchOrders();
+      setIsLoading(false);
     } catch (error) {
       console.error("Error deleting order:", error);
-    } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
  const [users, setUsers] = useState([]);
 
+  const fetchOrders = async () => {
+    try {
+      const orders = await getSingleOrders(`orders/find/${id}`);
+      console.log("Orderrrrr:", orders);
+      const order = orders.products;
+      console.log("Ordersss:", order);
+
+      const singleproduct = order.map((product) => product.product);
+      console.log("singleproduct", singleproduct);
+
+      const updatedUsers = singleproduct.map((product) => ({
+        id: product._id,
+        name: product.productName,
+        productImages: product.photos,
+        category: product.category,
+        status: product.orderStatus,
+        avatar: product.photos[0],
+        price: product.price,
+        stock: product.stock,
+        discountPrice: product.discountPrice,
+      }));
+
+      setUsers(updatedUsers);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    }
+  };
+
  useEffect(() => {
-   const fetchOrders = async () => {
-     try {
-       const orders = await getSingleOrders(`${API}/${id}`);
-       console.log("Orderrrrr:", orders);
-       const order = orders.products;
-       console.log("Ordersss:", order);
-
-       const singleproduct = order.map((product) => product.product);
-       console.log("singleproduct", singleproduct);
-
-       const updatedUsers = singleproduct.map((product) => ({
-         id: product._id,
-         name: product.productName,
-         productImages: product.photos,
-         category: product.category,
-         status: product.orderStatus,
-         avatar: product.photos[0],
-         price: product.price,
-         stock: product.stock,
-         discountPrice: product.discountPrice,
-       }));
-
-       setUsers(updatedUsers);
-     } catch (error) {
-       console.error("Error fetching orders:", error);
-     }
-   };
-
    fetchOrders();
  }, [id]);
 
@@ -458,48 +443,59 @@ export default function SingleOrderTable() {
   );
 
   return (
-    <Table
-      isCompact
-      removeWrapper
-      aria-label="Example table with custom cells, pagination and sorting"
-      bottomContent={bottomContent}
-      bottomContentPlacement="outside"
-      checkboxesProps={{
-        classNames: {
-          wrapper: "after:bg-primary after:text-background text-background",
-        },
-      }}
-      classNames={classNames}
-      selectedKeys={selectedKeys}
-      selectionMode="multiple"
-      sortDescriptor={sortDescriptor}
-      topContent={topContent}
-      topContentPlacement="outside"
-      onSelectionChange={setSelectedKeys}
-      onSortChange={setSortDescriptor}
-    >
-      <TableHeader columns={headerColumns}>
-        {(column) => (
-          <TableColumn
-            key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
-            allowsSorting={column.sortable}
-          >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody emptyContent={"No users found"} items={sortedItems}>
-        {sortedItems.map((item) => (
-          <TableRow key={item.id}>
-            {headerColumns.map((column) => (
-              <TableCell key={column.uid}>
-                {renderCell(item, column.uid)}
-              </TableCell>
+    <>
+      {isLoading && (
+        <div>
+          {" "}
+          <img src={loader} />{" "}
+        </div>
+      )}
+      {!isLoading && (
+        <Table
+          isCompact
+          className="overflow-x-scroll"
+          removeWrapper
+          aria-label="Example table with custom cells, pagination and sorting"
+          bottomContent={bottomContent}
+          bottomContentPlacement="outside"
+          checkboxesProps={{
+            classNames: {
+              wrapper: "after:bg-primary after:text-background text-background",
+            },
+          }}
+          classNames={classNames}
+          selectedKeys={selectedKeys}
+          selectionMode="multiple"
+          sortDescriptor={sortDescriptor}
+          topContent={topContent}
+          topContentPlacement="outside"
+          onSelectionChange={setSelectedKeys}
+          onSortChange={setSortDescriptor}
+        >
+          <TableHeader columns={headerColumns}>
+            {(column) => (
+              <TableColumn
+                key={column.uid}
+                align={column.uid === "actions" ? "center" : "start"}
+                allowsSorting={column.sortable}
+              >
+                {column.name}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody emptyContent={"No users found"} items={sortedItems}>
+            {sortedItems.map((item) => (
+              <TableRow key={item.id}>
+                {headerColumns.map((column) => (
+                  <TableCell key={column.uid}>
+                    {renderCell(item, column.uid)}
+                  </TableCell>
+                ))}
+              </TableRow>
             ))}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+          </TableBody>
+        </Table>
+      )}
+    </>
   );
 }

@@ -33,7 +33,6 @@ import NewOrder from "../Pages/NewOrder";
 import { getOrderByCustomer, getOrders } from "../helper/helper";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import config from "../../../Backend/config";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -72,8 +71,6 @@ const INITIAL_VISIBLE_COLUMNS = [
   "status",
   "actions",
 ];
-
-const API = "http://localhost:8000/api/orders/customer";
 
 export default function ViewCustomerTable() {
   const {id} = useParams();
@@ -115,56 +112,56 @@ export default function ViewCustomerTable() {
     }
   };
 
+   const fetchOrders = async () => {
+     console.log("ID:", id);
+     const orders = await getOrderByCustomer(id);
+     // const order = orders.data;
+     console.log("Orders:", orders);
+     const newUsers = orders.data.map((order) => {
+       console.log("Order:", order.products);
+       const singleproduct = order.products.map((product) => {
+         return product.product;
+       });
+
+       const productName = singleproduct.map((product) => {
+         return product.productName;
+       });
+
+       const productImage = singleproduct.map((product) => {
+         return product.photos;
+       });
+
+       const firstImage = productImage[0];
+
+       console.log("productImage", productImage);
+
+       const firstProductName = productName[0];
+       const totalProducts = productName.length;
+       const orderDate = new Date(order.createdAt);
+       return {
+         id: order._id,
+         totalProducts: totalProducts,
+         name: firstProductName,
+         productImages: productImage,
+         avatar: firstImage,
+         total: order.price,
+         phone: order.phone,
+         totalProducts: totalProducts,
+         status: order.orderStatus,
+         newCustomer: order.newCustomer,
+         customerName: order.customerName,
+         orderNote: order.orderNote,
+         paymentType: order.paymentType,
+         products: order.products,
+         quantity: order.quantity,
+         orderDate: `${orderDate.toLocaleDateString()} ${orderDate.toLocaleTimeString()}`,
+       };
+     });
+
+     setUsers(newUsers);
+   };
+
   useEffect(() => {
-    const fetchOrders = async () => {
-      console.log("ID:", id);
-      const orders = await getOrderByCustomer(id);
-      // const order = orders.data;
-      console.log("Orders:", orders);
-      const newUsers = orders.data.map((order) => {
-        console.log("Order:", order.products);
-        const singleproduct = order.products.map((product) => {
-          return product.product;
-        });
-
-        const productName = singleproduct.map((product) => {
-          return product.productName;
-        });
-
-        const productImage = singleproduct.map((product) => {
-          return product.photos;
-        });
-
-        const firstImage = productImage[0];
-
-        console.log("productImage", productImage);
-
-        const firstProductName = productName[0];
-        const totalProducts = productName.length;
-        const orderDate = new Date(order.createdAt);
-        return {
-          id: order._id,
-          totalProducts: totalProducts,
-          name: firstProductName,
-          productImages: productImage,
-          avatar: firstImage,
-          total: order.price,
-          phone: order.phone,
-          totalProducts: totalProducts,
-          status: order.orderStatus,
-          newCustomer: order.newCustomer,
-          customerName: order.customerName,
-          orderNote: order.orderNote,
-          paymentType: order.paymentType,
-          products: order.products,
-          quantity: order.quantity,
-          orderDate: `${orderDate.toLocaleDateString()} ${orderDate.toLocaleTimeString()}`,
-        };
-      });
-
-      setUsers(newUsers);
-    };
-
     fetchOrders();
     console.log(isOpen); // This will log the updated state value
   }, [id]);
@@ -486,6 +483,7 @@ export default function ViewCustomerTable() {
 
   return (
     <Table
+      className="overflow-x-scroll"
       isCompact
       removeWrapper
       aria-label="Example table with custom cells, pagination and sorting"

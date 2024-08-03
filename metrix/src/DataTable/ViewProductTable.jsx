@@ -29,6 +29,7 @@ import { capitalize } from "./utils";
 import { NavLink, useParams } from "react-router-dom";
 // import { set } from "mongoose";
 import { loader } from "../assets";
+import { deleteProducts } from "../helper/helper";
 
 const statusColorMap = {
   published: "success",
@@ -49,9 +50,7 @@ export default function VeiwProductTable() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const handleDelete = (id) => {
-    // const {id} = useParams();
-    console.log("id", id);
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       const token = localStorage.getItem("token");
       const config = {
@@ -78,6 +77,15 @@ export default function VeiwProductTable() {
           console.log(err);
         });
     }
+
+    setLoading(true);
+
+    const res = await deleteProducts(id);
+    console.log("res", res);
+    
+    fetchProducts();
+    setLoading(false);
+
   };
 
   const { isLoading, products } = useProductContext();

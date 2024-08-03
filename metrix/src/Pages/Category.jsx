@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {loader} from "../assets/index";
+import { deleteCategory, getCategory } from "../helper/helper";
 
 const Category = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,62 +17,37 @@ const Category = () => {
     navigate(`/category/edit/${id}`);
   };
 
-  const handleDelete = ({ id, imageUrl }) => {
-    if (window.confirm("Are you sure you want to delete this category?")) {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
+  const handleDelete = async ({ id, imageUrl }) => {
+  setIsLoading(true);
+  try{
+    
+      const res = await deleteCategory(id , imageUrl);
+      console.log(res);
+      setIsLoading(false);
+      getData();
+      navigate("/category");
+  }
+  catch(err){
+    console.log(err);
+      setIsLoading(false);
+     } 
+};
 
-      axios
-        .delete(`http://localhost:8000/api/category/?id=${id}&imageUrl${imageUrl}`, config)
-        .then((res) => {
-          console.log(res);
-          setIsLoading(false);
-          getData();
-          navigate("/category");
-        })
-        .catch((err) => {
-          console.log(err);
-          setIsLoading(false);
-        });
+  const getData = async () => {
+    try{
+      const res = await getCategory();
+      console.log("reso" , res);
 
-      setIsLoading(true);
+      setCategoryList(res.data.categories);
+    }catch(err)
+    {
+      console.log("Error Fetching Category");
     }
-  };
-
-
-
-  const getData = () => {
-    const token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json", // Use 'application/json' for typical API requests
-      },
-    };
-
-    axios
-      .get("http://localhost:8000/api/category", config)
-      .then((res) => {
-        console.log(res);
-        setCategoryList(res.data.categories);
-        // console.log(categoryList);
-  //       setIsLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        // setIsLoading(false);
-      });
-
-      console.log("cat" , categoryList)
   };
 
   useEffect(() => {
     getData();
-  }, []); // Currently runs only on mount, adjust for dynamic updates
+  }, []); 
 
   return (
     <>

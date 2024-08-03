@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 import axios from "axios";
 import {loader, metrix} from "../assets/index"
 import { useNavigate } from "react-router-dom";
+import { addCategory } from "../helper/helper";
 
 const AddCategory = ({ onSubmit }) => {
   const [name , setName] = useState('');
@@ -22,36 +23,19 @@ const AddCategory = ({ onSubmit }) => {
   const submitHandler = async (e) => {
     setIsLoading(true);
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("photo", selectedFile);
-
-    const token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data", // Required for FormData
-      },
-    };
-
-    console.log(selectedFile);
-
-    console.log("Form Data:", formData);
-    axios.post("http://localhost:8000/api/category", formData , config)
-    .then(res=>{
-      console.log(res);
+    
+    try{
+      const res = await addCategory(name, selectedFile);
       setIsLoading(false);
-      toast.success("Category Added Successfully"); 
-
-      // navigate('/category');
-    })
-    .catch(err=>{
+      toast.success("Category Added Successfully");
+      navigate("/category")
+    }
+    catch(err){
+      setIsLoading(false);
       setHasError(true);
-      setErrorMessage(err.message);
-      console.log(err);
-      setIsLoading(false);
-      toast.error("Failed to add Category");
-    });
+      setErrorMessage(err.response.data.message);
+      toast.error("Failed to Add Category");
+    }
   }
   
   return (

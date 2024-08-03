@@ -4,6 +4,7 @@ import axios from "axios";
 import { loader, metrix } from "../assets/index";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import { getCategoryById, updateCategory } from "../helper/helper";
 
 const UpdateCategory = ({ onSubmit }) => {
   const [name, setName] = useState("");
@@ -13,34 +14,32 @@ const UpdateCategory = ({ onSubmit }) => {
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [category, setCategory] = useState({});
+  const [categoryName , setCategoryName] = useState("");
 
   let params = useParams();
   console.log(params.id);
 
-  const token = localStorage.getItem("token");
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data", // Required for FormData
-    },
-  };
-
-  useEffect(() => {
+  const fetchCategory = async () => {
     setIsLoading(true);
-    axios
-      .get(`http://localhost:8000/api/category/${params.id}`, config)
-      .then((res) => {
-        console.log(res.data);
+    try{
+      const res = await getCategoryById(params.id);
+       console.log("eksjla" ,  res.data);
         setIsLoading(false);
         setCategory(res.data.category);
         setImageUrl(res.data.category.photo);
+        setCategoryName(res.data.category.name);
         console.log(category);
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsLoading(false);
-      });
-  }, []);
+    }
+    catch(err)
+    {
+      console.log(err);
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchCategory();
+  }, [params.id]);
 
   const fileHandler = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -52,27 +51,20 @@ const UpdateCategory = ({ onSubmit }) => {
   const submitHandler = async (e) => {
     setIsLoading(true);
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("photo", selectedFile);
 
-    console.log("Form Data:", formData);
-    axios
-      .put('http://localhost:8000/api/category/' + params.id, formData, config)
-      .then((res) => {
-        console.log(res);
-        setIsLoading(false);
-        toast.success("Category Added Successfully");
-
-        navigate("/category");
-      })
-      .catch((err) => {
-        setHasError(true);
-        setErrorMessage(err.message);
-        console.log(err);
-        setIsLoading(false);
-        toast.error("Failed to add Category");
-      });
+    try{
+      const response = await updateCategory( name , selectedFile , params.id);
+      console.log("uPdated" , response);
+      toast.success("Category Updated Success");
+      setIsLoading(false);
+      navigate("/category");
+    }catch(err){
+      setHasError(true);
+      setErrorMessage(err.message);
+      console.log(err);
+      setIsLoading(false);
+      toast.error("Error Updating Category");
+    }
   };
 
   return (
@@ -90,7 +82,7 @@ const UpdateCategory = ({ onSubmit }) => {
             type="text"
             id="name"
             name="name"
-            // value={name}
+            // value={categoryName}
             required
           />
           {/* <label htmlFor="photo">Category Image (Optional):</label> */}

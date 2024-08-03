@@ -4,6 +4,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { bulkUploader } from "../helper/helper";
 import { FaDownload } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
+import { Button } from "@nextui-org/react";
 
 
 const BulkUpload = () => {
@@ -54,14 +55,14 @@ const BulkUpload = () => {
     <>
       <Toaster position="top-center" reverseOrder={false} />
       {/* Modal toggle */}
-      <button
+      <Button
         onClick={toggleModal}
         className="block flex justify-center items-center font-poppins text-white bg-primary font-medium rounded-lg text-sm px-5 py-1.5 text-center "
         type="button"
         size="sm"
       >
         <span className="text-[21px] mr-[8px]">+</span> Bulk Upload
-      </button>
+      </Button>
 
       {/* Main modal */}
       {isOpen && (
@@ -73,7 +74,7 @@ const BulkUpload = () => {
             aria-hidden="true"
             className="fixed shadow-lg shadow-indigo-500/40 backdrop-blur-sm bg-indigo-500/10 font-poppins top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full overflow-y-auto overflow-x-hidden"
           >
-            <div className="relative p-4 max-w-[450px] max-h-full">
+            <div className="relative p-4 min-w-[350px]  max-h-full">
               {/* Modal content */}
               <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
                 {/* Modal header */}
@@ -107,9 +108,9 @@ const BulkUpload = () => {
                 {/* Modal body */}
                 <form
                   //   onSubmit={formik.handleSubmit}
-                  className="p-4 min-w-[400px] flex md:p-5"
+                  className="p-4 min-w-[350px] max-w-[450px] flex md:p-5"
                 >
-                  <div className="flex w-[100%] justify-center item-center flex-col">
+                  <div className="flex w-[90%] justify-center item-center flex-col">
                     <div className="flex justify-between items-center">
                       <h2>Data Information</h2>
                     </div>
@@ -124,7 +125,7 @@ const BulkUpload = () => {
                           </label>
                           <input
                             type="file"
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block py-2.5 px-1 md:p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             placeholder="Upload csv file"
                             onChange={(e) => {
                               fileHandler(e);
@@ -152,7 +153,7 @@ const BulkUpload = () => {
                       </div>
                     </div>
 
-                    <div className="flex justify-between items-center">
+                    <div className="flex w-full justify-between items-center">
                       <button
                         onClick={toggleModal}
                         className="bg-white border-2 border-primary px-[10px] py-[5px] font-medium rounded-md"

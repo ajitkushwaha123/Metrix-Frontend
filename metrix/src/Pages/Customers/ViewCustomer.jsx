@@ -14,7 +14,6 @@ import SingleOrderTable from "../../DataTable/SingleOrderTable";
 import ViewCustomerTable from "../../DataTable/ViewCustomerTable";
 import { format } from "date-fns"; // Import date-fns for formatting
 
-const API = "http://localhost:8000/api/orders/find";
 const ViewCustomer = () => {
   const { id } = useParams();
   console.log("id", id);
@@ -64,8 +63,8 @@ const ViewCustomer = () => {
         </div>
 
         <div className="py-[30px]">
-          <div className="flex">
-            <div className="mx-[10px] bg-[white] pb-[15px] rounded-xl w-[33%]">
+          <div className="flex flex-col md:flex-row">
+            <div className="mx-[10px] bg-[white] pb-[15px] rounded-xl  md:w-[33%]">
               <div className="flex justify-between p-5">
                 <div className="flex justify-center items-center">
                   <p className="bg-secondary mr-[15px] text-[24px] text-primary p-2 rounded-lg">
@@ -107,7 +106,7 @@ const ViewCustomer = () => {
               </div>
             </div>
 
-            <div className="mx-[10px] bg-[white] pb-[15px] rounded-xl w-[33%]">
+            <div className="mx-[10px] my-[25px] md:my-[0px] bg-[white] pb-[15px] rounded-xl  md:w-[33%]">
               <div className="flex justify-between p-5">
                 <div className="flex justify-center items-center">
                   <p className="bg-secondary mr-[15px] text-[24px] text-primary p-2 rounded-lg">
@@ -139,7 +138,7 @@ const ViewCustomer = () => {
               </div>
             </div>
 
-            <div className="mx-[10px] bg-[white] pb-[15px] rounded-xl w-[33%]">
+            <div className="mx-[10px] bg-[white] pb-[15px] rounded-xl  md:w-[33%]">
               <div className="flex justify-between p-5">
                 <div className="flex justify-center items-center">
                   <p className="bg-secondary mr-[15px] text-[24px] text-primary p-2 rounded-lg">

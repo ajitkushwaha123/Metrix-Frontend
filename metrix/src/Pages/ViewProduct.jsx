@@ -11,7 +11,7 @@ import { useParams } from 'react-router-dom';
 import { useProductContext } from "../context/productContext";
 
 
-const API = "http://localhost:8000/api/products";
+// const API = "http://localhost:8000/api/products";
 
 const ViewProduct = () => {
 
@@ -22,7 +22,7 @@ const ViewProduct = () => {
 
     useEffect(() => {
       console.log("id", id);
-      getSingleProduct(`${API}/${id}`);
+      getSingleProduct(`/products/${id}`);
       console.log("singleProduct", singleProduct);
     }, []);
 

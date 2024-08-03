@@ -30,6 +30,7 @@ import {capitalize} from "./utils";
 import { NavLink, useParams } from "react-router-dom";
 import { loader } from "../assets";
 import BulkUpload from "../components/BulkUpload";
+import { deleteProducts } from "../helper/helper";
 
 const statusColorMap = {
   published: "success",
@@ -43,35 +44,14 @@ export default function InvTable() {
 
   const [loading , setLoading] = useState(false);
 
-  const navigate = useNavigate();
-const handleDelete = (id) => {  
-  // const {id} = useParams();
-  console.log("id" , id);
-
-    const token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    };
-
+const navigate = useNavigate();
+const handleDelete = async (id) => {  
     setLoading(true);
-    axios
-      .delete(`http://localhost:8000/api/products/${id}`, config)
-      .then((res) => {
-        setLoading(false);
-        console.log(res);
-        // getProducts(`http://localhost:8000/api/product`);
-        toast.success("Product Deleted Successfully");
-        // window.location.reload();
-        navigate("/inventory");
-      })
-      .catch((err) => {
-        setLoading(false);
-        console.log(err);
-        toast.error("Failed to delete the product");
-      });
+
+    const res = await deleteProducts(id);
+    toast.success("Product Deleted Successfully");
+  
+    setLoading(false);
 };
 
 
@@ -404,6 +384,7 @@ const reloadFunction = () => {
     }
     {!loading && 
        <Table
+      className="overflow-x-scroll md:overflow-x-hidden"
       isCompact
       removeWrapper
       aria-label="Example table with custom cells, pagination and sorting"

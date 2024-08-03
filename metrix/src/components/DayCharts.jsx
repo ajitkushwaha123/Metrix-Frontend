@@ -12,9 +12,6 @@ import {
 import { getSalesForGraph, getCustomerForGraph } from "../helper/helper";
 
 const DayChart = ({ select }) => {
-  const OrderAPI = "http://localhost:8000/api/orders";
-  const API = "http://localhost:8000/api/customer";
-
   const [sales, setSales] = useState([]);
   const [customer, setCustomer] = useState([]);
 

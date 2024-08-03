@@ -11,8 +11,7 @@ import { loader } from "../assets";
 import { useNavigate } from "react-router-dom";
 import toast , { Toaster } from 'react-hot-toast';
 import { Select, SelectItem, Avatar } from "@nextui-org/react";
-import axios from "axios";
-
+import { getCategory } from "../helper/helper";
 
 const AddProduct = () => {
   const [photos, setPhotos] = useState([]);
@@ -25,26 +24,12 @@ const AddProduct = () => {
   console.log("Category data", selectCategory);
 
   const fetchCategory = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      };
-
-      const response = await axios.get(
-        `http://localhost:8000/api/category`,
-        config
-      );
+      const response = await getCategory();
+      console.log("Category data", response);
       setCategory(response.data.categories);
       console.log("Category ed successfully", response.data.categories);
 
       console.log("Category data fetched successfully", category);
-    } catch (error) {
-      console.log("Error while fetching category data", error);
-    }
   };
 
   useEffect(() => {
@@ -138,13 +123,56 @@ const AddProduct = () => {
         )}
         {!loading && (
           <div className="">
-            <div className="flex px-[40px] py-[20px] justify-between items-center">
+            <div className="flex px-[20px] md:px-[40px] py-[20px] justify-between items-center">
               <p className="text-[22px] font-medium">Add New Product</p>
             </div>
-            <form className="flex justify-center rounded-xl w-[full] items-center">
-              <div className="px-[40px] mb-[30px] rounded-xl bg-white py-[20px] justify-center items-center flex ">
-                <div className="font-poppins mr-[30px] bg-white">
-                  <div className="w-[370px] mb-[20px]">
+            <form className="flex flex-col justify-center rounded-xl w-[full] items-center">
+              <div className="px-[20px] md:px-[40px] md:flex-row flex-col mb-[30px] rounded-xl bg-white py-[20px] justify-center items-center flex ">
+                <div className="font-poppins flex justify-center items-center flex-col md:mr-[30px] bg-white">
+                  <div className="flex md:hidden justify-center items-center flex-col">
+                    <div>
+                      <div>
+                        <img
+                          className="rounded-xl p-2 w-[220px] h-[220px] cursor-pointer"
+                          src={imageUrl}
+                          onClick={() =>
+                            document.getElementById("photos").click()
+                          }
+                        />
+                        <input
+                          onChange={fileHandler}
+                          type="file"
+                          id="photos"
+                          name="photos"
+                          multiple
+                          className="hidden"
+                        />
+                      </div>
+                      <h3 className="font-medium text-[20px] mt-4">
+                        Additional Images
+                      </h3>
+                      <div className="grid grid-cols-3 relative pb-[40px] gap-4 mt-2">
+                        {photos.map((photo, index) => (
+                          <div className="relative" key={index}>
+                            <img
+                              src={URL.createObjectURL(photo)}
+                              alt={`Photo ${index}`}
+                              className="rounded-lg relative w-[100px] h-[100px]"
+                            />
+                            <button
+                              type="button"
+                              className="absolute top-0 right-0 bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center"
+                              onClick={() => deletePhoto(index)}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className=" mb-[20px]">
                     <Input
                       {...formik.getFieldProps("productName")}
                       type="text"
@@ -165,7 +193,7 @@ const AddProduct = () => {
                   {/* Show Category */}
 
                   <div className="pt-[3px] flex justify-center items-center pb-[20px]">
-                    <div className="w-[250px]">
+                    <div className="min-w-[250px]">
                       <Select
                         items={category}
                         placeholder="Select a Category"
@@ -189,7 +217,7 @@ const AddProduct = () => {
                                 color="success"
                               />
                               <div className="flex flex-col">
-                                <span >{item.data.name}</span>
+                                <span>{item.data.name}</span>
                                 <span className="text-default-500 text-tiny">
                                   {/* {item.data.phone} */}
                                 </span>
@@ -223,14 +251,11 @@ const AddProduct = () => {
                         )}
                       </Select>
                     </div>
-                    <NavLink to={"/add-category"}>
-                      <button className="bg-primary ml-[10px] text-white px-4 py-2 rounded-lg">
-                        Create New
-                      </button>
-                    </NavLink>
                   </div>
 
-                  <div className="mb-[20px] w-[370px]">
+                  
+
+                  <div className="mb-[20px] ">
                     <Input
                       {...formik.getFieldProps("price")}
                       type="number"
@@ -248,7 +273,7 @@ const AddProduct = () => {
                     />
                   </div>
 
-                  {/* <div className="mb-[20px] w-[370px]">
+                  {/* <div className="mb-[20px] ">
                     <Input
                       {...formik.getFieldProps("discountPrice")}
                       type="number"
@@ -266,7 +291,7 @@ const AddProduct = () => {
                     />
                   </div> */}
 
-                  <div className="w-[370px] mb-[20px]">
+                  <div className=" mb-[20px]">
                     <Input
                       {...formik.getFieldProps("stock")}
                       type="number"
@@ -276,7 +301,7 @@ const AddProduct = () => {
                       size="lg"
                       startContent={
                         <div className="pointer-events-none flex items-center">
-                          <span className="text-default-400 w-[full] text-medium">
+                          <span className="text-default-400 w-full text-medium">
                             <LuShirt />
                           </span>
                         </div>
@@ -284,24 +309,33 @@ const AddProduct = () => {
                     />
                   </div>
 
-                  <div className="flex justify-center items-center">
-                    <button
-                      onClick={(e) => {handleDraft(e)}}
-                      className="bg-black mx-[15px] rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
-                    >
-                      <MdOutlineArrowDropDown className="mr-[15px]" />
-                      Save as Draft
-                    </button>
-                    <button
-                      onClick={(e) => {handlePublished(e)}}
-                      className="bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
-                    >
-                      Save & Publish
-                    </button>
-                  </div>
+                  {/* <div className="hidden md:block flex-row flex justify-center items-center">
+                    <div>
+                      <button
+                        onClick={(e) => {
+                          handleDraft(e);
+                        }}
+                        className="bg-black mx-[15px] rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
+                      >
+                        <MdOutlineArrowDropDown className="mr-[15px]" />
+                        Draft
+                      </button>
+                    </div>
+
+                    <div>
+                      <button
+                        onClick={(e) => {
+                          handlePublished(e);
+                        }}
+                        className="bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
+                      >
+                        Publish
+                      </button>
+                    </div>
+                  </div> */}
                 </div>
 
-                <div className="flex justify-center items-center flex-col">
+                <div className="flex hidden md:block justify-center items-center flex-col">
                   <div>
                     <div>
                       <img
@@ -343,6 +377,25 @@ const AddProduct = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+              <div className="flex mb-[30px] justify-center items-center">
+                <button
+                  onClick={(e) => {
+                    handleDraft(e);
+                  }}
+                  className="bg-black mx-[15px] rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
+                >
+                  <MdOutlineArrowDropDown className="mr-[15px]" />
+                  Draft
+                </button>
+                <button
+                  onClick={(e) => {
+                    handlePublished(e);
+                  }}
+                  className="bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
+                >
+                  Publish
+                </button>
               </div>
             </form>
           </div>

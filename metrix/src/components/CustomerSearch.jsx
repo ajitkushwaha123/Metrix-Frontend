@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Select, SelectItem, Avatar } from "@nextui-org/react";
 import NewOrder from "../Pages/NewOrder"
+import { getCategory } from "../helper/helper";
 import axios from "axios";
 
 export default function CategorySearch() {
@@ -9,26 +10,14 @@ export default function CategorySearch() {
 
   console.log("Category data", selectCategory);
 
-  const fetchCategory = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      };
-
-      const response = await axios.get(`http://localhost:8000/api/category` , config); ;
+    const fetchCategory = async () => {
+      const response = await getCategory();
+      console.log("Category data", response);
       setCategory(response.data.categories);
       console.log("Category ed successfully", response.data.categories);
 
       console.log("Category data fetched successfully", category);
-
-    } catch (error) {
-      console.log("Error while fetching category data", error);
-    }
-  };
+    };
 
   useEffect(() => {
     fetchCategory()

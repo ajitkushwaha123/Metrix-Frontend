@@ -18,9 +18,6 @@ import SingleOrderTable from "../DataTable/SingleOrderTable";
 import { useFormik } from "formik";
 import toast, { Toaster } from "react-hot-toast";
 
-const API = "http://localhost:8000/api/orders/find";
-const orderAPI = "http://localhost:8000/api/orders";
-
 const ViewOrder = () => {
   const { id } = useParams();
   console.log("id:", id);
@@ -40,7 +37,7 @@ const ViewOrder = () => {
   const fetchProduct = async () => {
     try {
       console.log("Fetching product with id:", id);
-      const product = await getSingleOrders(`${API}/${id}`);
+      const product = await getSingleOrders(`orders/find/${id}`);
       console.log("Fetched product:", product);
       setCustomerName(product.customerName);
       setPhone(product.phone);
@@ -58,7 +55,7 @@ const ViewOrder = () => {
   const updateOrder = async (id, orderStatus) => {
     try {
       const { data } = await updateOrderHelper(
-        `${orderAPI}/${id}`,
+        `orders/${id}`,
         orderStatus
       );
       console.log("Updated order data:", data);
@@ -115,8 +112,8 @@ const ViewOrder = () => {
       <Navbar title={"Inventory"} />
       <BreadCrum title={"Inventory"} back={"/"} />
 
-      <div className="px-[40px]">
-        <div className="flex justify-between items-center">
+      <div className="px-[40px] md:px-[40px]">
+        <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex">
             <p className="mr-[30px] font-medium">
               Order Number :
@@ -130,7 +127,7 @@ const ViewOrder = () => {
             </p>
           </div>
 
-          <div className="flex justify-center items-center">
+          <div className="flex my-[15px] md:py-[0px] justify-center items-center">
             <button
               onClick={(e) => {
                 handleCancelOrder(e);
@@ -139,7 +136,7 @@ const ViewOrder = () => {
             >
               <MdOutlineArrowDropDown className="mr-[15px]" />
               {cancelled === "cancelled" && <p>Cancelled</p>}
-              {cancelled !== "cancelled" && <p>Cancel Order</p>}
+              {cancelled !== "cancelled" && <p>Cancel</p>}
             </button>
             <button
               onClick={(e) => {
@@ -148,14 +145,14 @@ const ViewOrder = () => {
               className="bg-primary rounded-lg flex justify-center items-center text-white px-6 text-[18px] py-2"
             >
               {completed === "completed" && <p>Completed</p>}
-              {completed !== "completed" && <p>Mark As Completed</p>}
+              {completed !== "completed" && <p>Completed</p>}
             </button>
           </div>
         </div>
 
-        <div className="py-[30px]">
-          <div className="flex">
-            <div className="mx-[10px] bg-[white] pb-[15px] rounded-xl w-[33%]">
+        <div className="py-[10px] md:py-[30px]">
+          <div className="flex flex-col md:flex-row">
+            <div className="md:mx-[20px] bg-[white] my-[10px] md:my-[1px] pb-[15px] rounded-xl w-[100%] md:w-[33%]">
               <div className="flex justify-between p-5">
                 <div className="flex justify-center items-center">
                   <p className="bg-secondary mr-[15px] text-[24px] text-primary p-2 rounded-lg">
@@ -201,7 +198,7 @@ const ViewOrder = () => {
               </div>
             </div>
 
-            <div className="mx-[10px] bg-[white] pb-[15px] rounded-xl w-[33%]">
+            <div className="md:mx-[20px] bg-[white] my-[10px] md:my-[1px] pb-[15px] rounded-xl w-[100%] md:w-[33%]">
               <div className="flex justify-between p-5">
                 <div className="flex justify-center items-center">
                   <p className="bg-secondary mr-[15px] text-[24px] text-primary p-2 rounded-lg">
@@ -233,7 +230,7 @@ const ViewOrder = () => {
               </div>
             </div>
 
-            <div className="mx-[10px] bg-[white] pb-[15px] rounded-xl w-[33%]">
+            <div className="md:mx-[20px] bg-[white] my-[10px] md:my-[1px] pb-[15px] w-[100%] rounded-xl md:w-[33%]">
               <div className="flex justify-between p-5">
                 <div className="flex justify-center items-center">
                   <p className="bg-secondary mr-[15px] text-[24px] text-primary p-2 rounded-lg">

@@ -80,7 +80,7 @@ export async function getCustomers(url) {
 
   try {
     console.log("URL:", url);
-    const { data } = await axios.get(`${url}`, config);
+    const { data } = await axios.get(`${API_URL}/${url}`, config);
     console.log("CutiePie:", data);
     return data;
   } catch (error) {
@@ -104,7 +104,7 @@ export async function getSingleOrders(url) {
 
   try {
     console.log("URL:", url);
-    const { data } = await axios.get(`${url}`, config);
+    const { data } = await axios.get(`${API_URL}/${url}`, config);
     console.log("Orders:", data);
     return data;
   } catch (error) {
@@ -588,7 +588,7 @@ export async function updateOrder(orderAPI, values) {
   console.log("Order API:", orderAPI);
 
   try {
-    const res = await axios.put(orderAPI, values, config);
+    const res = await axios.put(`${API_URL}/${orderAPI}`, values, config);
     console.log("Updated order:", res.data);
     return res.data; // Return the response data directly
   } catch (error) {
@@ -728,5 +728,249 @@ export async function insertOrders(values){
   {
     console.error("Error adding orders:", err);
     return Promise.reject({ error: "Couldn't add orders" });
+  }
+}
+
+export async function getCategory(){
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+
+  };
+
+  try{
+    const {data} = await axios.get(`${API_URL}/category`, config);
+    console.log("Category:", data);
+    return Promise.resolve({ data });
+  }
+  catch(err){
+    console.error("Error fetching category:", err);
+    return Promise.reject({ error: "Couldn't fetch category" });
+  }
+}
+
+
+export async function getProd() {
+  try {
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const { data } = await axios.get(`${API_URL}/products`, config);
+
+    const product = { data };
+    console.log("product-detail:", product);
+    return product;
+  } catch (error) {
+    console.error("Error fetching product detail:", error);
+    return { error: "Couldn't fetch product detail" };
+  }
+}
+
+export async function searchProducts(query){
+  try{
+    const token = localStorage.getItem("token");
+    console.log(token);
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const {data} = await axios.get(`${API_URL}/products?search=${query}`, config);
+    console.log("Search Products:", data);
+    return { data };
+  }catch(err)
+  {
+    console.log("Error fetching products:", err);
+    return { error: "Couldn't find products" };
+  }
+}
+
+export async function deleteProducts(id){
+  try{
+    const token = localStorage.getItem("token");
+    console.log(token);
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const response = await axios.delete(
+      `${API_URL}/products/${id}`,
+      config
+    );
+
+    console.log("Item Deleted :", response);
+
+    return { response };
+  }catch(err){
+    console.log("Error deleting file:", err);
+    return { error: "Couldn't delete file" };
+  }
+}
+
+export async function deleteCustomers(id) {
+  try {
+    const token = localStorage.getItem("token");
+    console.log(token);
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const response = await axios.delete(`${API_URL}/customer/${id}`, config);
+
+    console.log("Item Deleted :", response);
+
+    return { response };
+  } catch (err) {
+    console.log("Error deleting file:", err);
+    return { error: "Couldn't delete file" };
+  }
+}
+
+export async function addCategory(name , selectedFile)
+{
+  const formData = new FormData();
+    formData.append("name", name);
+    formData.append("photo", selectedFile);
+
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data", // Required for FormData
+      },
+    };
+
+    console.log(selectedFile);
+
+    console.log("Form Data:", formData);
+    try{
+      const { data } = await axios.post( `${API_URL}/category`, formData , config);
+      console.log(data);
+      return Promise.resolve( data );
+    }
+    catch(err){
+      console.log(err);
+      return Promise.reject({ err });
+    }
+
+}
+
+
+export async function getCategoryById(id){
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json", // Required for FormData
+    },
+  };
+
+  try{
+    const response = axios.get(
+    `${API_URL}/category/${id}`,
+    config
+  );
+
+     return Promise.resolve( response );
+  }
+  catch(err){
+    return Promise.reject( err );
+  }
+}
+
+export async function updateCategory(name , selectedFile , id)
+{
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data", // Required for FormData
+    },
+  };
+
+
+
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("photo", selectedFile);
+
+  console.log("Form Data:", formData);
+  
+  try{
+    const response =  axios.put(`${API_URL}/category/` + id, formData, config);
+    console.log("ressss" , response)
+    return Promise.resolve(response);
+  }
+  catch(err){
+    return Promise.reject(err);
+  }
+  
+}
+
+export async function getSingleCategory(id){
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  };
+
+  try{
+
+    const response = axios.get(
+      `${API_URL}/category/${id}`,
+      config
+    );
+
+    console.log("resp" , response);
+    return Promise.resolve(response);
+  }catch(err)
+  {
+    console.log("Error Fetching Categroy");
+    return Promise.reject(err);
+  }
+}
+
+export async function deleteCategory(id , imageUrl){
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  try{
+
+    const res = axios.delete(
+       `${API_URL}/category/?id=${id}&imageUrl${imageUrl}`,
+       config
+     );
+
+     return Promise.resolve(res);
+
+  }catch(err)
+  {
+    console.log("Error deleting Category");
+    return Promise.reject(err);
   }
 }

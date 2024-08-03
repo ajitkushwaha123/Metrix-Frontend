@@ -50,56 +50,88 @@ const Profile = () => {
   if(serverError)return <h1 className='text-xl text-red-500'>{serverError.message}</h1>
 
   return (
-    <div className='bg-white font-poppins h-[100%] mx-[40px] my-[20px] py-[50px] flex jus'>
-     <form onSubmit={formik.handleSubmit} className='w-full flex '>
-    <Toaster position='top-center' reverseOrder='false'></Toaster>
-      <div className='px-[50px] w-[50%]'>
-         <div className='flex text-[18px] items-center text-txtPrimary'>
-            <p className='pr-[20px] text-black font-semibold'>Account</p>
-            <p className='px-[20px]'>Buisness</p>
-            <p className='px-[20px]'>Security </p>
-         </div>
-
-         
-           <h2 className='text-[20px] text-start mt-[60px]'>Account Setting</h2>
-
-           <div className='mt-[20px] flex flex-col justify-center'>
-            <div className='flex rounded-lg my-[20px] text-[18px] justify-center items-center bg-[#EFF1F9] w-[375px] h-[52px]'> 
+    <div className="font-poppins py-[50px] flex items-center justify-center">
+      <form onSubmit={formik.handleSubmit} className="">
+        <Toaster position="top-center" reverseOrder="false"></Toaster>
+        <div className="">
+          <div className="bg-white mx-[20px] rounded-xl flex items-center flex-col justify-center">
+            <label className="ml-[100px] pt-[20px]" htmlFor="profile">
+              <img
+                width={"200px"}
+                height={"200px"}
+                name="profile"
+                className="rounded-full"
+                src={
+                  file ||
+                  apiData?.profile ||
+                  "https://i.pinimg.com/564x/44/27/2d/44272df32b1b832c9ea8f596fb4d76b2.jpg"
+                }
+              />
+              <input
+                className="opacity-0"
+                onChange={onUpload}
+                type="file"
+                id="profile"
+              />
+            </label>
+            <div className="flex rounded-lg px-[15px] mb-[20px] text-[18px] justify-center items-center bg-[#EFF1F9] h-[52px]">
               <IoKeyOutline />
-              <input {...formik.getFieldProps('name')} className='w-[303px] ml-[10px] h-[36px] outline-none bg-[#EFF1F9]' placeholder='Name' type='name'/>
+              <input
+                {...formik.getFieldProps("name")}
+                className=" ml-[10px] h-[36px] outline-none bg-[#EFF1F9]"
+                placeholder="Name"
+                type="name"
+              />
             </div>
 
-            <div className='flex rounded-lg text-[18px] justify-center items-center bg-[#EFF1F9] w-[375px] h-[52px]'> 
+            <div className="flex rounded-lg px-[15px] text-[18px] justify-center items-center bg-[#EFF1F9]  h-[52px]">
               <IoMailOutline />
-              <input {...formik.getFieldProps('email')} className='w-[303px] ml-[10px] h-[36px] outline-none bg-[#EFF1F9]' placeholder='Email Address' type='email'/>
+              <input
+                {...formik.getFieldProps("email")}
+                className=" ml-[10px] h-[36px] outline-none bg-[#EFF1F9]"
+                placeholder="Email Address"
+                type="email"
+              />
             </div>
 
-            <div className='flex rounded-lg my-[20px] text-[18px] justify-center items-center bg-[#EFF1F9] w-[375px] h-[52px]'> 
+            <div className="flex rounded-lg px-[15px] my-[20px] text-[18px] justify-center items-center bg-[#EFF1F9]  h-[52px]">
               <IoKeyOutline />
-              <input {...formik.getFieldProps('phone')} className='w-[303px] ml-[10px] h-[36px] outline-none bg-[#EFF1F9]' placeholder='Phone Number' type='phone'/>
+              <input
+                {...formik.getFieldProps("phone")}
+                className=" ml-[10px] h-[36px] outline-none bg-[#EFF1F9]"
+                placeholder="Phone Number"
+                type="phone"
+              />
             </div>
 
-            <div className='flex rounded-lg text-[18px] justify-center items-center bg-[#EFF1F9] w-[375px] h-[52px]'> 
+            <div className="flex rounded-lg px-[15px] text-[18px] justify-center items-center bg-[#EFF1F9]  h-[52px]">
               <IoMailOutline />
-              <input {...formik.getFieldProps('address')} className='w-[303px] ml-[10px] h-[36px] outline-none bg-[#EFF1F9]' placeholder='Address' type='address'/>
+              <input
+                {...formik.getFieldProps("address")}
+                className=" ml-[10px] h-[36px] outline-none bg-[#EFF1F9]"
+                placeholder="Address"
+                type="address"
+              />
             </div>
 
-            <div className='flex rounded-lg my-[20px] text-[18px] justify-center items-center bg-[#EFF1F9] w-[375px] h-[52px]'> 
+            <div className="flex rounded-lg px-[15px] my-[20px] text-[18px] justify-center items-center bg-[#EFF1F9]  h-[52px]">
               <IoKeyOutline />
-              <input {...formik.getFieldProps('address')} className='w-[303px] ml-[10px] h-[36px] outline-none bg-[#EFF1F9]' placeholder='City' type='city'/>
+              <input
+                {...formik.getFieldProps("address")}
+                className=" ml-[10px] h-[36px] outline-none bg-[#EFF1F9]"
+                placeholder="City"
+                type="city"
+              />
             </div>
-         </div>
-      </div>
-      <div className='w-[50%]'>
-         <button className='bg-primary rounded-lg text-white px-6 text-[18px] py-2'>Update</button>
-         <label htmlFor='profile'>
-           <img width={"250px"} height={"250px"} name="profile" className='mt-[60px] rounded-full' src={file || apiData?.profile || 'https://i.pinimg.com/564x/44/27/2d/44272df32b1b832c9ea8f596fb4d76b2.jpg'}/>
-           <input className='opacity-0' onChange={onUpload} type='file' id='profile' />
-         </label>
-      </div>
+
+            <button className="bg-primary mb-[20px] rounded-lg text-white px-6 text-[18px] py-2">
+              Update
+            </button>
+          </div>
+        </div>
       </form>
     </div>
-  )
+  );
 }
 
 export default Profile
